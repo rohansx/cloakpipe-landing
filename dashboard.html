@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CloakPipe — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+
+<meta name="description" content="CloakPipe pipeline overview — live request stream, latency, entities masked, policies, and compliance posture." />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="stylesheet" href="/src/dashboard.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============== SIDEBAR ============== -->
+  <aside class="side">
+    <div class="side-brand">
+      <svg viewBox="0 0 22 22" fill="none">
+        <path d="M2 20 L8 4 L10 4 L4 20 Z" fill="currentColor"/>
+        <path d="M10 20 L16 4 L18 4 L12 20 Z" fill="currentColor"/>
+        <rect x="18" y="3" width="2" height="3" fill="#00FF66"/>
+        <rect x="18" y="7" width="2" height="3" fill="#00E0FF"/>
+      </svg>
+      <span>CloakPipe</span>
+      <span class="v2-tag">V2</span>
+    </div>
+
+    <div class="workspace">
+      <div class="ws-mark">C</div>
+      <div class="ws-meta">
+        <strong>cloakpipe</strong>
+        <small>prod · us-west-2</small>
+      </div>
+      <svg class="chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5 L6 8 L9 5"/></svg>
+    </div>
+
+    <div class="side-section">Monitor</div>
+    <a class="side-item active" href="#">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg>
+      <span>Overview</span>
+    </a>
+    <a class="side-item" href="#">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12 L6 8 L9 11 L14 4"/></svg>
+      <span>Live traffic</span><span class="count">2.4K/m</span>
+    </a>
+    <a class="side-item" href="#">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 4 V8 L11 10"/></svg>
+      <span>Audit log</span>
+    </a>
+    <a class="side-item" href="#">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5 L8 8 L13 5 M3 5 V12 H13 V5"/></svg>
+      <span>Vault</span><span class="count">47K</span>
+    </a>
+
+    <div class="side-section">Configure</div>
+    <a class="side-item" href="#">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4 H13 M3 8 H13 M3 12 H9"/></svg>
+      <span>Policies</span>
+    </a>
+    <a class="side-item" href="#">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="2.5"/><path d="M3 14 C3 11.5 5 10 8 10 C11 10 13 11.5 13 14"/></svg>
+      <span>Roles &amp; teams</span>
+    </a>
+    <a class="side-item" href="#">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10 C4 7 6 7 8 10 C10 7 12 7 14 10 M2 6 C4 3 6 3 8 6 C10 3 12 3 14 6"/></svg>
+      <span>Detection engines</span>
+    </a>
+    <a class="side-item" href="#">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8 H5 M11 8 H14"/><rect x="5" y="5" width="6" height="6"/></svg>
+      <span>Providers</span>
+    </a>
+    <a class="side-item" href="#">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="3"/><path d="M8 1 V3 M8 13 V15 M1 8 H3 M13 8 H15"/></svg>
+      <span>Compliance</span>
+    </a>
+
+    <div class="side-section">Developer</div>
+    <a class="side-item" href="#">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 4 L2 8 L5 12 M11 4 L14 8 L11 12"/></svg>
+      <span>API keys</span>
+    </a>
+    <a class="side-item" href="#">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10"/><path d="M5 7 H11 M5 10 H9"/></svg>
+      <span>Documentation</span>
+    </a>
+
+    <div class="side-bottom">
+      <div class="avatar">R</div>
+      <div class="who">Rohan Sharma<small>admin</small></div>
+      <button class="theme-mini" id="theme-toggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2 M12 20v2 M2 12h2 M20 12h2 M4.9 4.9l1.4 1.4 M17.7 17.7l1.4 1.4 M4.9 19.1l1.4-1.4 M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14c-1 4-5 7-9 7-5 0-9-4-9-9 0-4 3-8 7-9-2 4 0 9 4 10 3 1 6 0 7-0z"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============== MAIN ============== -->
+  <main class="main">
+
+    <div class="topbar">
+      <div class="crumbs">
+        <strong>cloakpipe</strong>
+        <span class="sep">/</span>
+        <span>prod</span>
+        <span class="sep">/</span>
+        <strong>Overview</strong>
+      </div>
+      <div class="top-right">
+        <div class="search">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 L13.5 13.5"/></svg>
+          <input placeholder="Search requests, entities, audit" />
+          <kbd>⌘K</kbd>
+        </div>
+        <div class="range">
+          <button>1H</button>
+          <button>6H</button>
+          <button class="on">24H</button>
+          <button>7D</button>
+          <button>30D</button>
+        </div>
+        <a class="btn-mini" href="index.html">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8 L14 8 M9 4 L14 8 L9 12"/></svg>
+          Landing
+        </a>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="page-head">
+        <div>
+          <h1>Pipeline <span class="acc">overview.</span></h1>
+          <div class="meta">
+            <span class="live">LIVE</span>
+            <span>·</span>
+            <span>Synced 2s ago</span>
+            <span>·</span>
+            <span>us-west-2 · prod</span>
+          </div>
+        </div>
+        <div class="page-actions">
+          <button class="btn-mini">
+            <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 7 L5 10 L12 3"/></svg>
+            All normal
+          </button>
+          <button class="btn-mini">
+            <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 2 V10 M3 7 L7 11 L11 7"/></svg>
+            Export
+          </button>
+          <button class="btn-mini cta">
+            <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 2 V12 M2 7 H12"/></svg>
+            New policy
+          </button>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpis">
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-label">Requests · 24h</div>
+            <div class="kpi-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12 L6 8 L9 11 L14 4"/></svg></div>
+          </div>
+          <div class="kpi-value" id="kpi-req">142,807</div>
+          <div class="kpi-delta up">↑ 18.4% vs yesterday</div>
+          <svg class="kpi-spark" viewBox="0 0 100 40" preserveAspectRatio="none">
+            <path d="M0 30 L14 27 L25 22 L40 19 L55 14 L70 12 L85 8 L100 5" stroke="var(--accent)" stroke-width="1.2" fill="none"/>
+          </svg>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-label">P95 latency</div>
+            <div class="kpi-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 4 V8 L11 10"/></svg></div>
+          </div>
+          <div class="kpi-value"><em>38</em><span class="unit">ms</span></div>
+          <div class="kpi-delta up">↓ 4 ms vs 24h avg</div>
+          <svg class="kpi-spark" viewBox="0 0 100 40" preserveAspectRatio="none">
+            <path d="M0 16 L15 18 L25 16 L40 20 L55 16 L70 14 L85 12 L100 18" stroke="var(--accent)" stroke-width="1.2" fill="none"/>
+          </svg>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-label">Entities masked</div>
+            <div class="kpi-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6 L8 3 L13 6 L13 10 L8 13 L3 10 Z"/></svg></div>
+          </div>
+          <div class="kpi-value" id="kpi-ent">418,392</div>
+          <div class="kpi-delta up">↑ 24.1% vs yesterday</div>
+          <svg class="kpi-spark" viewBox="0 0 100 40" preserveAspectRatio="none">
+            <path d="M0 32 L12 28 L24 24 L36 20 L48 14 L60 10 L75 8 L88 4 L100 2" stroke="var(--accent)" stroke-width="1.2" fill="none"/>
+          </svg>
+        </div>
+
+        <div class="kpi warn">
+          <div class="kpi-head">
+            <div class="kpi-label">Policy blocks</div>
+            <div class="kpi-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2 L13 4 V8 C13 11 11 13 8 14 C5 13 3 11 3 8 V4 Z"/></svg></div>
+          </div>
+          <div class="kpi-value">312</div>
+          <div class="kpi-delta warn">↑ 7 in last hour</div>
+          <svg class="kpi-spark" viewBox="0 0 100 40" preserveAspectRatio="none">
+            <path d="M0 32 L10 28 L20 26 L30 22 L40 24 L50 16 L60 18 L70 12 L80 14 L90 8 L100 12" stroke="var(--warn)" stroke-width="1.2" fill="none"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- row 1: latency + entities -->
+      <div class="grid r1">
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Latency over time</div>
+              <div class="panel-sub">Pipeline overhead · milliseconds</div>
+            </div>
+            <div class="panel-tabs">
+              <button class="on">P50</button>
+              <button>P95</button>
+              <button>P99</button>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="chart">
+              <svg id="latency-chart" viewBox="0 0 600 200" preserveAspectRatio="none">
+                <g stroke="var(--line)" stroke-width="1">
+                  <line x1="0" y1="50" x2="600" y2="50"/>
+                  <line x1="0" y1="100" x2="600" y2="100"/>
+                  <line x1="0" y1="150" x2="600" y2="150"/>
+                </g>
+                <path id="latency-area" d="" fill="rgba(0, 255, 102, 0.10)" />
+                <path id="latency-line" d="" stroke="var(--accent)" stroke-width="1.8" fill="none" stroke-linejoin="round"/>
+                <line x1="0" y1="75" x2="600" y2="75" stroke="var(--danger)" stroke-width="1" stroke-dasharray="3 5" opacity="0.55"/>
+                <text x="596" y="71" text-anchor="end" fill="var(--danger)" font-family="JetBrains Mono" font-size="9.5" letter-spacing="0.5">SLO · 50 MS P95</text>
+              </svg>
+            </div>
+            <div class="chart-axis">
+              <span>00:00</span><span>04:00</span><span>08:00</span><span>12:00</span><span>16:00</span><span>20:00</span><span>NOW</span>
+            </div>
+            <div class="chart-summary">
+              <div class="s"><div class="l">P50</div><div class="v">14<span class="unit">ms</span></div></div>
+              <div class="s"><div class="l">P95</div><div class="v">38<span class="unit">ms</span></div></div>
+              <div class="s"><div class="l">P99</div><div class="v">62<span class="unit">ms</span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Entities by class</div>
+              <div class="panel-sub">Last 24h · 418,392 total</div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="ent-list">
+              <div class="ent-row">
+                <div class="ename"><span class="sq" style="background:var(--accent)"></span>Person</div>
+                <div class="ebar"><div style="width: 88%; background: var(--accent);"></div></div>
+                <div class="ev">135,608 · 32%</div>
+              </div>
+              <div class="ent-row">
+                <div class="ename"><span class="sq" style="background:var(--info)"></span>Email</div>
+                <div class="ebar"><div style="width: 63%; background: var(--info);"></div></div>
+                <div class="ev">96,648 · 23%</div>
+              </div>
+              <div class="ent-row">
+                <div class="ename"><span class="sq" style="background:var(--warn)"></span>Medical</div>
+                <div class="ebar"><div style="width: 46%; background: var(--warn);"></div></div>
+                <div class="ev">70,290 · 17%</div>
+              </div>
+              <div class="ent-row">
+                <div class="ename"><span class="sq" style="background:var(--danger)"></span>Financial</div>
+                <div class="ebar"><div style="width: 39%; background: var(--danger);"></div></div>
+                <div class="ev">59,415 · 14%</div>
+              </div>
+              <div class="ent-row">
+                <div class="ename"><span class="sq" style="background:var(--lavender)"></span>Phone / ID</div>
+                <div class="ebar"><div style="width: 25%; background: var(--lavender);"></div></div>
+                <div class="ev">38,073 · 9%</div>
+              </div>
+              <div class="ent-row">
+                <div class="ename"><span class="sq" style="background:var(--text-3)"></span>Other</div>
+                <div class="ebar"><div style="width: 12%; background: var(--text-3);"></div></div>
+                <div class="ev">18,358 · 4%</div>
+              </div>
+            </div>
+            <div class="ent-foot">
+              <span>12 CLASSES TRACKED</span>
+              <span><strong>0</strong> LEAKS</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- inspector -->
+      <div class="panel" style="margin-bottom: 12px;">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">Request inspector</div>
+            <div class="panel-sub">req_8af9c2 · openai/gpt-5 · 14:32:08.412</div>
+          </div>
+          <div class="panel-tabs">
+            <button class="on">Latest</button>
+            <button>Pinned</button>
+            <button>Flagged · 3</button>
+            <button>Replay</button>
+          </div>
+        </div>
+        <div class="inspector-body">
+          <div class="insp-pane">
+            <div class="insp-label">Inbound · what your app sent</div>
+            <div class="insp-text">
+              You are a medical assistant. Patient <span class="pii">Sarah Chen</span> (DOB <span class="pii">03/15/1982</span>) presented to <span class="pii">Northshore Medical</span> with chest pain. Currently prescribed <span class="pii">Amlodipine 10mg</span> daily. Contact: <span class="pii">s.chen@northshore.med</span>, <span class="pii">+1-415-555-0182</span>. Insurance: <span class="pii">Aetna 8841-7732</span>. Please summarize and recommend next steps.
+            </div>
+            <div class="insp-meta">
+              <div><div class="m-l">Tokens</div><div class="m-v">1,284</div></div>
+              <div><div class="m-l">Entities</div><div class="m-v">7 detected</div></div>
+              <div><div class="m-l">Engine</div><div class="m-v">gliner + privacy-filter</div></div>
+              <div><div class="m-l">Policy</div><div class="m-v">healthcare-strict-v3</div></div>
+            </div>
+          </div>
+          <div class="insp-pane">
+            <div class="insp-label out">Outbound · what the LLM received</div>
+            <div class="insp-text">
+              You are a medical assistant. Patient <span class="fake">PERSON_3</span> (DOB <span class="fake">DATE_1</span>) presented to <span class="fake">ORG_2</span> with chest pain. Currently prescribed <span class="fake">MEDICATION_7</span> daily. Contact: <span class="fake">EMAIL_4</span>, <span class="fake">PHONE_5</span>. Insurance: <span class="fake">POLICY_6</span>. Please summarize and recommend next steps.
+            </div>
+            <div class="insp-meta">
+              <div><div class="m-l">Vault writes</div><div class="m-v">7 · AES-256-GCM</div></div>
+              <div><div class="m-l">Overhead</div><div class="m-v">38 ms</div></div>
+              <div><div class="m-l">Rehydration</div><div class="m-v">stream · 11 chunks</div></div>
+              <div><div class="m-l">Status</div><div class="m-v" style="color: var(--accent);">clean</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- row 2: live feed + right column -->
+      <div class="grid r2">
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Live request stream</div>
+              <div class="panel-sub">Tap any row to inspect</div>
+            </div>
+            <div class="panel-tabs">
+              <button class="on">All</button>
+              <button>OpenAI</button>
+              <button>Anthropic</button>
+              <button>Self-hosted</button>
+            </div>
+          </div>
+          <div class="feed" id="feed"></div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">Active policies</div>
+                <div class="panel-sub">6 enabled · 1 draft</div>
+              </div>
+              <button class="btn-mini">Manage</button>
+            </div>
+            <div>
+              <div class="policy-row">
+                <div class="pic"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2 L13 4 V8 C13 11 11 13 8 14 C5 13 3 11 3 8 V4 Z"/></svg></div>
+                <div class="meta"><div class="name">healthcare-strict-v3</div><div class="desc">mask PII + PHI · all providers · HIPAA</div></div>
+                <div class="toggle on"></div>
+              </div>
+              <div class="policy-row">
+                <div class="pic"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="12" height="8"/><path d="M2 7 H14"/></svg></div>
+                <div class="meta"><div class="name">finance-pci-v2</div><div class="desc">cards · IBAN · SSN · closed only</div></div>
+                <div class="toggle on"></div>
+              </div>
+              <div class="policy-row">
+                <div class="pic"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12"/><rect x="5" y="5" width="6" height="6"/></svg></div>
+                <div class="meta"><div class="name">internal-llm-bypass</div><div class="desc">self-hosted only · skip vault</div></div>
+                <div class="toggle on"></div>
+              </div>
+              <div class="policy-row">
+                <div class="pic"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8 H11"/></svg></div>
+                <div class="meta"><div class="name">legal-privilege-v1</div><div class="desc">draft · awaiting review</div></div>
+                <div class="toggle"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">Compliance posture</div>
+                <div class="panel-sub">Coverage by framework</div>
+              </div>
+              <button class="btn-mini">Export</button>
+            </div>
+            <div class="panel-body">
+              <div class="compliance">
+                <div class="comp-row"><div class="l">HIPAA</div><div class="bar"><div style="width: 98%"></div></div><div class="v">98%</div></div>
+                <div class="comp-row"><div class="l">GDPR</div><div class="bar"><div style="width: 96%"></div></div><div class="v">96%</div></div>
+                <div class="comp-row"><div class="l">SOC 2</div><div class="bar"><div style="width: 91%"></div></div><div class="v">91%</div></div>
+                <div class="comp-row"><div class="l">CCPA</div><div class="bar"><div style="width: 94%"></div></div><div class="v">94%</div></div>
+                <div class="comp-row"><div class="l">DPDP</div><div class="bar"><div style="width: 88%"></div></div><div class="v">88%</div></div>
+                <div class="comp-row"><div class="l">EU AI Act</div><div class="bar"><div style="width: 82%"></div></div><div class="v">82%</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">Providers</div>
+                <div class="panel-sub">Routed last hour</div>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="providers">
+                <div class="prov-row">
+                  <div class="name"><span class="dot" style="background:var(--accent)"></span><strong>openai</strong> · gpt-5</div>
+                  <div class="req">48.2K</div>
+                  <div class="pbar"><div style="width: 88%; background: var(--accent);"></div></div>
+                  <div class="ms">32ms</div>
+                </div>
+                <div class="prov-row">
+                  <div class="name"><span class="dot" style="background:var(--info)"></span><strong>anthropic</strong> · opus-4.5</div>
+                  <div class="req">32.4K</div>
+                  <div class="pbar"><div style="width: 64%; background: var(--info);"></div></div>
+                  <div class="ms">36ms</div>
+                </div>
+                <div class="prov-row">
+                  <div class="name"><span class="dot" style="background:var(--lavender)"></span><strong>google</strong> · gemini-2.5</div>
+                  <div class="req">18.7K</div>
+                  <div class="pbar"><div style="width: 38%; background: var(--lavender);"></div></div>
+                  <div class="ms">41ms</div>
+                </div>
+                <div class="prov-row">
+                  <div class="name"><span class="dot" style="background:var(--warn)"></span><strong>bedrock</strong> · titan</div>
+                  <div class="req">9.2K</div>
+                  <div class="pbar"><div style="width: 22%; background: var(--warn);"></div></div>
+                  <div class="ms">47ms</div>
+                </div>
+                <div class="prov-row">
+                  <div class="name"><span class="dot" style="background:var(--text-3)"></span><strong>self-hosted</strong> · vllm</div>
+                  <div class="req">4.1K</div>
+                  <div class="pbar"><div style="width: 12%; background: var(--text-3);"></div></div>
+                  <div class="ms">8ms</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script type="module" src="/src/dashboard.js"></script>
+</body>
+</html>

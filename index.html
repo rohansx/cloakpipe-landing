@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CloakPipe — The trust layer between your application and AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+
+<meta name="description" content="The trust layer between your application and AI. Sensitive data is pseudonymized before it reaches any third-party model, then restored in the response. Deterministic, reversible, fully audited, under 50 ms." />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+
+<!-- ============== NOTICE STRIP ============== -->
+<div class="notice">
+  <span class="dot"></span>
+  v1.4 release · OpenAI Privacy Filter now supported
+  <span class="pipe">·</span>
+  <a href="#">Read the changelog →</a>
+</div>
+
+<!-- ============== NAV ============== -->
+<nav class="nav">
+  <a class="brand" href="#">
+    <svg class="brand-mark" viewBox="0 0 22 22" fill="none">
+      <path d="M2 20 L8 4 L10 4 L4 20 Z" fill="currentColor"/>
+      <path d="M10 20 L16 4 L18 4 L12 20 Z" fill="currentColor"/>
+      <rect x="18" y="3" width="2" height="3" fill="#00FF66"/>
+      <rect x="18" y="7" width="2" height="3" fill="#00E0FF"/>
+    </svg>
+    CloakPipe
+  </a>
+  <div class="nav-links">
+    <a class="active" href="#">Home</a>
+    <span class="nav-tick"><svg viewBox="0 0 10 10" fill="none"><path d="M2 8 L8 2" stroke="currentColor" stroke-width="1"/></svg></span>
+    <a href="#trust">Trust layer</a>
+    <span class="nav-tick"><svg viewBox="0 0 10 10" fill="none"><path d="M2 8 L8 2" stroke="currentColor" stroke-width="1"/></svg></span>
+    <a href="#platform">Platform</a>
+    <span class="nav-tick"><svg viewBox="0 0 10 10" fill="none"><path d="M2 8 L8 2" stroke="currentColor" stroke-width="1"/></svg></span>
+    <a href="#integrations">Integrations</a>
+    <span class="nav-tick"><svg viewBox="0 0 10 10" fill="none"><path d="M2 8 L8 2" stroke="currentColor" stroke-width="1"/></svg></span>
+    <a href="#pricing">Pricing</a>
+    <span class="nav-tick"><svg viewBox="0 0 10 10" fill="none"><path d="M2 8 L8 2" stroke="currentColor" stroke-width="1"/></svg></span>
+    <a href="dashboard.html">Dashboard</a>
+  </div>
+  <div class="nav-right">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2 M12 20v2 M2 12h2 M20 12h2 M4.9 4.9l1.4 1.4 M17.7 17.7l1.4 1.4 M4.9 19.1l1.4-1.4 M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14c-1 4-5 7-9 7-5 0-9-4-9-9 0-4 3-8 7-9-2 4 0 9 4 10 3 1 6 0 7-0z"/></svg>
+    </button>
+    <a class="btn btn-cta" href="#"><span class="corner"></span>Try for free <span class="arr">→</span></a>
+    <a class="btn" href="#">Log in <span class="arr">→</span></a>
+  </div>
+</nav>
+
+<!-- ============== HERO ============== -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow reveal">v1.4 · Open source · Apache 2.0</div>
+      <h1 class="reveal" data-d="1">
+        The trust layer<br>
+        between your application<br>
+        and <span class="acc">AI.</span>
+      </h1>
+      <p class="lede reveal" data-d="2">
+        Every prompt, response, and tool call passes through CloakPipe.
+        Sensitive data is <span class="hl">pseudonymized before it reaches any third-party model</span>,
+        then restored in the response. Deterministic. Reversible. Fully audited. Under 50 ms.
+      </p>
+      <div class="hero-ctas reveal" data-d="3">
+        <a class="btn btn-lg btn-cta" href="#"><span class="corner"></span>Try for free <span class="arr">→</span></a>
+        <a class="btn btn-lg" href="dashboard.html">See it live <span class="arr">→</span></a>
+      </div>
+      <div class="hero-stats reveal" data-d="4">
+        <div class="hero-stat"><strong>&lt; <em>50</em> ms</strong><span>p95 overhead</span></div>
+        <div class="hero-stat"><strong>AES-256</strong><span>customer-managed keys</span></div>
+        <div class="hero-stat"><strong>Apache 2.0</strong><span>open-source core</span></div>
+      </div>
+    </div>
+
+    <div class="hero-chart reveal" data-d="2">
+      <div class="chart-frame">
+        <div class="chart-header">
+          <span>Entities masked · last 24h</span>
+          <span class="live">LIVE</span>
+        </div>
+        <div class="chart-svg-wrap">
+          <svg id="hero-chart" viewBox="0 0 800 320" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="chart-axis">
+          <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>NOW</span>
+        </div>
+        <div class="chart-foot">
+          <div class="cf">
+            <div class="l">Masked</div>
+            <div class="v accent" id="masked-count">418,392</div>
+          </div>
+          <div class="cf">
+            <div class="l">High-sensitivity</div>
+            <div class="v danger">2,184</div>
+          </div>
+          <div class="cf">
+            <div class="l">Leaked</div>
+            <div class="v"><em style="font-style: normal;">0</em></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== STAT STRIP ============== -->
+<section class="stat-strip">
+  <div class="stat-strip-inner">
+    <div class="stat-cell">
+      <div class="l">Sensitive entities</div>
+      <div class="v"><em>418K</em><span class="u">/day</span></div>
+      <div class="sub">masked before leaving the customer perimeter</div>
+    </div>
+    <div class="stat-cell">
+      <div class="l">P95 latency</div>
+      <div class="v">38<span class="u">ms</span></div>
+      <div class="sub">including full ONNX-based detection pipeline</div>
+    </div>
+    <div class="stat-cell">
+      <div class="l">Detection F1</div>
+      <div class="v"><em>0.96</em></div>
+      <div class="sub">on PII-Masking-300k with ensemble mode</div>
+    </div>
+    <div class="stat-cell">
+      <div class="l">Deployment options</div>
+      <div class="v">5</div>
+      <div class="sub">from managed cloud to fully air-gapped</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== PSEUDONYMIZATION VS REDACTION ============== -->
+<section class="section" id="trust">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">01 · Why pseudonymization</div>
+        <h2>Redaction<br>destroys data.</h2>
+      </div>
+      <p>
+        Every other tool replaces sensitive entities with dead tokens like
+        <code class="mono" style="background: var(--surface-2); padding: 1px 6px; color: var(--text-2);">[PERSON]</code>
+        — the original information is gone forever. CloakPipe replaces them with
+        <span class="hl">deterministic fake entities the LLM can still reason about</span>,
+        then restores the real values on the way back.
+      </p>
+    </div>
+
+    <div class="pseudo reveal">
+      <div class="pseudo-row head">
+        <div class="pseudo-cell">
+          <div class="head-tag">Input</div>
+          <div class="head-name">Original sensitive data</div>
+        </div>
+        <div class="pseudo-cell bad">
+          <div class="head-tag">Other tools</div>
+          <div class="head-name">Redacted — data lost</div>
+        </div>
+        <div class="pseudo-cell good">
+          <div class="head-tag">CloakPipe</div>
+          <div class="head-name">Pseudonymized — utility kept</div>
+        </div>
+      </div>
+      <div class="pseudo-row">
+        <div class="pseudo-cell"><span class="pv">Dr. Sarah Chen</span></div>
+        <div class="pseudo-cell dead"><span class="pv">[PERSON]</span></div>
+        <div class="pseudo-cell safe"><span class="pv">Dr. PERSON_3</span></div>
+      </div>
+      <div class="pseudo-row">
+        <div class="pseudo-cell"><span class="pv">Amlodipine 10mg</span></div>
+        <div class="pseudo-cell dead"><span class="pv">[MEDICATION]</span></div>
+        <div class="pseudo-cell safe"><span class="pv">MEDICATION_7</span></div>
+      </div>
+      <div class="pseudo-row">
+        <div class="pseudo-cell"><span class="pv">s.chen@northshore.org</span></div>
+        <div class="pseudo-cell dead"><span class="pv">[EMAIL]</span></div>
+        <div class="pseudo-cell safe"><span class="pv">EMAIL_3@DOMAIN_1.org</span></div>
+      </div>
+      <div class="pseudo-row">
+        <div class="pseudo-cell"><span class="pv">4532 1234 5678 9012</span></div>
+        <div class="pseudo-cell dead"><span class="pv">[CREDIT_CARD]</span></div>
+        <div class="pseudo-cell safe"><span class="pv">4532 8847 2231 5104</span></div>
+      </div>
+      <div class="pseudo-row">
+        <div class="pseudo-cell"><span class="pv">MRN-2024-88291</span></div>
+        <div class="pseudo-cell dead"><span class="pv">[MRN]</span></div>
+        <div class="pseudo-cell safe"><span class="pv">MRN-XXXX-TOKEN_12</span></div>
+      </div>
+    </div>
+
+    <div class="pseudo-note reveal" data-d="1">
+      <div class="ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 7 L6 11 L12 3"/></svg></div>
+      <p>
+        <strong>Format-preserving.</strong>
+        Replacement credit cards pass the Luhn checksum. Replacement IBANs pass mod-97.
+        Replacement emails are still emails. The model — and any downstream system that consumes its output — keeps working exactly as before.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== PLATFORM: 4 SURFACES ============== -->
+<section class="section" id="platform">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">02 · Platform</div>
+        <h2>Four surfaces.<br><span class="acc">One open core.</span></h2>
+      </div>
+      <p>
+        The Rust proxy is the foundation — open source under Apache 2.0.
+        The Vault, Policy, and Audit layers are the commercial platform: the part that
+        <span class="hl">closes enterprise deals in regulated industries</span>.
+      </p>
+    </div>
+
+    <div class="surfaces reveal">
+
+      <div class="surface proxy">
+        <div class="ix"></div>
+        <div class="num">SURFACE 01 · PROXY</div>
+        <div class="name">CloakPipe Proxy</div>
+        <div class="tagline">Rust-native reverse proxy. Intercept, detect, mask, forward, rehydrate — under 50 ms.</div>
+        <ul class="points">
+          <li>OpenAI-compatible API — change one base URL, your app keeps working</li>
+          <li>Streaming SSE rehydration without buffering or breaking the contract</li>
+          <li>Routes to OpenAI, Anthropic, Google, Bedrock, Azure, self-hosted</li>
+          <li>Native MCP server for agent integrations</li>
+        </ul>
+
+        <div class="tiers">
+          <div class="tiers-h">
+            <span>Detection pipeline · tiered</span>
+            <span class="tot">cumulative · &lt; 50 ms p95</span>
+          </div>
+          <div class="tier-grid">
+            <div class="tier">
+              <div class="tn">T1</div>
+              <div class="tname">Regex + checksum</div>
+              <div class="twhat">Cards · IBAN · SSN · ABA. Luhn-validated.</div>
+              <div class="tms">&lt; 1 ms</div>
+            </div>
+            <div class="tier">
+              <div class="tn">T2</div>
+              <div class="tname">Privacy Filter</div>
+              <div class="twhat">OpenAI 1.5B on ONNX. Names, addresses, dates.</div>
+              <div class="tms">30–50 ms</div>
+            </div>
+            <div class="tier">
+              <div class="tn">T3</div>
+              <div class="tname">GLiNER2-PII</div>
+              <div class="twhat">Custom entities. Multilingual. Zero-shot.</div>
+              <div class="tms">40–80 ms</div>
+            </div>
+            <div class="tier">
+              <div class="tn">T4</div>
+              <div class="tname">Ensemble</div>
+              <div class="twhat">Merge across backends for maximum recall.</div>
+              <div class="tms">opt-in</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="surface vault">
+        <div class="ix"></div>
+        <div class="num">SURFACE 02 · VAULT</div>
+        <div class="name">Vault</div>
+        <div class="tagline">Reversible by design. Authorized by policy.</div>
+        <ul class="points">
+          <li>AES-256-GCM at rest</li>
+          <li>Customer-managed keys via KMS</li>
+          <li>Format-preserving — cards pass Luhn</li>
+          <li>Per-tenant isolation</li>
+          <li>Automatic key rotation</li>
+        </ul>
+
+        <div class="vault-vis">
+          <div class="vrow">
+            <span class="vr">Sarah Chen</span>
+            <span class="va">→</span>
+            <span class="vf">PERSON_3</span>
+          </div>
+          <div class="vrow">
+            <span class="vr">4532·1234·…</span>
+            <span class="va">→</span>
+            <span class="vf">4532·8847·…</span>
+          </div>
+          <div class="vrow">
+            <span class="vr">MRN-2024-…</span>
+            <span class="va">→</span>
+            <span class="vf">MRN-XXXX-…</span>
+          </div>
+          <div class="vault-lock">
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="6" width="6" height="5"/><path d="M4 6 V4 C4 2.5 5 2 6 2 C7 2 8 2.5 8 4 V6"/></svg>
+            AES-256 · BYOK
+          </div>
+        </div>
+      </div>
+
+      <div class="surface policy">
+        <div class="ix"></div>
+        <div class="num">SURFACE 03 · POLICY</div>
+        <div class="name">Policy</div>
+        <div class="tagline">Code, not config. Versioned in Git, enforced on every request.</div>
+        <ul class="points">
+          <li>OPA / Cedar — sub-millisecond decisions</li>
+          <li>Per-entity · per-provider · per-team · per-context</li>
+          <li>RBAC + SAML / OIDC · IdP role mapping</li>
+        </ul>
+
+        <div class="yaml">
+<span class="yc"># mask patient data for external models</span>
+<span class="yk">- when</span>:
+    <span class="yk">provider</span>: <span class="yv">[openai, anthropic, google]</span>
+    <span class="yk">entity</span>:   <span class="yv">[PERSON, DIAGNOSIS, MRN]</span>
+  <span class="yk">action</span>: <span class="ya">pseudonymize</span>
+        </div>
+      </div>
+
+      <div class="surface audit">
+        <div class="ix"></div>
+        <div class="num">SURFACE 04 · AUDIT</div>
+        <div class="name">Audit</div>
+        <div class="tagline">Every decision logged. Compliance evidence on demand.</div>
+        <ul class="points">
+          <li>Request-level trail — masked, unmasked, by whom</li>
+          <li>HIPAA · GDPR · SOC 2 · PCI-DSS · EU AI Act exports</li>
+          <li>OpenTelemetry-native — Datadog · Grafana · Splunk</li>
+        </ul>
+
+        <div class="alog">
+          <div class="alog-row">
+            <span class="at">14:32:08</span>
+            <span class="ae"><span class="ok">mask</span> 7 entities · req_8af9c2 → gpt-5</span>
+            <span class="aw">healthcare-v3</span>
+          </div>
+          <div class="alog-row">
+            <span class="at">14:32:11</span>
+            <span class="ae"><span class="info">rehydrate</span> 11 chunks · 3.8 ms</span>
+            <span class="aw">vault·prod</span>
+          </div>
+          <div class="alog-row">
+            <span class="at">14:32:14</span>
+            <span class="ae"><span class="deny">unmask deny</span> role: sales · mrn</span>
+            <span class="aw">cbac-v1</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============== INTEGRATIONS GRID ============== -->
+<section class="section" id="integrations">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">03 · Integrations</div>
+        <h2>Drop in.<br>Keep <span class="acc">everything else.</span></h2>
+      </div>
+      <p>
+        CloakPipe speaks the OpenAI API dialect and ships native middleware for the frameworks
+        you're already using. <span class="hl">One line of config</span>. Zero rewrites.
+      </p>
+    </div>
+
+    <div class="integrations reveal">
+
+      <div class="integ-card" data-fill="100">
+        <div class="ix"></div>
+        <div class="integ-meta">
+          <span class="stars">★ 102K</span>
+          <span class="lang python">PYTHON</span>
+        </div>
+        <div class="integ-name">
+          <span class="ico"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7 L7 3 L11 7 L7 11 Z"/></svg></span>
+          langchain-ai/langchain
+        </div>
+        <div class="integ-desc"><code class="mono">CloakPipeRunnable</code> middleware. Drop-in for any chain or agent. Streaming-safe.</div>
+        <div class="integ-bar"></div>
+        <div class="integ-foot">
+          <span>Native middleware</span>
+          <span class="ok">SHIPPED</span>
+        </div>
+      </div>
+
+      <div class="integ-card" data-fill="90">
+        <div class="ix"></div>
+        <div class="integ-meta">
+          <span class="stars">★ 38K</span>
+          <span class="lang python">PYTHON</span>
+        </div>
+        <div class="integ-name">
+          <span class="ico"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M2 7 H12 M7 2 V12"/></svg></span>
+          run-llama/llama_index
+        </div>
+        <div class="integ-desc">Query-time masking for RAG. Pseudonymize retrieved chunks before they hit the LLM.</div>
+        <div class="integ-bar"></div>
+        <div class="integ-foot">
+          <span>Retrieval wrapper</span>
+          <span class="ok">SHIPPED</span>
+        </div>
+      </div>
+
+      <div class="integ-card" data-fill="80">
+        <div class="ix"></div>
+        <div class="integ-meta">
+          <span class="stars">★ 28K</span>
+          <span class="lang python">PYTHON</span>
+        </div>
+        <div class="integ-name">
+          <span class="ico"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="4" r="2"/><circle cx="10" cy="4" r="2"/><circle cx="7" cy="11" r="2"/></svg></span>
+          crewAIInc/crewAI
+        </div>
+        <div class="integ-desc">Per-agent masking context and access level. Policy enforced across the orchestration.</div>
+        <div class="integ-bar"></div>
+        <div class="integ-foot">
+          <span>Agent wrapper</span>
+          <span class="ok">SHIPPED</span>
+        </div>
+      </div>
+
+      <div class="integ-card" data-fill="70">
+        <div class="ix"></div>
+        <div class="integ-meta">
+          <span class="stars">★ 18K</span>
+          <span class="lang typescript">TYPESCRIPT</span>
+        </div>
+        <div class="integ-name">
+          <span class="ico"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="2.5" width="4" height="4"/><rect x="7.5" y="7.5" width="4" height="4"/><path d="M6.5 4.5 H9 V7.5"/></svg></span>
+          langchain-ai/langgraph
+        </div>
+        <div class="integ-desc">Policy-aware tool wrapper. CBAC on every node transition.</div>
+        <div class="integ-bar"></div>
+        <div class="integ-foot">
+          <span>Tool wrapper</span>
+          <span class="ok">SHIPPED</span>
+        </div>
+      </div>
+
+      <div class="integ-card" data-fill="60">
+        <div class="ix"></div>
+        <div class="integ-meta">
+          <span class="stars">★ 12K</span>
+          <span class="lang go">GO</span>
+        </div>
+        <div class="integ-name">
+          <span class="ico"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7 H6 M8 7 H12 M5 4 V10"/></svg></span>
+          BerriAI/litellm
+        </div>
+        <div class="integ-desc">Middleware in the proxy chain. Protects every downstream model with one config.</div>
+        <div class="integ-bar"></div>
+        <div class="integ-foot">
+          <span>Proxy plugin</span>
+          <span class="ok">BETA</span>
+        </div>
+      </div>
+
+      <div class="integ-card" data-fill="45">
+        <div class="ix"></div>
+        <div class="integ-meta">
+          <span class="stars">★ 4.2K</span>
+          <span class="lang rust">RUST</span>
+        </div>
+        <div class="integ-name">
+          <span class="ico"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4"/><path d="M3 7 H11"/></svg></span>
+          rohansx/cloakpipe-mcp
+        </div>
+        <div class="integ-desc">Native Model Context Protocol server. mask, unmask, scan tools for any MCP client.</div>
+        <div class="integ-bar"></div>
+        <div class="integ-foot">
+          <span>MCP server</span>
+          <span class="ok">SHIPPED</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="integ-more">
+      <a class="btn btn-lg" href="#">View all 14 integrations <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== DEPLOYMENT ============== -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">04 · Deployment</div>
+        <h2>Laptop to <span class="acc">air-gapped.</span></h2>
+      </div>
+      <p>
+        Same Rust binary. Same detection pipeline. Same vault encryption.
+        <span class="hl">Pick the topology that matches your security posture</span>.
+      </p>
+    </div>
+
+    <div class="deploys reveal">
+      <div class="deploy">
+        <div class="ix"></div>
+        <div class="d-num">01</div>
+        <div class="d-name">Managed cloud</div>
+        <div class="d-desc">Hosted at cloakpipe.co. Dashboard, vault, audit logs. SOC 2 infrastructure.</div>
+        <div class="d-tag">SAAS</div>
+      </div>
+      <div class="deploy">
+        <div class="ix"></div>
+        <div class="d-num">02</div>
+        <div class="d-name">Docker</div>
+        <div class="d-desc">Single container or compose. Any Linux host. Customer-managed everything.</div>
+        <div class="d-tag">SINGLE BINARY</div>
+      </div>
+      <div class="deploy">
+        <div class="ix"></div>
+        <div class="d-num">03</div>
+        <div class="d-name">Kubernetes</div>
+        <div class="d-desc">Production Helm chart. HPA, rolling deploys, health checks.</div>
+        <div class="d-tag">HELM · HPA</div>
+      </div>
+      <div class="deploy">
+        <div class="ix"></div>
+        <div class="d-num">04</div>
+        <div class="d-name">VPC / private</div>
+        <div class="d-desc">Inside your AWS, GCP, Azure. No internet egress. Engineering-assisted.</div>
+        <div class="d-tag">CUSTOMER CLOUD</div>
+      </div>
+      <div class="deploy">
+        <div class="ix"></div>
+        <div class="d-num">05</div>
+        <div class="d-name">Air-gapped</div>
+        <div class="d-desc">Fully offline. ONNX detection locally. No network calls. No telemetry.</div>
+        <div class="d-tag">OFFLINE · ONNX</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== PRICING ============== -->
+<section class="section" id="pricing">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">05 · Pricing</div>
+        <h2>Open core.<br><span class="acc">Pay for the platform.</span></h2>
+      </div>
+      <p>
+        The Rust proxy is free forever, Apache 2.0. You pay when you want
+        <span class="hl">managed hosting, policy enforcement, RBAC, and compliance evidence</span> —
+        the things that make CloakPipe production-ready for regulated industries.
+      </p>
+    </div>
+
+    <div class="pricing reveal">
+      <div class="tier-card">
+        <div class="pn">Community</div>
+        <div class="pp">Free <small>forever</small></div>
+        <div class="pw">Individual developers, OSS contributors, self-hosters.</div>
+        <ul>
+          <li>Rust proxy &amp; CLI</li>
+          <li>Full detection pipeline</li>
+          <li>Pseudonymization vault</li>
+          <li>MCP server</li>
+          <li>Streaming rehydration</li>
+        </ul>
+        <a class="pcta" href="#">Clone repo <span class="arr">→</span></a>
+      </div>
+
+      <div class="tier-card">
+        <div class="pn">Pro</div>
+        <div class="pp">$199<small>/mo</small></div>
+        <div class="pw">Startups and small teams shipping AI features.</div>
+        <ul>
+          <li>Everything in Community</li>
+          <li>Managed cloud hosting</li>
+          <li>Web dashboard &amp; metrics</li>
+          <li>250K API calls</li>
+          <li>Audit logs · 30 day</li>
+        </ul>
+        <a class="pcta" href="#">Start trial <span class="arr">→</span></a>
+      </div>
+
+      <div class="tier-card feature">
+        <div class="ix"></div>
+        <div class="pn">Growth</div>
+        <div class="pp"><em>$999</em><small>/mo</small></div>
+        <div class="pw">Mid-market AI companies in regulated industries.</div>
+        <ul>
+          <li>Policy engine &amp; RBAC</li>
+          <li>SSO · SAML / OIDC</li>
+          <li>HIPAA BAA available</li>
+          <li>2M API calls</li>
+          <li>99.9% SLA · priority</li>
+        </ul>
+        <a class="pcta" href="#">Talk to sales <span class="arr">→</span></a>
+      </div>
+
+      <div class="tier-card">
+        <div class="pn">Enterprise</div>
+        <div class="pp">Custom</div>
+        <div class="pw">Healthcare, legal, finance, insurance, government.</div>
+        <ul>
+          <li>Everything in Growth</li>
+          <li>VPC / on-prem / air-gapped</li>
+          <li>Customer-managed KMS</li>
+          <li>CBAC + custom policies</li>
+          <li>99.99% SLA · TAM</li>
+        </ul>
+        <a class="pcta" href="#">Contact us <span class="arr">→</span></a>
+      </div>
+
+      <div class="tier-card">
+        <div class="pn">Platform</div>
+        <div class="pp">Custom <small>embedded</small></div>
+        <div class="pw">AI gateways and model routers.</div>
+        <ul>
+          <li>Embedded integration</li>
+          <li>White-label option</li>
+          <li>Per-request licensing</li>
+          <li>Co-marketing</li>
+          <li>Dedicated engineering</li>
+        </ul>
+        <a class="pcta" href="#">Partner <span class="arr">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CLOSER ============== -->
+<section class="closer">
+  <div class="wrap">
+    <h2 class="reveal">
+      The trust layer<br>
+      between your application<br>
+      and <span class="acc">AI.</span>
+    </h2>
+    <div class="ctas reveal" data-d="1">
+      <a class="btn btn-lg btn-cta" href="#"><span class="corner"></span>Try for free <span class="arr">→</span></a>
+      <a class="btn btn-lg" href="dashboard.html">Open dashboard <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand-row">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <path d="M2 20 L8 4 L10 4 L4 20 Z" fill="currentColor"/>
+            <path d="M10 20 L16 4 L18 4 L12 20 Z" fill="currentColor"/>
+            <rect x="18" y="3" width="2" height="3" fill="#00FF66"/>
+            <rect x="18" y="7" width="2" height="3" fill="#00E0FF"/>
+          </svg>
+          CloakPipe
+        </div>
+        <p>The trust layer between your application and AI. Rust-native, open source under Apache 2.0, managed cloud and enterprise platform from the team.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Product</h4>
+        <a href="#trust">Trust layer</a>
+        <a href="#platform">Platform</a>
+        <a href="#integrations">Integrations</a>
+        <a href="#pricing">Pricing</a>
+        <a href="dashboard.html">Dashboard</a>
+      </div>
+      <div class="foot-col">
+        <h4>Developers</h4>
+        <a href="#">Documentation</a>
+        <a href="#">GitHub repo</a>
+        <a href="#">Changelog</a>
+        <a href="#">MCP reference</a>
+      </div>
+      <div class="foot-col">
+        <h4>Company</h4>
+        <a href="#">About</a>
+        <a href="#">Security</a>
+        <a href="#">Compliance</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 · CLOAKPIPE · APACHE 2.0 OPEN-SOURCE CORE</span>
+      <span class="right">
+        <span class="v2">DESIGN V2</span>
+        <span>CLOAKPIPE.CO</span>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
