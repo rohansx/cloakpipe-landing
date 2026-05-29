@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CloakPipe — Pricing: open core, pay for the platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<meta name="description" content="CloakPipe pricing — the Rust proxy is free forever (Apache 2.0); pay for managed hosting, policy engine, RBAC, compliance, and support. Community, Pro, Growth, Enterprise, and Platform tiers." />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+
+<div id="site-nav"></div>
+
+<!-- ============== PAGE HERO ============== -->
+<section class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow reveal">Pricing · Apache 2.0 open-source core</div>
+    <h1 class="reveal" data-d="1">
+      Open core.<br>
+      Pay for the <span class="acc">platform.</span>
+    </h1>
+    <p class="lede reveal" data-d="2">
+      The Rust proxy is <span class="hl">free forever under Apache 2.0</span> — full detection
+      pipeline, deterministic pseudonymization, and MCP server included. You pay when you want
+      managed hosting, the policy engine, RBAC, compliance evidence, and support: the things that
+      make CloakPipe production-ready for regulated industries.
+    </p>
+    <div class="hero-ctas reveal" data-d="3">
+      <a class="btn btn-lg btn-cta" href="https://app.cloakpipe.co/signup"><span class="corner"></span>Try for free <span class="arr">→</span></a>
+      <a class="btn btn-lg" href="https://github.com/rohansx/cloakpipe">Clone the repo <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== THE FIVE TIERS ============== -->
+<section class="section" id="tiers">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">01 · Tiers</div>
+        <h2>Five tiers.<br><span class="acc">One open core.</span></h2>
+        <a class="learn-more" href="#compare">Jump to the comparison <span class="arr">→</span></a>
+      </div>
+      <p>
+        Start free on your own infrastructure. Move to managed cloud when you want a dashboard and
+        audit logs. Add the <span class="hl">policy engine, RBAC, and a HIPAA BAA</span> when you sell
+        into regulated industries. Everything above Community is the commercial platform.
+      </p>
+    </div>
+
+    <div class="pricing reveal">
+      <div class="tier-card">
+        <div class="pn">Community</div>
+        <div class="pp">Free <small>forever</small></div>
+        <div class="pw">Individual developers, OSS contributors, evaluation, self-hosters.</div>
+        <ul>
+          <li>Rust proxy &amp; CLI</li>
+          <li>Full detection pipeline — Privacy Filter, GLiNER2, regex/checksum</li>
+          <li>Deterministic pseudonymization</li>
+          <li>MCP server</li>
+          <li>Streaming SSE rehydration</li>
+          <li>Self-host: Docker, K8s, air-gapped</li>
+          <li>Community support</li>
+        </ul>
+        <a class="pcta" href="https://github.com/rohansx/cloakpipe">Clone repo <span class="arr">→</span></a>
+      </div>
+
+      <div class="tier-card">
+        <div class="pn">Pro</div>
+        <div class="pp">$199<small>/mo</small></div>
+        <div class="pw">Startups and small teams shipping AI features.</div>
+        <ul>
+          <li>Everything in Community</li>
+          <li>Managed cloud hosting</li>
+          <li>Web dashboard &amp; metrics</li>
+          <li>API key management</li>
+          <li>250K API calls</li>
+          <li>Audit logs · 30 day retention</li>
+          <li>Email support · SOC 2 report on request</li>
+        </ul>
+        <a class="pcta" href="https://app.cloakpipe.co/signup">Start trial <span class="arr">→</span></a>
+      </div>
+
+      <div class="tier-card feature">
+        <div class="ix"></div>
+        <div class="pn">Growth</div>
+        <div class="pp"><em>$999</em><small>/mo</small></div>
+        <div class="pw">Mid-market AI companies in regulated industries.</div>
+        <ul>
+          <li>Everything in Pro</li>
+          <li>Policy engine &amp; RBAC</li>
+          <li>SSO · SAML / OIDC</li>
+          <li>Custom entity types</li>
+          <li>HIPAA BAA available</li>
+          <li>2M API calls</li>
+          <li>99.9% SLA · priority support</li>
+        </ul>
+        <a class="pcta" href="mailto:hello@rohan.sh?subject=CloakPipe%20Growth">Talk to sales <span class="arr">→</span></a>
+      </div>
+
+      <div class="tier-card">
+        <div class="pn">Enterprise</div>
+        <div class="pp">Custom</div>
+        <div class="pw">Healthcare, legal, finance, insurance, government.</div>
+        <ul>
+          <li>Everything in Growth</li>
+          <li>VPC / on-prem / air-gapped</li>
+          <li>Customer-managed KMS</li>
+          <li>CBAC + custom policies</li>
+          <li>Compliance dashboards</li>
+          <li>Unlimited calls · 99.99% SLA</li>
+          <li>Dedicated TAM · annual pen-test</li>
+        </ul>
+        <a class="pcta" href="mailto:hello@rohan.sh?subject=CloakPipe%20Enterprise">Contact us <span class="arr">→</span></a>
+      </div>
+
+      <div class="tier-card">
+        <div class="pn">Platform</div>
+        <div class="pp">Custom <small>embedded</small></div>
+        <div class="pw">AI gateways and model routers — Venice, OpenRouter, LiteLLM.</div>
+        <ul>
+          <li>Embedded integration</li>
+          <li>White-label option</li>
+          <li>Per-request or flat licensing</li>
+          <li>Co-marketing</li>
+          <li>Dedicated engineering support</li>
+        </ul>
+        <a class="pcta" href="mailto:hello@rohan.sh?subject=CloakPipe%20Platform">Partner with us <span class="arr">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== WHAT'S INCLUDED — COMPARISON ============== -->
+<section class="section" id="compare">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">02 · What's included</div>
+        <h2>Where the line<br>is <span class="acc">drawn.</span></h2>
+        <a class="learn-more" href="platform.html">See the full platform <span class="arr">→</span></a>
+      </div>
+      <p>
+        The detection pipeline, vault, and pseudonymization are open and free. The
+        <span class="hl">managed platform, policy enforcement, identity, compliance, and SLA</span>
+        are what you pay for. Every capability, mapped to every tier.
+      </p>
+    </div>
+
+    <div class="pseudo reveal" role="table" aria-label="Capability comparison across tiers">
+      <div class="pseudo-row head" style="grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;">
+        <div class="pseudo-cell"><div class="head-tag">Capability</div></div>
+        <div class="pseudo-cell"><div class="head-tag">Community</div></div>
+        <div class="pseudo-cell"><div class="head-tag">Pro</div></div>
+        <div class="pseudo-cell good"><div class="head-tag">Growth</div></div>
+        <div class="pseudo-cell"><div class="head-tag">Enterprise</div></div>
+        <div class="pseudo-cell"><div class="head-tag">Platform</div></div>
+      </div>
+
+      <div class="pseudo-row" style="grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;">
+        <div class="pseudo-cell"><span class="pv">Rust proxy &amp; CLI</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+      </div>
+
+      <div class="pseudo-row" style="grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;">
+        <div class="pseudo-cell"><span class="pv">Detection pipeline &amp; pseudonymization</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+      </div>
+
+      <div class="pseudo-row" style="grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;">
+        <div class="pseudo-cell"><span class="pv">Encrypted vault &amp; MCP server</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+      </div>
+
+      <div class="pseudo-row" style="grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;">
+        <div class="pseudo-cell"><span class="pv">Managed cloud hosting</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-4);">—</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+      </div>
+
+      <div class="pseudo-row" style="grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;">
+        <div class="pseudo-cell"><span class="pv">Web dashboard &amp; metrics</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-4);">—</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+      </div>
+
+      <div class="pseudo-row" style="grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;">
+        <div class="pseudo-cell"><span class="pv">Policy engine (OPA / Cedar)</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-4);">—</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-4);">—</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+      </div>
+
+      <div class="pseudo-row" style="grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;">
+        <div class="pseudo-cell"><span class="pv">RBAC &amp; SSO (SAML / OIDC)</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-4);">—</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-4);">—</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+      </div>
+
+      <div class="pseudo-row" style="grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;">
+        <div class="pseudo-cell"><span class="pv">HIPAA BAA</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-4);">—</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-4);">—</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-4);">—</span></div>
+      </div>
+
+      <div class="pseudo-row" style="grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;">
+        <div class="pseudo-cell"><span class="pv">VPC / on-prem / air-gapped</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-2);">self-host</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-4);">—</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-4);">—</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+      </div>
+
+      <div class="pseudo-row" style="grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;">
+        <div class="pseudo-cell"><span class="pv">Customer-managed KMS (BYOK)</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-4);">—</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-4);">—</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-4);">—</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+        <div class="pseudo-cell"><span style="color: var(--accent); font-weight: 600;">✓</span></div>
+      </div>
+
+      <div class="pseudo-row" style="grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;">
+        <div class="pseudo-cell"><span class="pv">SLA</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-4);">—</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-4);">—</span></div>
+        <div class="pseudo-cell"><span class="mono" style="color: var(--text);">99.9%</span></div>
+        <div class="pseudo-cell"><span class="mono" style="color: var(--text);">99.99%</span></div>
+        <div class="pseudo-cell"><span class="mono" style="color: var(--text);">custom</span></div>
+      </div>
+
+      <div class="pseudo-row" style="grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;">
+        <div class="pseudo-cell"><span class="pv">Support</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-2);">community</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-2);">email</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-2);">priority</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-2);">TAM</span></div>
+        <div class="pseudo-cell"><span style="color: var(--text-2);">dedicated</span></div>
+      </div>
+    </div>
+
+    <div class="pseudo-note reveal" data-d="1">
+      <div class="ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 7 L6 11 L12 3"/></svg></div>
+      <p>
+        <strong>The free tier is not a trial.</strong>
+        Detection and pseudonymization are commoditized and open — the proxy, CLI, vault, and MCP
+        server are Apache 2.0 forever, and self-hosters can run them air-gapped at $0/GB. Paid tiers
+        add managed operations and the governance layer regulated buyers require.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== PRICING PHILOSOPHY ============== -->
+<section class="section" id="philosophy">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">03 · Philosophy</div>
+        <h2>Distribution<br>and <span class="acc">revenue.</span></h2>
+        <a class="learn-more" href="trust.html">Why pseudonymization <span class="arr">→</span></a>
+      </div>
+      <p>
+        Open source is not a discount. It is how trust infrastructure earns its way into the stack —
+        <span class="hl">auditable, forkable, and free to run</span> — while the managed platform funds
+        the engineering behind it.
+      </p>
+    </div>
+
+    <div class="prose reveal">
+      <p>
+        <strong>The open-source proxy is distribution.</strong> Detection is already free —
+        OpenAI, Google, Microsoft, and the open-source community commoditized PII detection long ago.
+        The hard problem was never finding sensitive data; it is building the complete trust
+        infrastructure around it. So we give the proxy, the detection pipeline, and reversible
+        pseudonymization away under Apache 2.0. Developers self-host, evaluate, fork, and embed it
+        without a sales call.
+      </p>
+      <p>
+        <strong>The managed platform is revenue.</strong> Self-hosters get full detection and
+        pseudonymization for free. Paying customers get the vault operations, policy engine, RBAC,
+        audit exports, compliance evidence, and support that make CloakPipe production-ready for
+        healthcare, legal, finance, insurance, and government — the part that closes enterprise deals.
+      </p>
+      <h3>A proven model</h3>
+      <p>
+        This is the open-core model proven by <strong>Redis, Supabase, GitLab, and HashiCorp</strong>:
+        an open foundation drives adoption and earns trust; a commercial layer of hosting, governance,
+        and compliance generates the revenue. The open core is honest open source, not a crippled
+        teaser — and the platform is worth paying for because it solves the operational and regulatory
+        problems that open source alone cannot.
+      </p>
+      <h3>Pricing you can read</h3>
+      <p>
+        Enterprise data-security vendors hide behind opaque custom quotes. CloakPipe publishes its
+        pricing, ships a free tier, and offers a self-host option that costs nothing per gigabyte.
+        You always know what you would pay before you talk to anyone.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FAQ ============== -->
+<section class="section" id="faq">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">04 · FAQ</div>
+        <h2>Questions,<br><span class="acc">answered.</span></h2>
+        <a class="learn-more" href="mailto:hello@rohan.sh?subject=CloakPipe%20pricing%20question">Ask us anything <span class="arr">→</span></a>
+      </div>
+      <p>
+        Straight answers on what is free, what is paid, how we treat your data, and how calls are
+        counted. Anything else, <span class="hl">email us directly</span>.
+      </p>
+    </div>
+
+    <div class="prose reveal">
+      <h3>Is the proxy really free?</h3>
+      <p>
+        Yes — free forever, Apache 2.0. The Rust proxy and CLI, the full tiered detection pipeline
+        (OpenAI Privacy Filter, GLiNER2-PII, and regex/checksum validators), deterministic
+        pseudonymization, the encrypted vault primitives, and the MCP server are all open source.
+        You can self-host on Docker, Kubernetes, or fully air-gapped with no license and no per-call
+        fee. There is no usage cap on the community tier when you run it yourself.
+      </p>
+
+      <h3>Do you train on my data?</h3>
+      <p>
+        <strong>No.</strong> CloakPipe never trains on your prompts, responses, or vault contents.
+        Detection runs locally on your infrastructure — no data leaves your perimeter to be detected.
+        On managed cloud, data is processed in-transit only and the real values live exclusively in
+        your encrypted vault. Audit logs record entity <em>types</em> and actions, never raw sensitive
+        values, so the audit trail itself is privacy-safe.
+      </p>
+
+      <h3>Self-host vs managed — which should I pick?</h3>
+      <p>
+        Self-host (Community) if you want full control of infrastructure and keys, an air-gapped
+        environment, or zero per-gigabyte cost. Choose managed (Pro and up) when you would rather not
+        operate the service yourself and want a hosted dashboard, audit retention, and API key
+        management. The same Rust binary, detection pipeline, and vault encryption run in both —
+        managed simply adds operations, governance, and support on top.
+      </p>
+
+      <h3>Is a HIPAA BAA available?</h3>
+      <p>
+        Yes, starting on the <strong>Growth</strong> tier and included on Enterprise. CloakPipe
+        provides encryption at rest and in transit, access controls, and audit logging, and gives
+        healthcare AI companies exportable evidence that PHI is pseudonymized before it reaches any
+        third-party model — supporting the HIPAA de-identification safe harbor. Enterprise adds
+        VPC, on-prem, or air-gapped deployment and customer-managed KMS for the strictest environments.
+      </p>
+
+      <h3>What counts as an API call?</h3>
+      <p>
+        One API call is one request that passes through the managed proxy — typically one prompt
+        forwarded to an LLM provider and rehydrated on the way back. Streaming responses count as a
+        single call regardless of how many SSE chunks are rehydrated. Async batch and directory scans
+        are metered separately; talk to us if your workload is scan-heavy. Self-hosted Community usage
+        is never metered.
+      </p>
+
+      <h3>Can CloakPipe embed into our own gateway or product?</h3>
+      <p>
+        Yes — that is the <strong>Platform</strong> tier. CloakPipe is designed to embed into AI
+        gateways and model routers as middleware: one integration protects every downstream model call
+        for all of your users. It includes a white-label option, per-request or flat licensing,
+        co-marketing, and dedicated engineering support. Reach out at
+        <a href="mailto:hello@rohan.sh?subject=CloakPipe%20Platform" style="color: var(--accent); border-bottom: 1px solid var(--accent);">hello@rohan.sh</a>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CLOSER ============== -->
+<section class="closer">
+  <div class="wrap">
+    <h2 class="reveal">
+      Free to run.<br>
+      Worth paying<br>
+      for at <span class="acc">scale.</span>
+    </h2>
+    <div class="ctas reveal" data-d="1">
+      <a class="btn btn-lg btn-cta" href="https://app.cloakpipe.co/signup"><span class="corner"></span>Try for free <span class="arr">→</span></a>
+      <a class="btn btn-lg" href="mailto:hello@rohan.sh?subject=CloakPipe%20sales">Talk to sales <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script type="module" src="/src/chrome.js"></script>
+</body>
+</html>

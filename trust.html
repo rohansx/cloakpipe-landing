@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CloakPipe — The trust layer (pseudonymization, not redaction)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<meta name="description" content="How CloakPipe pseudonymizes sensitive data with deterministic, format-preserving, reversible fake entities — preserving LLM utility while keeping real values in an encrypted vault." />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+
+<div id="site-nav"></div>
+
+<!-- ============== PAGE HERO ============== -->
+<section class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow reveal">The trust layer · Pseudonymization, not redaction</div>
+    <h1 class="reveal" data-d="1">
+      Redaction destroys data.<br>
+      <span class="acc">Pseudonymization keeps it.</span>
+    </h1>
+    <p class="lede reveal" data-d="2">
+      Every other tool replaces sensitive entities with dead tokens like
+      <code class="mono" style="background: var(--surface-2); padding: 1px 6px; color: var(--text-2);">[PERSON]</code>
+      — the original information is gone forever, and your application can never reassemble a useful answer.
+      CloakPipe replaces them with <span class="hl">deterministic, format-preserving fake entities the LLM can still reason about</span>,
+      stores the real values in an encrypted vault, then restores them on the way back. Reversible — but only under policy.
+    </p>
+    <div class="hero-ctas reveal" data-d="3">
+      <a class="btn btn-lg btn-cta" href="https://app.cloakpipe.co/signup"><span class="corner"></span>Try for free <span class="arr">→</span></a>
+      <a class="btn btn-lg" href="dashboard.html">See it live <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== ORIGINAL / REDACTED / PSEUDONYMIZED ============== -->
+<section class="section" id="comparison">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">01 · The difference</div>
+        <h2>Same input.<br><span class="acc">Three outcomes.</span></h2>
+        <a class="learn-more" href="platform.html">How the proxy does it <span class="arr">→</span></a>
+      </div>
+      <p>
+        Detection-only tools — Microsoft Presidio, AWS Comprehend, the OpenAI Privacy Filter on its own —
+        find sensitive data and stamp out a dead token. That works for anonymizing a training set. It
+        <span class="hl">does not work for a real-time AI application</span> where the response has to come back
+        with the real values intact. Watch what happens to a single clinical sentence.
+      </p>
+    </div>
+
+    <div class="pseudo reveal">
+      <div class="pseudo-row head">
+        <div class="pseudo-cell">
+          <div class="head-tag">Input</div>
+          <div class="head-name">Original sensitive data</div>
+        </div>
+        <div class="pseudo-cell bad">
+          <div class="head-tag">Other tools</div>
+          <div class="head-name">Redacted — data lost</div>
+        </div>
+        <div class="pseudo-cell good">
+          <div class="head-tag">CloakPipe</div>
+          <div class="head-name">Pseudonymized — utility kept</div>
+        </div>
+      </div>
+      <div class="pseudo-row">
+        <div class="pseudo-cell"><span class="pv">Dr. Sarah Chen</span></div>
+        <div class="pseudo-cell dead"><span class="pv">[PERSON]</span></div>
+        <div class="pseudo-cell safe"><span class="pv">Dr. PERSON_3</span></div>
+      </div>
+      <div class="pseudo-row">
+        <div class="pseudo-cell"><span class="pv">Amlodipine 10mg</span></div>
+        <div class="pseudo-cell dead"><span class="pv">[MEDICATION]</span></div>
+        <div class="pseudo-cell safe"><span class="pv">MEDICATION_7</span></div>
+      </div>
+      <div class="pseudo-row">
+        <div class="pseudo-cell"><span class="pv">s.chen@northshore.org</span></div>
+        <div class="pseudo-cell dead"><span class="pv">[EMAIL]</span></div>
+        <div class="pseudo-cell safe"><span class="pv">EMAIL_3@DOMAIN_1.org</span></div>
+      </div>
+      <div class="pseudo-row">
+        <div class="pseudo-cell"><span class="pv">555-0123</span></div>
+        <div class="pseudo-cell dead"><span class="pv">[PHONE]</span></div>
+        <div class="pseudo-cell safe"><span class="pv">PHONE_5</span></div>
+      </div>
+      <div class="pseudo-row">
+        <div class="pseudo-cell"><span class="pv">4532 1234 5678 9012</span></div>
+        <div class="pseudo-cell dead"><span class="pv">[CREDIT_CARD]</span></div>
+        <div class="pseudo-cell safe"><span class="pv">4532 8847 2231 5104</span></div>
+      </div>
+      <div class="pseudo-row">
+        <div class="pseudo-cell"><span class="pv">1600 Amphitheatre Pkwy</span></div>
+        <div class="pseudo-cell dead"><span class="pv">[ADDRESS]</span></div>
+        <div class="pseudo-cell safe"><span class="pv">742 ADDRESS_2 Ave</span></div>
+      </div>
+      <div class="pseudo-row">
+        <div class="pseudo-cell"><span class="pv">MRN-2024-88291</span></div>
+        <div class="pseudo-cell dead"><span class="pv">[MRN]</span></div>
+        <div class="pseudo-cell safe"><span class="pv">MRN-XXXX-TOKEN_12</span></div>
+      </div>
+    </div>
+
+    <div class="pseudo-note reveal" data-d="1">
+      <div class="ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 7 L6 11 L12 3"/></svg></div>
+      <p>
+        <strong>The model never sees a single real value.</strong>
+        It receives structurally valid text and reasons about it normally — &ldquo;PERSON_3 should take MEDICATION_7 at 20mg.&rdquo;
+        CloakPipe restores the originals in the response: &ldquo;Dr. Sarah Chen should take Amlodipine at 20mg.&rdquo;
+        Redaction throws that round trip away. Pseudonymization is the only approach that keeps it.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== HOW IT WORKS — THE ROUND TRIP ============== -->
+<section class="section" id="round-trip">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">02 · The round trip</div>
+        <h2>Detect. Mask.<br><span class="acc">Forward. Restore.</span></h2>
+        <a class="learn-more" href="platform.html">The full hot path <span class="arr">→</span></a>
+      </div>
+      <p>
+        Every prompt your application makes passes through the Rust proxy. The whole loop —
+        detection, vault write, forward, and rehydration —
+        <span class="hl">completes in under 50&nbsp;ms p95</span>, transparently. One line of code changes: the base URL.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>01 · Detect</h3>
+        <p>
+          A tiered pipeline scans the outbound prompt locally. Regex and checksum validators catch structured
+          identifiers in under a millisecond; ONNX models (OpenAI Privacy Filter, GLiNER2-PII) catch names,
+          addresses, dates, and custom entities. No data leaves your infrastructure to be detected.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>02 · Pseudonymize</h3>
+        <p>
+          Each detected entity is replaced with a deterministic, semantically valid fake. &ldquo;Dr. Sarah Chen&rdquo;
+          becomes &ldquo;Dr. PERSON_3&rdquo; — the same token every time, so the LLM can track relationships across the
+          entire conversation.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>03 · Vault write</h3>
+        <p>
+          The real&nbsp;→&nbsp;fake mapping is written to an AES-256-GCM encrypted vault with customer-managed keys.
+          The vault is the source of truth and the only place a real value ever exists outside your application.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>04 · Forward clean prompt</h3>
+        <p>
+          The pseudonymized prompt is forwarded to any provider — OpenAI, Anthropic, Google, Bedrock, Azure, or a
+          self-hosted model. The provider sees structurally valid text with zero real sensitive data.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>05 · Rehydrate response</h3>
+        <p>
+          As the response streams back token-by-token, CloakPipe runs a sliding window over the SSE chunks, detects
+          pseudonymized tokens, looks up the real values, and splices them in — without buffering or breaking the
+          streaming contract.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>06 · Audit &amp; return</h3>
+        <p>
+          Every detection, mask, and unmask decision is logged as a privacy-safe audit event, then the response —
+          with real values restored — is returned to your application. Compliance evidence is generated on the way out.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FORMAT-PRESERVING ============== -->
+<section class="section" id="format-preserving">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">03 · Format-preserving</div>
+        <h2>Fakes that pass<br><span class="acc">validation.</span></h2>
+        <a class="learn-more" href="platform.html#vault">Inside the vault <span class="arr">→</span></a>
+      </div>
+      <p>
+        A redacted token like <code class="mono" style="background: var(--surface-2); padding: 1px 6px; color: var(--text-2);">[CREDIT_CARD]</code>
+        breaks the moment it hits a system that expects a card number. CloakPipe generates replacements that
+        <span class="hl">pass the same validation checks as the originals</span>, using format-preserving encryption
+        (FF1, NIST SP 800-38G). Downstream systems — and the model itself — keep working exactly as before.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Credit cards — Luhn-valid</h3>
+        <p>
+          A card number is replaced with another number that passes the Luhn checksum. Payment-related queries
+          flow through your AI pipeline without exposing a single real PAN to the model provider.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>IBANs — mod-97 valid</h3>
+        <p>
+          Bank account identifiers are regenerated to pass the mod-97 check digit. Any downstream validator that
+          rejects malformed IBANs will accept the pseudonym just as it accepts the original.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Emails stay emails</h3>
+        <p>
+          <code class="mono">s.chen@northshore.org</code> becomes <code class="mono">EMAIL_3@DOMAIN_1.org</code> —
+          still a syntactically valid address. Forms, regexes, and parsers that expect an email don't choke on a
+          dead token.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Structured IDs keep their shape</h3>
+        <p>
+          Phone numbers stay phone-shaped, medical record numbers keep their prefix and length. The vault uses
+          AES-SIV for deterministic encryption and FF1 for format preservation, chosen per entity type.
+        </p>
+      </div>
+    </div>
+
+    <div class="pseudo-note reveal" data-d="1">
+      <div class="ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 7 L6 11 L12 3"/></svg></div>
+      <p>
+        <strong>Format preservation is what makes pseudonymization safe to drop into production.</strong>
+        The model — and any database, validator, or webhook that consumes its output — keeps working exactly as before,
+        because every fake is indistinguishable in shape from the real value it stands in for.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== DETERMINISTIC CONSISTENCY ============== -->
+<section class="section" id="deterministic">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">04 · Deterministic consistency</div>
+        <h2>Same input.<br><span class="acc">Same token.</span></h2>
+        <a class="learn-more" href="integrations.html">Works across your stack <span class="arr">→</span></a>
+      </div>
+      <p>
+        Tokenization is deterministic within a tenant's scope: the same value always produces the same token.
+        That single property is what lets the LLM <span class="hl">reason about relationships between entities</span>
+        instead of treating every mention as a brand-new unknown.
+      </p>
+    </div>
+
+    <div class="prose reveal">
+      <p>
+        If &ldquo;Dr. Sarah Chen&rdquo; appears five times in a prompt, it maps to &ldquo;Dr. PERSON_3&rdquo; all five times.
+        When the model answers, CloakPipe restores &ldquo;Dr. Sarah Chen&rdquo; in all five places. The model can correctly say
+        <strong>&ldquo;PERSON_3 prescribed MEDICATION_7 to PERSON_5&rdquo;</strong> — and the relationship survives the round trip.
+      </p>
+      <p>
+        Consistency holds across conversations, sessions, and batch processing, not just a single message. Tokens can be
+        scoped to a single conversation, expire after a configurable TTL, or persist indefinitely for long-running workflows —
+        whichever your use case demands.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal" data-d="1" style="margin-top: 24px;">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Relationships preserved</h3>
+        <p>
+          Because mapping is stable, the model keeps the graph intact: who prescribed what to whom, which party
+          signed which clause, which account sent which transfer.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Session &amp; TTL scoping</h3>
+        <p>
+          Tokens can live for one conversation, expire on a schedule, or persist for ongoing pipelines. You decide
+          how long a pseudonym means the same thing.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== REVERSIBILITY UNDER POLICY ============== -->
+<section class="section" id="reversibility">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">05 · Reversibility under policy</div>
+        <h2>This is not a feature.<br><span class="acc">It is the product.</span></h2>
+        <a class="learn-more" href="platform.html#policy">Policy &amp; CBAC <span class="arr">→</span></a>
+      </div>
+      <p>
+        Without a vault, pseudonymization is one-way: data goes in, nothing comes back. With a vault, it is
+        <span class="hl">reversible under policy</span>. That is the line between anonymization — which destroys
+        utility — and privacy, which preserves utility while controlling access.
+      </p>
+    </div>
+
+    <div class="prose reveal">
+      <p>
+        The vault stores every real&nbsp;→&nbsp;fake mapping, encrypted at rest with AES-256-GCM and per-tenant isolation.
+        Unmasking is never automatic. Every unmask request runs through the policy engine first:
+        <strong>the caller's identity, role, and request context</strong> are checked against rules defined in code and
+        versioned in Git — context-based access control (CBAC).
+      </p>
+      <p>
+        A sales agent cannot unmask a medical record. A supervising physician can — but only during an active case review,
+        and only for the entity types policy permits. Every decision, allowed or denied, is written to a privacy-safe audit
+        trail that never contains a raw value.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal" data-d="1" style="margin-top: 24px;">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Customer-managed keys</h3>
+        <p>
+          AES-256-GCM at rest with keys held in AWS KMS, GCP KMS, Azure Key Vault, or HashiCorp Vault Transit.
+          CloakPipe never holds the keys to your customer's data, and keys rotate automatically without breaking
+          existing tokens.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>CBAC on every unmask</h3>
+        <p>
+          Who is asking, what is their role, how sensitive is the data, what is the workflow context — all evaluated
+          at runtime via OPA or Cedar in sub-millisecond time before any real value is revealed.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Per-tenant isolation</h3>
+        <p>
+          Each customer gets their own vault namespace and their own encryption keys. Cross-tenant access is
+          impossible at the cryptographic level, not just the application level.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Privacy-safe audit</h3>
+        <p>
+          Audit logs record what <em>types</em> of data were processed and what actions were taken — never the actual
+          values. The trail proves compliance for HIPAA, GDPR, SOC&nbsp;2, and PCI-DSS without becoming a new liability.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CLOSER ============== -->
+<section class="closer">
+  <div class="wrap">
+    <h2 class="reveal">
+      Redaction destroys data.<br>
+      <span class="acc">Pseudonymization keeps it.</span>
+    </h2>
+    <div class="ctas reveal" data-d="1">
+      <a class="btn btn-lg btn-cta" href="https://app.cloakpipe.co/signup"><span class="corner"></span>Try for free <span class="arr">→</span></a>
+      <a class="btn btn-lg" href="https://github.com/rohansx/cloakpipe">Read the source <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script type="module" src="/src/chrome.js"></script>
+</body>
+</html>

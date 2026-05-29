@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CloakPipe — Platform: Proxy, Vault, Policy, Audit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<meta name="description" content="The four CloakPipe product surfaces in depth — the Rust proxy, the encrypted vault, the policy engine, and the audit layer — plus architecture, deployment topologies, and compliance posture." />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+
+<div id="site-nav"></div>
+
+<!-- ============== PAGE HERO ============== -->
+<section class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow reveal">Platform · The open core, deconstructed</div>
+    <h1 class="reveal" data-d="1">
+      Four surfaces.<br>
+      One <span class="acc">open core.</span>
+    </h1>
+    <p class="lede reveal" data-d="2">
+      CloakPipe is built as four distinct product surfaces — the
+      <span class="hl">Rust proxy, the encrypted vault, the policy engine, and the audit layer</span>.
+      The proxy is open source under Apache 2.0. Everything above it is the commercial platform
+      that closes enterprise deals in regulated industries. Each layer adds value on top of the last.
+    </p>
+    <div class="hero-ctas reveal" data-d="3">
+      <a class="btn btn-lg btn-cta" href="https://app.cloakpipe.co/signup"><span class="corner"></span>Try for free <span class="arr">→</span></a>
+      <a class="btn btn-lg" href="https://github.com/rohansx/cloakpipe">Read the source <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SURFACE 01 · PROXY ============== -->
+<section class="section" id="proxy">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">Surface 01 · Proxy</div>
+        <h2>The Rust proxy.<br><span class="acc">Open source core.</span></h2>
+        <a class="learn-more" href="https://github.com/rohansx/cloakpipe">Browse the repo <span class="arr">→</span></a>
+      </div>
+      <p>
+        A Rust-native reverse proxy that intercepts AI API calls, pseudonymizes outbound data,
+        and rehydrates inbound responses in real-time — <span class="hl">under 50 ms p95, including the full detection pipeline</span>.
+        Eight Rust crates compiled to a single native binary. Your application changes exactly one line: the base URL.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>OpenAI-compatible API</h3>
+        <p>Change your base URL from <code class="mono">api.openai.com</code> to your CloakPipe endpoint. No other code changes. Works with LangChain, LlamaIndex, CrewAI, curl, and any OpenAI-compatible client.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Streaming SSE rehydration</h3>
+        <p>LLMs stream token-by-token. CloakPipe maintains a sliding window, detects pseudonymized tokens mid-stream, looks up real values from the vault, and splices them in — without buffering or breaking the SSE contract.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Multi-provider routing</h3>
+        <p>Route to OpenAI, Anthropic, Google, AWS Bedrock, Azure OpenAI, or any self-hosted model via vLLM or Ollama. Apply different masking policies per provider — strict for closed models, lighter or bypassed for self-hosted.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Native MCP server</h3>
+        <p>A Model Context Protocol server exposing <code class="mono">mask_text</code>, <code class="mono">mask_file</code>, <code class="mono">unmask_in_context</code>, and <code class="mono">scan_directory</code> tools. AI agents can call CloakPipe directly as a tool from Claude Desktop, Cursor, or any MCP client.</p>
+      </div>
+    </div>
+
+    <div class="prose reveal" data-d="1" style="margin-top:36px;">
+      <h3>Pluggable, tiered detection pipeline</h3>
+      <p>
+        Detection is deliberately commoditized — CloakPipe does not lock you into a single model.
+        The proxy runs a <strong>tiered pipeline</strong> where each tier escalates only as needed:
+        what regex catches deterministically, the neural models never see; what one model misses, the ensemble catches.
+        OpenAI Privacy Filter scores 96% on synthetic benchmarks but Tonic.ai measured 18–65% on real-world EHR notes,
+        call transcripts, and loan contracts. <strong>No single model catches everything</strong> — which is why the pipeline tiers.
+      </p>
+    </div>
+
+    <div class="surfaces reveal" data-d="1" style="margin-top:24px;">
+      <div class="surface proxy" style="grid-column: span 6; grid-row: auto; border-right:none; border-bottom:none;">
+        <div class="ix"></div>
+        <div class="num">DETECTION PIPELINE · TIERED · CUMULATIVE &lt; 50 MS P95</div>
+        <div class="name">Catch by escalation, not by one model</div>
+        <div class="tagline">Each request flows through the tiers in order. Cheap, deterministic checks fire first; neural detection escalates only for unstructured text and custom entities.</div>
+        <div class="tiers" style="margin-top:8px;">
+          <div class="tiers-h">
+            <span>Tier 1 → Tier 4</span>
+            <span class="tot">cumulative · &lt; 50 ms p95</span>
+          </div>
+          <div class="tier-grid">
+            <div class="tier">
+              <div class="tn">T1</div>
+              <div class="tname">Regex + checksum</div>
+              <div class="twhat">Cards (Luhn) · IBAN (mod-97) · SSN range · ABA routing · email · URL · IP. Rust-native.</div>
+              <div class="tms">&lt; 1 ms</div>
+            </div>
+            <div class="tier">
+              <div class="tn">T2</div>
+              <div class="tname">Privacy Filter</div>
+              <div class="twhat">OpenAI 1.5B (50M active) on ONNX. Apache 2.0, 128K ctx. Names, addresses, dates, secrets.</div>
+              <div class="tms">30–50 ms</div>
+            </div>
+            <div class="tier">
+              <div class="tn">T3</div>
+              <div class="tname">GLiNER2-PII</div>
+              <div class="twhat">300M params, multilingual, zero-shot. Fires for custom entity types — MRNs, case IDs, policy numbers.</div>
+              <div class="tms">40–80 ms</div>
+            </div>
+            <div class="tier">
+              <div class="tn">T4</div>
+              <div class="tname">Ensemble</div>
+              <div class="twhat">Run multiple backends and merge for maximum recall. For when missing one entity is unacceptable.</div>
+              <div class="tms">opt-in</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SURFACE 02 · VAULT ============== -->
+<section class="section" id="vault">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">Surface 02 · Vault</div>
+        <h2>Reversible by design.<br><span class="acc">You hold the keys.</span></h2>
+        <a class="learn-more" href="trust.html">Why reversibility matters <span class="arr">→</span></a>
+      </div>
+      <p>
+        An encrypted tokenization vault that stores the mapping between real sensitive data and pseudonymized tokens.
+        The vault is the source of truth — and the reason pseudonymization is <span class="hl">reversible under policy</span>,
+        not a one-way redaction. Without a vault, data goes in and nothing useful comes out.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>AES-256-GCM at rest</h3>
+        <p>Every real value stored in the vault is encrypted with AES-256-GCM. Nothing real exists outside the vault — the clean prompt that reaches the provider contains zero original sensitive data.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Customer-managed keys</h3>
+        <p>Bring your own keys via AWS KMS, GCP Cloud KMS, Azure Key Vault, or HashiCorp Vault Transit. Envelope encryption with customer-managed root keys — you never hand CloakPipe the keys to your customer's data.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Deterministic + format-preserving</h3>
+        <p>The same input always produces the same token within a tenant's scope, preserving entity consistency across conversations and batches. Format-preserving FF1 (NIST SP 800-38G) keeps cards Luhn-valid and emails email-shaped.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Per-tenant isolation</h3>
+        <p>Each customer gets their own vault namespace with their own encryption keys. No cross-tenant data access is possible at the cryptographic level.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>TTL &amp; session scoping</h3>
+        <p>Tokens can expire after a single conversation, after a configurable TTL, or persist indefinitely for ongoing workflows. Scope the lifetime to the sensitivity of the workload.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Automatic key rotation</h3>
+        <p>Encryption keys rotate on a configurable schedule without disrupting active tokens. Old tokens remain decryptable; new tokens use the latest key. No downtime, no migration.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SURFACE 03 · POLICY ============== -->
+<section class="section" id="policy">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">Surface 03 · Policy</div>
+        <h2>Code, not config.<br><span class="acc">Versioned in Git.</span></h2>
+        <a class="learn-more" href="#audit">Every decision is logged <span class="arr">→</span></a>
+      </div>
+      <p>
+        A policy engine that defines what gets masked, for which models, for which teams, and who can unmask.
+        Policies are <span class="hl">code, versioned in Git, and enforced automatically on every request</span> —
+        backed by OPA (Open Policy Agent) or Cedar for sub-millisecond authorization decisions.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Entity policies</h3>
+        <p>"Mask all patient names when routing to external models." "Block financial amounts from reaching any provider." "Allow internal model calls unmasked." Per entity type, per action.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Provider policies</h3>
+        <p>Maximum masking for OpenAI, Anthropic, and Google. Bypass for self-hosted vLLM. Mask only financial data for Venice TEE models. Per provider, per masking level.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Team / role policies</h3>
+        <p>"Legal: mask everything, no exceptions. Engineering: mask PII, allow code. Data science: unmasked access to internal models only." Per RBAC role, mapped from SAML / OIDC.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Context-based access (CBAC)</h3>
+        <p>Unmasking decided at runtime from who is asking, their role, the data's sensitivity, and the workflow context. A sales agent cannot unmask medical records; a supervising physician can — but only during an active case review.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Custom entity definitions</h3>
+        <p>Define domain-specific entity types via regex, keyword lists, or NER labels: medical record numbers, case docket IDs, insurance policy numbers, internal employee IDs — whatever your domain requires.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Policy-as-code</h3>
+        <p>Defined in YAML, backed by OPA or Cedar. Every change is a versioned commit; every evaluation is an audit event. Policies are testable, reviewable, and deployable through standard CI/CD.</p>
+      </div>
+    </div>
+
+    <div class="prose reveal" data-d="1" style="margin-top:36px;">
+      <h3>Example policy — patient data for external models</h3>
+    </div>
+    <div class="yaml reveal" data-d="1" style="margin-top:12px;">
+<span class="yc"># rules — evaluated top to bottom on every request</span>
+<span class="yk">- name</span>: <span class="yv">mask_patient_data_for_external_models</span>
+  <span class="yk">when</span>:
+      <span class="yk">provider</span>:    <span class="yv">[openai, anthropic, google]</span>
+      <span class="yk">entity_type</span>: <span class="yv">[PERSON, DIAGNOSIS, MEDICATION, MRN]</span>
+  <span class="yk">action</span>: <span class="ya">pseudonymize</span>
+
+<span class="yc"># self-hosted models stay inside the perimeter — pass through</span>
+<span class="yk">- name</span>: <span class="yv">allow_internal_models_unmasked</span>
+  <span class="yk">when</span>:
+      <span class="yk">provider</span>: <span class="yv">[internal-vllm, self-hosted]</span>
+  <span class="yk">action</span>: <span class="ya">passthrough</span>
+
+<span class="yc"># only clinicians may reverse clinical entities — CBAC enforced</span>
+<span class="yk">- name</span>: <span class="yv">restrict_unmask_to_physicians</span>
+  <span class="yk">when</span>:
+      <span class="yk">action</span>:      <span class="yv">unmask</span>
+      <span class="yk">entity_type</span>: <span class="yv">[DIAGNOSIS, MEDICATION]</span>
+  <span class="yk">require_role</span>: <span class="ya">[physician, clinical_admin]</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SURFACE 04 · AUDIT ============== -->
+<section class="section" id="audit">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">Surface 04 · Audit</div>
+        <h2>Every decision<br><span class="acc">logged. Never raw.</span></h2>
+        <a class="learn-more" href="#compliance">See the compliance posture <span class="arr">→</span></a>
+      </div>
+      <p>
+        A compliance and observability layer that records every privacy-relevant event, generates compliance evidence,
+        and integrates with your existing monitoring stack. <span class="hl">Audit logs never contain raw sensitive data</span> —
+        they record what <em>types</em> of data were processed and what actions were taken, not the values. The audit trail is itself privacy-safe.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>What gets logged</h3>
+        <p>Every request (timestamp, caller, source IP, destination provider), every detection event (entity types, confidence, model used), every masking action, every unmask request, and every policy evaluation — plus full latency metrics.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Never the raw values</h3>
+        <p>The trail records that a <code class="mono">DIAGNOSIS</code> was masked for request <code class="mono">req_8af9c2</code> — never the diagnosis itself. Evidence of control without becoming a second copy of the data you are protecting.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Compliance evidence on demand</h3>
+        <p>Exportable evidence for HIPAA (PHI masked before processors), GDPR/DPDP (data minimization), SOC 2 Type II (access &amp; encryption controls), EU AI Act (de-identification), and PCI-DSS (tokenized cardholder data).</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>OpenTelemetry-native</h3>
+        <p>Structured traces, metrics, and logs from day one. Export to Datadog, Grafana, Splunk, Honeycomb, Prometheus, or any OTEL collector. Pre-built dashboards for detection rates, entity distribution, latency percentiles, and unmask patterns.</p>
+      </div>
+    </div>
+
+    <div class="prose reveal" data-d="1" style="margin-top:36px;">
+      <h3>A privacy-safe trail, in practice</h3>
+    </div>
+    <div class="alog reveal" data-d="1" style="margin-top:12px;">
+      <div class="alog-row">
+        <span class="at">14:32:08</span>
+        <span class="ae"><span class="ok">mask</span> 7 entities · req_8af9c2 → gpt-5</span>
+        <span class="aw">healthcare-v3</span>
+      </div>
+      <div class="alog-row">
+        <span class="at">14:32:09</span>
+        <span class="ae"><span class="info">detect</span> T1 regex + T2 privacy-filter · F1 0.96</span>
+        <span class="aw">otel·trace</span>
+      </div>
+      <div class="alog-row">
+        <span class="at">14:32:11</span>
+        <span class="ae"><span class="info">rehydrate</span> 11 chunks · vault lookup 3.8 ms</span>
+        <span class="aw">vault·prod</span>
+      </div>
+      <div class="alog-row">
+        <span class="at">14:32:14</span>
+        <span class="ae"><span class="deny">unmask deny</span> role: sales · entity: MRN</span>
+        <span class="aw">cbac-v1</span>
+      </div>
+      <div class="alog-row">
+        <span class="at">14:32:18</span>
+        <span class="ae"><span class="ok">unmask allow</span> role: physician · DIAGNOSIS · case review</span>
+        <span class="aw">cbac-v1</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== ARCHITECTURE ============== -->
+<section class="section" id="architecture">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">Architecture · The hot path</div>
+        <h2>One request.<br><span class="acc">Under 50 ms.</span></h2>
+        <a class="learn-more" href="https://github.com/rohansx/cloakpipe#readme">Read the architecture docs <span class="arr">→</span></a>
+      </div>
+      <p>
+        Every prompt, response, and tool call passes the same per-request hot path: authenticate, evaluate policy,
+        detect, pseudonymize and write to the vault, forward a clean prompt, stream back, rehydrate, and emit an audit event.
+        <span class="hl">All of it in Rust, transparently, with a sub-50 ms p95 target.</span>
+      </p>
+    </div>
+
+    <div class="surfaces reveal">
+      <div class="surface proxy" style="grid-column: span 6; grid-row: auto; border-right:none; border-bottom:none;">
+        <div class="ix"></div>
+        <div class="num">REQUEST FLOW · PER-REQUEST · &lt; 50 MS TARGET</div>
+        <div class="name">Auth → Policy → Detect → Vault → Forward → Rehydrate → Audit</div>
+        <div class="tagline">Built on Rust / Axum / Tower with Tokio streams. Detection escalates through tiers; the vault makes the round-trip reversible; the audit log closes every request.</div>
+        <ul class="points">
+          <li><strong>1 · Auth</strong> — JWT / mTLS verification at the proxy edge</li>
+          <li><strong>2 · Policy</strong> — OPA evaluation: allow / deny plus per-entity rules</li>
+          <li><strong>3 · Detection</strong> — T1 regex + checksum (&lt;1ms) → T2 Privacy Filter (ONNX, 30–50ms) → T3 GLiNER2 for custom entities (optional)</li>
+          <li><strong>4 · Pseudonymize + vault write</strong> — deterministic tokens encrypted at rest</li>
+          <li><strong>5 · Forward</strong> — clean prompt to the LLM provider; zero real data leaves</li>
+          <li><strong>6 · Stream + rehydrate</strong> — detect tokens in the SSE stream, vault lookup, authorize, splice real values back</li>
+          <li><strong>7 · Audit</strong> — emit a privacy-safe event via OpenTelemetry, then return the response with real values restored</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="prose reveal" data-d="1" style="margin-top:40px;">
+      <h3>Core technology choices</h3>
+    </div>
+    <table class="reveal" data-d="1" style="width:100%; border-collapse:collapse; border:1px solid var(--line); margin-top:12px; background:var(--surface); font-size:13.5px;">
+      <thead>
+        <tr style="background:var(--surface-2);">
+          <th style="text-align:left; padding:14px 18px; border-bottom:1px solid var(--line); font:600 11px var(--mono); letter-spacing:0.1em; text-transform:uppercase; color:var(--text-3);">Component</th>
+          <th style="text-align:left; padding:14px 18px; border-bottom:1px solid var(--line); font:600 11px var(--mono); letter-spacing:0.1em; text-transform:uppercase; color:var(--text-3);">Technology</th>
+          <th style="text-align:left; padding:14px 18px; border-bottom:1px solid var(--line); font:600 11px var(--mono); letter-spacing:0.1em; text-transform:uppercase; color:var(--text-3);">Why</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:500;">Proxy runtime</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">Rust / Axum / Tower</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Sub-millisecond overhead per request. Zero-cost abstractions. Memory safety without GC pauses.</td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:500;">ML inference</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">ONNX Runtime (ort)</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Run Privacy Filter and GLiNER2 locally on CPU or GPU. No Python dependency in the hot path.</td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:500;">Tokenization</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">HF tokenizers (Rust)</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Fast model-input preparation, shared across the detection pipeline.</td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:500;">Vault encryption</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">AES-256-GCM · AES-SIV · FF1</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">GCM for general encryption, SIV for deterministic tokens, FF1 (NIST SP 800-38G) for format-preserving values.</td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:500;">Key management</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">Vault Transit / cloud KMS</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Envelope encryption. Customer-managed root keys. Automatic rotation.</td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:500;">Token registry</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">PostgreSQL (sqlx)</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Deterministic token lookup with per-tenant isolation. Proven at scale.</td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:500;">Policy engine</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">OPA · Cedar</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">OPA: industry standard, Rego DSL, sub-millisecond decisions. Cedar: typed alternative for compile-time guarantees.</td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px; color:var(--text); font-weight:500;">Observability</td>
+          <td style="padding:14px 18px;"><span class="mono" style="color:var(--accent);">OpenTelemetry-rust</span></td>
+          <td style="padding:14px 18px; color:var(--text-2);">Traces, metrics, and logs over Tokio streams, exportable to any OTEL collector.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============== DEPLOYMENT ============== -->
+<section class="section" id="deployment">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">Deployment · Five topologies</div>
+        <h2>Laptop to <span class="acc">air-gapped.</span></h2>
+        <a class="learn-more" href="pricing.html">See what each tier includes <span class="arr">→</span></a>
+      </div>
+      <p>
+        Same Rust binary. Same detection pipeline. Same vault encryption.
+        <span class="hl">Pick the topology that matches your security posture</span> — from fully managed cloud
+        to a fully offline air-gapped install with no network calls and no telemetry.
+      </p>
+    </div>
+
+    <div class="deploys reveal">
+      <div class="deploy">
+        <div class="ix"></div>
+        <div class="d-num">01</div>
+        <div class="d-name">Managed cloud</div>
+        <div class="d-desc">Hosted at cloakpipe.co. Endpoint, dashboard, vault, audit logs all managed. Data processed in-transit only, never stored outside the vault. SOC 2 infrastructure.</div>
+        <div class="d-tag">SAAS</div>
+      </div>
+      <div class="deploy">
+        <div class="ix"></div>
+        <div class="d-num">02</div>
+        <div class="d-name">Docker</div>
+        <div class="d-desc">Single container or docker-compose on any Linux host. Customer controls all infrastructure, keys, and data. Open-source proxy plus a commercial license for platform features.</div>
+        <div class="d-tag">SINGLE BINARY</div>
+      </div>
+      <div class="deploy">
+        <div class="ix"></div>
+        <div class="d-num">03</div>
+        <div class="d-name">Kubernetes</div>
+        <div class="d-desc">Production Helm chart for K8s clusters. Horizontal autoscaling, rolling deploys, health checks — for teams running AI workloads on Kubernetes.</div>
+        <div class="d-tag">HELM · HPA</div>
+      </div>
+      <div class="deploy">
+        <div class="ix"></div>
+        <div class="d-num">04</div>
+        <div class="d-name">VPC / private</div>
+        <div class="d-desc">Deployed inside your AWS VPC, GCP VPC, or Azure VNet. No internet egress. CloakPipe engineering assists with deployment and configuration.</div>
+        <div class="d-tag">CUSTOMER CLOUD</div>
+      </div>
+      <div class="deploy">
+        <div class="ix"></div>
+        <div class="d-num">05</div>
+        <div class="d-name">Air-gapped</div>
+        <div class="d-desc">Fully offline. All detection models run via ONNX locally. No network calls. No telemetry. For defense, intelligence, and maximum-security healthcare environments.</div>
+        <div class="d-tag">OFFLINE · ONNX</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== COMPLIANCE POSTURE ============== -->
+<section class="section" id="compliance">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">Compliance · Posture</div>
+        <h2>Built to be<br><span class="acc">deployable in audits.</span></h2>
+        <a class="learn-more" href="mailto:hello@rohan.sh?subject=CloakPipe%20Compliance">Request compliance docs <span class="arr">→</span></a>
+      </div>
+      <p>
+        CloakPipe helps your AI application meet regulatory requirements — and the product itself meets
+        the standards needed to be deployable in regulated environments.
+        <span class="hl">Each framework maps to what it unlocks for your customers</span>.
+      </p>
+    </div>
+
+    <table class="reveal" style="width:100%; border-collapse:collapse; border:1px solid var(--line); background:var(--surface); font-size:13.5px;">
+      <thead>
+        <tr style="background:var(--surface-2);">
+          <th style="text-align:left; padding:14px 18px; border-bottom:1px solid var(--line); font:600 11px var(--mono); letter-spacing:0.1em; text-transform:uppercase; color:var(--text-3);">Framework</th>
+          <th style="text-align:left; padding:14px 18px; border-bottom:1px solid var(--line); font:600 11px var(--mono); letter-spacing:0.1em; text-transform:uppercase; color:var(--text-3);">CloakPipe status</th>
+          <th style="text-align:left; padding:14px 18px; border-bottom:1px solid var(--line); font:600 11px var(--mono); letter-spacing:0.1em; text-transform:uppercase; color:var(--text-3);">What it enables for customers</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:600;">SOC 2 Type II</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--warn);">In progress · Vanta</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Cite CloakPipe's report in your own audits. Required for enterprise procurement in healthcare, finance, and legal.</td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:600;">HIPAA</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">BAA available</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Demonstrate PHI is masked before reaching model providers. Fulfills the HIPAA de-identification safe harbor.</td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:600;">GDPR / DPDP</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">DPA template · Art. 25/32</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Proof of data minimization. Answer data subject access and deletion requests from the audit trail. Data residency controls.</td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:600;">EU AI Act</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--warn);">High-risk · Aug 2026</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Demonstrate personal data is de-identified before high-risk AI processing, with a human-oversight audit trail.</td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:600;">PCI-DSS</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">FPE tokenization</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Process payment-related queries without exposing card numbers. No cardholder data stored in plaintext.</td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px; color:var(--text); font-weight:600;">ISO 27001</td>
+          <td style="padding:14px 18px;"><span class="mono" style="color:var(--text-3);">Planned</span></td>
+          <td style="padding:14px 18px; color:var(--text-2);">Required for European and APAC enterprise procurement. ~70% control overlap with SOC 2.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============== CLOSER ============== -->
+<section class="closer">
+  <div class="wrap">
+    <h2 class="reveal">
+      Four surfaces.<br>
+      One <span class="acc">open core.</span>
+    </h2>
+    <div class="ctas reveal" data-d="1">
+      <a class="btn btn-lg btn-cta" href="https://app.cloakpipe.co/signup"><span class="corner"></span>Try for free <span class="arr">→</span></a>
+      <a class="btn btn-lg" href="dashboard.html">See it live <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script type="module" src="/src/chrome.js"></script>
+</body>
+</html>

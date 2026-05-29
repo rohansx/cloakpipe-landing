@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CloakPipe — Integrations: providers, frameworks, gateways, MCP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<meta name="description" content="CloakPipe speaks the OpenAI API dialect and ships native middleware for LangChain, LlamaIndex, CrewAI, LangGraph, LiteLLM and more — plus AI gateways, MCP, KMS, identity, and observability integrations." />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+
+<div id="site-nav"></div>
+
+<!-- ============== PAGE HERO ============== -->
+<section class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow reveal">Integrations · OpenAI-compatible · native middleware</div>
+    <h1 class="reveal" data-d="1">
+      Drop in.<br>
+      Keep <span class="acc">everything else.</span>
+    </h1>
+    <p class="lede reveal" data-d="2">
+      CloakPipe speaks the OpenAI API dialect, so the simplest integration is
+      <span class="hl">changing one base URL</span>. For the frameworks, gateways, and
+      agent runtimes you already run, there's native middleware — no rewrites, no lock-in,
+      and the same Rust pipeline underneath every connector.
+    </p>
+    <div class="hero-ctas reveal" data-d="3">
+      <a class="btn btn-lg btn-cta" href="https://app.cloakpipe.co/signup"><span class="corner"></span>Try for free <span class="arr">→</span></a>
+      <a class="btn btn-lg" href="https://github.com/rohansx/cloakpipe">View on GitHub <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== LLM PROVIDERS ============== -->
+<section class="section" id="providers">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">01 · LLM providers</div>
+        <h2>Route to <span class="acc">any model.</span></h2>
+        <a class="learn-more" href="platform.html">How the proxy routes <span class="arr">→</span></a>
+      </div>
+      <p>
+        The proxy is OpenAI-compatible and provider-agnostic. Point your app at a CloakPipe
+        endpoint and route to closed models, managed clouds, or self-hosted weights.
+        <span class="hl">Different masking policies per provider</span> — strict for closed
+        models, lighter or bypassed for models inside your own perimeter.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>OpenAI</h3>
+        <p>Swap <code class="mono">api.openai.com</code> for your CloakPipe base URL. GPT-class models, function calling, and streaming SSE all keep working unchanged.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Anthropic (Claude)</h3>
+        <p>Pseudonymize prompts before they reach Claude, then rehydrate the streamed response in real time. Privileged content never leaves your control.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Google (Gemini)</h3>
+        <p>Mask financial and customer data on the way to Gemini, restore real values on return. Per-entity policy decides what Google ever sees.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>AWS Bedrock</h3>
+        <p>Route to Bedrock-hosted models with the same detection pipeline in front. Vault and audit run inside your AWS account.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Azure OpenAI</h3>
+        <p>Azure deployments behave like any other OpenAI-compatible target. One config switch, full pseudonymization and rehydration.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Mistral</h3>
+        <p>Forward clean prompts to Mistral endpoints. Structurally valid replacements keep the model reasoning correctly about entities.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Cohere</h3>
+        <p>Cohere chat and command models route through the proxy with the same sub-50 ms overhead and full audit trail.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Any OpenAI-compatible endpoint</h3>
+        <p>If it speaks the OpenAI API dialect, CloakPipe routes to it. No SDK fork required — just the base URL.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Self-hosted · vLLM · Ollama · TGI</h3>
+        <p>Run models inside your perimeter via vLLM, Ollama, or Text Generation Inference. Policy can bypass masking when the model is already yours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== AI FRAMEWORKS ============== -->
+<section class="section" id="frameworks">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">02 · AI frameworks</div>
+        <h2>Native middleware,<br><span class="acc">zero rewrites.</span></h2>
+        <a class="learn-more" href="https://github.com/rohansx/cloakpipe">Browse the connectors <span class="arr">→</span></a>
+      </div>
+      <p>
+        For the orchestration frameworks you already build on, CloakPipe ships as a wrapper
+        that slots into the existing data path. <span class="hl">One line in your chain or
+        agent</span> — masking, vault, and policy come along for free.
+      </p>
+    </div>
+
+    <div class="integrations reveal">
+
+      <div class="integ-card" data-fill="100">
+        <div class="ix"></div>
+        <div class="integ-meta">
+          <span class="stars">★ 102K</span>
+          <span class="lang python">PYTHON</span>
+        </div>
+        <div class="integ-name">
+          <span class="ico"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7 L7 3 L11 7 L7 11 Z"/></svg></span>
+          langchain-ai/langchain
+        </div>
+        <div class="integ-desc"><code class="mono">CloakPipeRunnable</code> middleware. Drop-in for any chain or agent. Streaming-safe.</div>
+        <div class="integ-bar"></div>
+        <div class="integ-foot">
+          <span><a href="https://github.com/langchain-ai/langchain">Native middleware</a></span>
+          <span class="ok">SHIPPED</span>
+        </div>
+      </div>
+
+      <div class="integ-card" data-fill="90">
+        <div class="ix"></div>
+        <div class="integ-meta">
+          <span class="stars">★ 38K</span>
+          <span class="lang python">PYTHON</span>
+        </div>
+        <div class="integ-name">
+          <span class="ico"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M2 7 H12 M7 2 V12"/></svg></span>
+          run-llama/llama_index
+        </div>
+        <div class="integ-desc">Query-time masking for RAG. Pseudonymize retrieved chunks before they hit the LLM.</div>
+        <div class="integ-bar"></div>
+        <div class="integ-foot">
+          <span><a href="https://github.com/run-llama/llama_index">Retrieval wrapper</a></span>
+          <span class="ok">SHIPPED</span>
+        </div>
+      </div>
+
+      <div class="integ-card" data-fill="80">
+        <div class="ix"></div>
+        <div class="integ-meta">
+          <span class="stars">★ 28K</span>
+          <span class="lang python">PYTHON</span>
+        </div>
+        <div class="integ-name">
+          <span class="ico"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="4" r="2"/><circle cx="10" cy="4" r="2"/><circle cx="7" cy="11" r="2"/></svg></span>
+          crewAIInc/crewAI
+        </div>
+        <div class="integ-desc">Per-agent masking context and access level. Policy enforced across the orchestration.</div>
+        <div class="integ-bar"></div>
+        <div class="integ-foot">
+          <span><a href="https://github.com/crewAIInc/crewAI">Agent wrapper</a></span>
+          <span class="ok">SHIPPED</span>
+        </div>
+      </div>
+
+      <div class="integ-card" data-fill="70">
+        <div class="ix"></div>
+        <div class="integ-meta">
+          <span class="stars">★ 18K</span>
+          <span class="lang typescript">TYPESCRIPT</span>
+        </div>
+        <div class="integ-name">
+          <span class="ico"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="2.5" width="4" height="4"/><rect x="7.5" y="7.5" width="4" height="4"/><path d="M6.5 4.5 H9 V7.5"/></svg></span>
+          langchain-ai/langgraph
+        </div>
+        <div class="integ-desc">Policy-aware tool wrapper. CBAC on every node transition.</div>
+        <div class="integ-bar"></div>
+        <div class="integ-foot">
+          <span><a href="https://github.com/langchain-ai/langgraph">Tool wrapper</a></span>
+          <span class="ok">SHIPPED</span>
+        </div>
+      </div>
+
+      <div class="integ-card" data-fill="60">
+        <div class="ix"></div>
+        <div class="integ-meta">
+          <span class="stars">★ 12K</span>
+          <span class="lang go">GO</span>
+        </div>
+        <div class="integ-name">
+          <span class="ico"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7 H6 M8 7 H12 M5 4 V10"/></svg></span>
+          BerriAI/litellm
+        </div>
+        <div class="integ-desc">Middleware in the proxy chain. Protects every downstream model with one config.</div>
+        <div class="integ-bar"></div>
+        <div class="integ-foot">
+          <span><a href="https://github.com/BerriAI/litellm">Proxy plugin</a></span>
+          <span class="ok">BETA</span>
+        </div>
+      </div>
+
+      <div class="integ-card" data-fill="45">
+        <div class="ix"></div>
+        <div class="integ-meta">
+          <span class="stars">★ 4.2K</span>
+          <span class="lang rust">RUST</span>
+        </div>
+        <div class="integ-name">
+          <span class="ico"><svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4"/><path d="M3 7 H11"/></svg></span>
+          rohansx/cloakpipe-mcp
+        </div>
+        <div class="integ-desc">Native Model Context Protocol server. mask, unmask, scan tools for any MCP client.</div>
+        <div class="integ-bar"></div>
+        <div class="integ-foot">
+          <span><a href="https://github.com/rohansx/cloakpipe-mcp">MCP server</a></span>
+          <span class="ok">SHIPPED</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="prose reveal" data-d="1" style="margin-top: 28px;">
+      <p>
+        <strong>AutoGen and other multi-agent runtimes</strong> are covered by the same model:
+        the orchestrator defines the security posture, each agent gets its own masking context,
+        access level, and audit scope, and individual agents cannot override it. The framework
+        changes; the trust layer underneath does not.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== AI GATEWAYS ============== -->
+<section class="section" id="gateways">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">03 · AI gateways</div>
+        <h2>One integration.<br><span class="acc">Every downstream model.</span></h2>
+        <a class="learn-more" href="pricing.html">Platform &amp; embed licensing <span class="arr">→</span></a>
+      </div>
+      <p>
+        For platforms that route requests across many model providers, CloakPipe embeds as
+        middleware in the existing proxy chain. <span class="hl">A single integration protects
+        all downstream calls</span> for every user of the gateway.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Venice.ai</h3>
+        <p>Close the content-privacy gap on routed closed models. CloakPipe sits in the proxy chain, masking before the provider ever sees a prompt.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>OpenRouter</h3>
+        <p>Add pseudonymization to multi-provider routing. One embed protects every model OpenRouter forwards to.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>LiteLLM</h3>
+        <p>Run as a middleware plugin in the LiteLLM proxy chain so one config protects all downstream models at once.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Kong AI Gateway</h3>
+        <p>Enterprise API gateway adding AI features. PII protection is the natural next layer in the request lifecycle.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Gravitee</h3>
+        <p>Slot CloakPipe into Gravitee's AI gateway policy chain for masking and audit across every routed model call.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Cloudflare AI Gateway</h3>
+        <p>Add a privacy layer to edge-routed model traffic, with vault and audit hosted inside your own perimeter.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Portkey</h3>
+        <p>Embed masking middleware into Portkey's gateway so prompts are pseudonymized before reaching any configured provider.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>TrueFoundry</h3>
+        <p>Wrap TrueFoundry's model gateway with CloakPipe to keep sensitive data inside your infrastructure across every deployment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== AGENT PROTOCOLS ============== -->
+<section class="section" id="mcp">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">04 · Agent protocols</div>
+        <h2>CloakPipe as<br>a <span class="acc">tool.</span></h2>
+        <a class="learn-more" href="https://github.com/rohansx/cloakpipe-mcp">MCP server reference <span class="arr">→</span></a>
+      </div>
+      <p>
+        The native <span class="hl">Model Context Protocol server</span> exposes CloakPipe's
+        core operations as agent tools. Any MCP client can mask, unmask, scan, and apply policy
+        without leaving the protocol — and every call lands in the audit trail.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>mask &amp; unmask tools</h3>
+        <p><code class="mono">mask_text</code>, <code class="mono">mask_file</code>, and <code class="mono">unmask_in_context</code> let an agent pseudonymize content and reverse it under policy — vault-backed, authorized per request.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>scan tool</h3>
+        <p><code class="mono">scan_directory</code> detects sensitive data across files and data sources, returning entity types and confidence without ever exposing raw values.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>policy tool</h3>
+        <p>Agents evaluate masking and unmask decisions against the same OPA / Cedar policy engine the proxy uses. The orchestrator's posture is enforced, not advisory.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Claude Desktop · Cursor · any MCP client</h3>
+        <p>Drop the server into Claude Desktop, Cursor, or any MCP-compatible runtime. Tool responses are intercepted, scanned, and policy-checked before the agent processes them.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== KEY MANAGEMENT ============== -->
+<section class="section" id="kms">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">05 · Key management</div>
+        <h2>You hold<br>the <span class="acc">keys.</span></h2>
+        <a class="learn-more" href="trust.html">How the vault works <span class="arr">→</span></a>
+      </div>
+      <p>
+        The vault encrypts every real value with AES-256, and the root keys stay yours.
+        Bring-your-own-key through your existing KMS — <span class="hl">CloakPipe never holds
+        the keys to your customer's data</span>. Envelope encryption with automatic rotation.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>AWS KMS</h3>
+        <p>Customer-managed keys in AWS KMS via envelope encryption. Keys rotate on your schedule; existing tokens stay decryptable.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>GCP Cloud KMS</h3>
+        <p>Root keys in Google Cloud KMS. Per-tenant vault namespaces mean no cross-tenant access is possible at the cryptographic level.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Azure Key Vault</h3>
+        <p>Manage encryption keys in Azure Key Vault. Automatic rotation runs without disrupting active tokens.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>HashiCorp Vault Transit</h3>
+        <p>Use Vault Transit as the key-management backend for BYOK envelope encryption across self-hosted and air-gapped deployments.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== IDENTITY & ACCESS ============== -->
+<section class="section" id="identity">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">06 · Identity &amp; access</div>
+        <h2>Map your IdP<br>to <span class="acc">policy.</span></h2>
+        <a class="learn-more" href="platform.html">Policy &amp; RBAC <span class="arr">→</span></a>
+      </div>
+      <p>
+        Single sign-on and provisioning plug into your existing identity provider. IdP roles
+        map directly to CloakPipe policies, so <span class="hl">who can unmask what</span> is
+        decided by the same directory that runs the rest of your stack.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>SAML 2.0</h3>
+        <p>Enterprise SSO via SAML 2.0. Authenticate operators against your IdP before any unmask or dashboard access.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>OIDC (SSO)</h3>
+        <p>OpenID Connect single sign-on for modern identity providers, with session and role claims flowing into policy decisions.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>SCIM provisioning</h3>
+        <p>Automatic user provisioning and de-provisioning through SCIM. Lifecycle stays in sync with your directory.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>IdP role mapping</h3>
+        <p>Map directory groups and roles straight onto CloakPipe RBAC and CBAC rules — physicians unmask diagnoses, sales never can.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== OBSERVABILITY ============== -->
+<section class="section" id="observability">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">07 · Observability</div>
+        <h2>OpenTelemetry-<br><span class="acc">native.</span></h2>
+        <a class="learn-more" href="platform.html#audit">The audit layer <span class="arr">→</span></a>
+      </div>
+      <p>
+        Every API call emits structured traces, metrics, and logs from day one. Export to any
+        OTEL-compatible collector with <span class="hl">pre-built dashboards</span> for
+        detection rates, entity distribution, latency percentiles, and unmask patterns.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>OpenTelemetry</h3>
+        <p>Traces, metrics, and logs in OTEL format. The foundation every other observability integration builds on — no vendor lock-in.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Datadog</h3>
+        <p>Stream CloakPipe telemetry into Datadog dashboards and monitors for latency, detection, and policy-decision metrics.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Grafana</h3>
+        <p>Visualize entity-type distribution and proxy overhead in Grafana with the bundled OTEL-backed dashboards.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Splunk</h3>
+        <p>Forward structured events to Splunk for operational monitoring alongside the rest of your platform telemetry.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Honeycomb</h3>
+        <p>High-cardinality tracing in Honeycomb to debug per-request detection and rehydration behavior.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Prometheus</h3>
+        <p>Scrape CloakPipe metrics with Prometheus for alerting on latency percentiles and detection-rate anomalies.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== COMPLIANCE TOOLING ============== -->
+<section class="section" id="compliance">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">08 · Compliance tooling</div>
+        <h2>Evidence,<br><span class="acc">automated.</span></h2>
+        <a class="learn-more" href="trust.html">Compliance posture <span class="arr">→</span></a>
+      </div>
+      <p>
+        Audit logs are privacy-safe by design — they record what types of data were processed
+        and what actions were taken, never the values. <span class="hl">Wire them into the
+        evidence and SIEM tools you already run</span> for SOC 2 and security operations.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Vanta</h3>
+        <p>Automated SOC 2 evidence collection. CloakPipe's access-control and audit-logging controls feed Vanta continuously.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Drata</h3>
+        <p>Continuous compliance monitoring with Drata, pulling encryption and change-management evidence from the audit layer.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Comp AI</h3>
+        <p>Connect Comp AI for SOC 2 evidence automation across CloakPipe's logging, encryption, and access controls.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>SIEM webhooks · Splunk · Sentinel · Elastic</h3>
+        <p>Webhook integration streams privacy-relevant events into Splunk, Microsoft Sentinel, or Elastic for security monitoring and alerting.</p>
+      </div>
+    </div>
+
+    <div class="prose reveal" data-d="1" style="margin-top: 28px;">
+      <p>
+        Need a connector that isn't listed? The proxy is OpenAI-compatible and the audit layer
+        is OTEL-native, so most integrations are a base-URL switch or a webhook away.
+        <strong>Talk to us about embedding CloakPipe</strong> into your gateway or platform —
+        <a class="learn-more" style="margin-top:8px;" href="mailto:hello@rohan.sh?subject=CloakPipe%20integration">Email the team <span class="arr">→</span></a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CLOSER ============== -->
+<section class="closer">
+  <div class="wrap">
+    <h2 class="reveal">
+      One base URL.<br>
+      <span class="acc">Everything else stays.</span>
+    </h2>
+    <div class="ctas reveal" data-d="1">
+      <a class="btn btn-lg btn-cta" href="https://app.cloakpipe.co/signup"><span class="corner"></span>Try for free <span class="arr">→</span></a>
+      <a class="btn btn-lg" href="https://github.com/rohansx/cloakpipe">View on GitHub <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script type="module" src="/src/chrome.js"></script>
+</body>
+</html>
