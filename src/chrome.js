@@ -15,6 +15,7 @@ const NAV = [
   { label: 'Platform', href: '/platform.html', match: ['/platform.html'] },
   { label: 'Integrations', href: '/integrations.html', match: ['/integrations.html'] },
   { label: 'Pricing', href: '/pricing.html', match: ['/pricing.html'] },
+  { label: 'Playground', href: '/playground.html', match: ['/playground.html'] },
   { label: 'Demo', href: '/dashboard.html', match: ['/dashboard.html'] },
 ];
 
@@ -95,6 +96,7 @@ function renderFooter() {
           <a href="/platform.html">Platform</a>
           <a href="/integrations.html">Integrations</a>
           <a href="/pricing.html">Pricing</a>
+          <a href="/playground.html">Playground</a>
           <a href="/dashboard.html">Live demo</a>
         </div>
         <div class="foot-col">

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CloakPipe — Playground: mask PII live with the Privacy Filter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<meta name="description" content="Paste any text and watch CloakPipe pseudonymize it live with the real detection pipeline — regex + checksum for structured IDs and the OpenAI Privacy Filter for names, addresses, emails, and more. Nothing is stored." />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+
+<div id="site-nav"></div>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow reveal">Live · powered by openai/privacy-filter</div>
+    <h1 class="reveal" data-d="1">See it <span class="acc">mask, live.</span></h1>
+    <p class="lede reveal" data-d="2">
+      Paste anything with names, emails, cards, MRNs. CloakPipe runs the real
+      detection pipeline — <span class="hl">regex + checksum for structured IDs, the OpenAI Privacy
+      Filter for the rest</span> — and returns pseudonymized text. Nothing is stored;
+      only the masked output ever leaves the server.
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="pg reveal">
+      <div class="pg-pane">
+        <div class="pg-label">Your text</div>
+        <textarea id="pg-input" class="pg-input" spellcheck="false">You are a medical assistant. Patient Dr. Sarah Chen (DOB 03/15/1982) presented to Northshore Medical with chest pain. Currently prescribed Amlodipine 10mg daily. Contact: sarah.chen@hospital.org, +1-415-555-0182. Card 4532 1234 5678 9012. MRN-2024-88291. Please summarize and recommend next steps.</textarea>
+        <button id="pg-run" class="btn btn-lg btn-cta"><span class="corner"></span>Mask it <span class="arr">→</span></button>
+      </div>
+      <div class="pg-pane">
+        <div class="pg-label out">Pseudonymized — safe to send to any LLM</div>
+        <div id="pg-output" class="pg-output">Masking…</div>
+        <div id="pg-meta" class="pg-meta"></div>
+      </div>
+    </div>
+    <p class="pg-note">No data stored · ephemeral vault · 30 requests/min · <a href="/trust.html">how it works →</a></p>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script type="module" src="/src/chrome.js"></script>
+<script type="module" src="/src/playground.js"></script>
+</body>
+</html>

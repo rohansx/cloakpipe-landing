@@ -11,6 +11,7 @@ export default defineConfig({
         platform: 'platform.html',
         integrations: 'integrations.html',
         pricing: 'pricing.html',
+        playground: 'playground.html',
         dashboard: 'dashboard.html',
       },
     },
