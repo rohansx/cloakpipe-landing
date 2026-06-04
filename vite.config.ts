@@ -10,6 +10,7 @@ export default defineConfig({
         trust: 'trust.html',
         platform: 'platform.html',
         integrations: 'integrations.html',
+        docs: 'docs.html',
         pricing: 'pricing.html',
         playground: 'playground.html',
         dashboard: 'dashboard.html',
