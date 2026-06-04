@@ -14,6 +14,7 @@ const NAV = [
   { label: 'Trust layer', href: '/trust.html', match: ['/trust.html'] },
   { label: 'Platform', href: '/platform.html', match: ['/platform.html'] },
   { label: 'Integrations', href: '/integrations.html', match: ['/integrations.html'] },
+  { label: 'Docs', href: '/docs.html', match: ['/docs.html', '/docs'] },
   { label: 'Pricing', href: '/pricing.html', match: ['/pricing.html'] },
   { label: 'Playground', href: '/playground.html', match: ['/playground.html'] },
   { label: 'Demo', href: '/dashboard.html', match: ['/dashboard.html'] },
@@ -31,6 +32,7 @@ const TICK = `<span class="nav-tick"><svg viewBox="0 0 10 10" fill="none"><path 
 
 const SUN = `<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2 M12 20v2 M2 12h2 M20 12h2 M4.9 4.9l1.4 1.4 M17.7 17.7l1.4 1.4 M4.9 19.1l1.4-1.4 M17.7 6.3l1.4-1.4"/></svg>`;
 const MOON = `<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14c-1 4-5 7-9 7-5 0-9-4-9-9 0-4 3-8 7-9-2 4 0 9 4 10 3 1 6 0 7-0z"/></svg>`;
+const GITHUB = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.7.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.4-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 4.6 18 4.9 18 4.9c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5z"/></svg>`;
 
 function currentPath() {
   let p = window.location.pathname;
@@ -62,6 +64,7 @@ function renderNav() {
     <a class="brand" href="/index.html">${BRAND_MARK} CloakPipe</a>
     <div class="nav-links">${desktopLinks}</div>
     <div class="nav-right">
+      <a class="nav-gh" href="${GH}" target="_blank" rel="noopener" aria-label="CloakPipe on GitHub" title="Star CloakPipe on GitHub">${GITHUB}</a>
       <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">${SUN}${MOON}</button>
       <a class="btn btn-cta nav-desk-cta" href="${SIGNUP}"><span class="corner"></span>Try for free <span class="arr">→</span></a>
       <a class="btn nav-desk-cta" href="${LOGIN}">Log in <span class="arr">→</span></a>
@@ -88,7 +91,7 @@ function renderFooter() {
       <div class="foot-grid">
         <div>
           <div class="foot-brand-row">${BRAND_MARK} CloakPipe</div>
-          <p>The trust layer between your application and AI. Rust-native, open source under Apache 2.0, managed cloud and enterprise platform from the team.</p>
+          <p>The trust layer between your application and AI. Rust-native, open source under MIT, managed cloud and enterprise platform from the team.</p>
         </div>
         <div class="foot-col">
           <h4>Product</h4>
@@ -101,7 +104,7 @@ function renderFooter() {
         </div>
         <div class="foot-col">
           <h4>Developers</h4>
-          <a href="${GH}#readme">Documentation</a>
+          <a href="/docs.html">Documentation</a>
           <a href="${GH}">GitHub repo</a>
           <a href="${GH}/releases">Changelog</a>
           <a href="${GH_MCP}">MCP reference</a>
@@ -115,7 +118,7 @@ function renderFooter() {
         </div>
       </div>
       <div class="foot-bottom">
-        <span>© 2026 · CLOAKPIPE · APACHE 2.0 OPEN-SOURCE CORE</span>
+        <span>© 2026 · CLOAKPIPE · MIT OPEN-SOURCE CORE</span>
         <span class="right">
           <span class="v2">DESIGN V2</span>
           <span>CLOAKPIPE.CO</span>
