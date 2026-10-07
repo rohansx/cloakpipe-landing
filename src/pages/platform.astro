@@ -1,0 +1,9 @@
+---
+import Base from '../layouts/Base.astro';
+import body from '../partials/platform.html?raw';
+const title = "CloakPipe — Platform: Proxy, Vault, Release Control, Policy, Evidence Ledger";
+const description = "The CloakPipe Rust proxy, encrypted vault, release certification and runtime gate, MCP tool gate, and signed evidence ledger, with shipped, preview and roadmap capabilities labelled throughout.";
+---
+<Base title={title} description={description} page="platform">
+  <Fragment set:html={body} />
+</Base>

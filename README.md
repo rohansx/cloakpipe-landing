@@ -1,46 +1,17 @@
 # cloakpipe-landing
 
-Marketing landing page and dashboard preview for CloakPipe — **Design V2** (Geist + JetBrains Mono, boxy dark/light theme, green/cyan accent).
+The CloakPipe marketing site and docs ([cloakpipe.co](https://cloakpipe.co)): a static
+[Astro](https://astro.build) site, deployed by Vercel on every push to `main`.
 
-Static multi-page site built with [Vite](https://vitejs.dev/). No framework — plain HTML/CSS/JS.
-
-## Pages
-
-| Route            | File             | What it is                                                        |
-| ---------------- | ---------------- | ----------------------------------------------------------------- |
-| `/`              | `index.html`     | Landing page — hero, pseudonymization story, platform, pricing.   |
-| `/dashboard.html`| `dashboard.html` | Dashboard preview — live request stream, latency, policies, etc.  |
-
-The two pages cross-link (hero "See it live" → dashboard; dashboard "Landing" → home).
-
-## Develop
-
-```bash
-npm install
-npm run dev      # http://localhost:5173
+```sh
+npm ci
+npm run dev        # http://localhost:4321
+npm run build      # static site in dist/
+node scripts/check-links.mjs   # every internal link in dist/ must resolve
 ```
 
-## Build
+- Pages: `src/pages/` (docs are Markdown in `src/pages/docs/`, sidebar order in `src/lib/docs.ts`).
+- Page bodies: `src/partials/*.html`; shared chrome: `src/components/`, `src/layouts/`.
+- Headers, redirects and the Content-Security-Policy: `vercel.json`.
 
-```bash
-npm run build    # → dist/  (both pages)
-npm run preview  # serve the production build locally
-```
-
-## Structure
-
-```
-cloakpipe-landing/
-├── index.html          # landing markup
-├── dashboard.html      # dashboard markup
-├── src/
-│   ├── styles.css      # landing styles
-│   ├── main.js         # landing JS — theme toggle, hero bar chart, reveal-on-scroll, live counter
-│   ├── dashboard.css   # dashboard styles
-│   └── dashboard.js    # dashboard JS — theme toggle, latency chart, live feed, KPI tickers, toggles/tabs
-├── public/favicon.svg
-├── vite.config.ts      # multi-page (index + dashboard)
-└── package.json
-```
-
-Theme preference persists in `localStorage` under `cp-theme`. Fonts load from Google Fonts.
+The product itself is open source at [rohansx/cloakpipe](https://github.com/rohansx/cloakpipe).

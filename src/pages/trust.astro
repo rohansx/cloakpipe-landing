@@ -1,0 +1,9 @@
+---
+import Base from '../layouts/Base.astro';
+import body from '../partials/trust.html?raw';
+const title = "CloakPipe — Evidence: verifiable, not self-attested";
+const description = "How CloakPipe turns every release certification and policy decision into hash-chained, signed evidence anyone can verify offline without trusting the operator — built on deterministic, format-preserving pseudonymization.";
+---
+<Base title={title} description={description} page="trust">
+  <Fragment set:html={body} />
+</Base>

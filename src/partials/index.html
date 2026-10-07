@@ -1,0 +1,159 @@
+<!-- ============== HERO ============== -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow reveal">Agent reliability, provable · developer preview</div>
+      <h1 class="reveal" data-d="1">The reliability<br>layer for<br>AI <span class="acc">agents.</span></h1>
+      <p class="lede reveal" data-d="2">
+        CloakPipe certifies every agent release against your evals, enforces that decision on each
+        model and tool call, and keeps signed evidence anyone can verify offline.
+      </p>
+      <div class="hero-ctas reveal" data-d="3">
+        <a class="btn btn-lg btn-cta" href="mailto:hello@rohan.sh?subject=CloakPipe%20design%20partner"><span class="corner"></span>Become a design partner <span class="arr">→</span></a>
+        <a class="btn btn-lg" href="/docs">Read the docs <span class="arr">→</span></a>
+      </div>
+      <div class="hero-stats reveal" data-d="4">
+        <div class="hero-stat"><strong>1</strong><span>identity for the full agent release</span></div>
+        <div class="hero-stat"><strong>4</strong><span>Evaluate · Certify · Enforce · Prove</span></div>
+        <div class="hero-stat"><strong>MIT</strong><span>inspectable enforcement core</span></div>
+      </div>
+    </div>
+
+    <div class="hero-chart reveal" data-d="2">
+      <div class="chart-frame release-frame">
+        <div class="chart-header"><span>Agent Release</span><span class="live">CANDIDATE</span></div>
+        <div class="release-title"><span>support-agent@184</span><small>sha256:8e7a3fb…</small></div>
+        <div class="manifest-grid">
+          <div><span>code</span><strong>8fd29ac</strong></div>
+          <div><span>prompt</span><strong>support-v31</strong></div>
+          <div><span>model</span><strong>provider/model@snapshot</strong></div>
+          <div><span>tools</span><strong>support-tools@17</strong></div>
+          <div><span>retrieval</span><strong>support-index@892</strong></div>
+          <div><span>policy</span><strong>support-prod@11</strong></div>
+        </div>
+        <div class="release-gate">
+          <span>Certification gate</span><strong class="deny">BLOCKED</strong>
+          <small>tool accuracy 0.972 · required 0.980</small>
+        </div>
+        <div class="chart-foot">
+          <div class="cf"><div class="l">Privacy</div><div class="v accent">PASS</div></div>
+          <div class="cf"><div class="l">Critical cases</div><div class="v danger">1 FAIL</div></div>
+          <div class="cf"><div class="l">Evidence</div><div class="v">SIGNED</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FOUR PILLARS ============== -->
+<section class="stat-strip">
+  <div class="wrap"><div class="stat-strip-inner">
+    <div class="stat-cell"><div class="l">01 · Evaluate</div><div class="v">Measure</div><div class="sub">Import JUnit, Braintrust, and Langfuse results against the exact release hash.</div></div>
+    <div class="stat-cell"><div class="l">02 · Certify</div><div class="v">Decide</div><div class="sub">A deterministic policy decision, signed and bound to the manifest hash.</div></div>
+    <div class="stat-cell"><div class="l">03 · Enforce</div><div class="v">Control</div><div class="sub">Uncertified or revoked releases lose production authority at runtime.</div></div>
+    <div class="stat-cell"><div class="l">04 · Prove</div><div class="v">Verify</div><div class="sub">Signed ledger and certifications that verify offline, without the console.</div></div>
+  </div></div>
+</section>
+
+<!-- ============== PROBLEM ============== -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l"><div class="eyebrow">The production problem</div><h2>Your API can be healthy<br>while your agent is <span class="acc">wrong.</span></h2></div>
+      <p>Agent behavior changes when a prompt, model snapshot, tool schema, MCP server, retrieval index, permission, or policy changes. Conventional monitoring sees successful HTTP calls. CloakPipe tracks the complete behavior-affecting release and connects pre-production assurance to runtime authority.</p>
+    </div>
+    <div class="feature-grid reveal">
+      <div class="feature-card"><div class="ix"></div><h3>Configuration drift</h3><p>The production agent no longer matches the configuration that passed evaluation.</p></div>
+      <div class="feature-card"><div class="ix"></div><h3>Silent regression</h3><p>The model still responds, but tool choice, schema adherence, task completion, latency, or cost degrades.</p></div>
+      <div class="feature-card"><div class="ix"></div><h3>Unbounded authority</h3><p>A prompt injection or changed tool grants the model more authority than its certified release received.</p></div>
+      <div class="feature-card"><div class="ix"></div><h3>Unverifiable logs</h3><p>A mutable dashboard cannot independently prove which configuration ran or why an action was allowed.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CONTROL LOOP ============== -->
+<section class="section" id="platform">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l"><div class="eyebrow">The control loop</div><h2>From change<br>to <span class="acc">verified decision.</span></h2><a class="learn-more" href="/platform">Explore the architecture <span class="arr">→</span></a></div>
+      <p>CloakPipe does not replace your evaluation platform, gateway, telemetry, or CI system. It binds their evidence to one Agent Release, applies a deterministic decision, enforces it, and records the result. Every step below is in the open-source core or the cloud today.</p>
+    </div>
+    <div class="surfaces reveal">
+      <div class="surface proxy"><div class="ix"></div><div class="num">01 · EVALUATE</div><div class="name">Release assurance</div><div class="tagline">Test the exact agent configuration—not an isolated prompt or model.</div><ul class="points"><li><code class="mono">cloakpipe eval import</code> reads JUnit XML, Braintrust experiments, and Langfuse dataset runs</li><li>Fail closed: an unscored case is an error, never a pass</li><li><code class="mono">release diff</code> maps each changed component to the suites it requires</li></ul></div>
+      <div class="surface vault"><div class="ix"></div><div class="num">02 · CERTIFY</div><div class="name">Signed certification</div><div class="tagline">Turn results into a deterministic, reproducible release decision.</div><ul class="points"><li>Rules for critical failures, pass-rate regression against a baseline, coverage, and metrics</li><li>Ed25519-signed DSSE certification bound to the manifest hash</li><li>Offline <code class="mono">verify-cert</code>, revocation statements, and a GitHub Action</li></ul></div>
+      <div class="surface policy"><div class="ix"></div><div class="num">03 · ENFORCE</div><div class="name">Runtime control</div><div class="tagline">Only certified releases receive production authority.</div><ul class="points"><li>Cedar sees the release; revoked releases are blocked and uncertified ones stay pseudonymized</li><li>Production promotion requires a valid certification or a recorded break-glass reason</li><li>Sentinels revoke on live error, block, or deny rates; the MCP gate allows only declared tools</li></ul></div>
+      <div class="surface audit"><div class="ix"></div><div class="num">04 · PROVE</div><div class="name">Portable evidence</div><div class="tagline">Verify the basis and outcome of a decision outside the dashboard.</div><ul class="points"><li>Hash-chained, Ed25519-signed ledger records bound to the release hash</li><li>PII types, policy decisions, and tool hops; never raw values</li><li>Offline verifier for ledger bundles and certifications</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== OPEN CORE ============== -->
+<section class="section" id="open-core">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l"><div class="eyebrow">Open core</div><h2>Inspect enforcement.<br>Verify <span class="acc">proof.</span></h2><a class="learn-more" href="https://github.com/rohansx/cloakpipe">Browse the repository <span class="arr">→</span></a></div>
+      <p>The components customers must trust stay open: the Rust proxy, privacy transformations, policy runtime, release identity, evidence formats, ledger, verifier, SDKs, and adapters. CloakPipe Cloud provides managed orchestration and fleet operations.</p>
+    </div>
+    <div class="pseudo reveal ownership-table">
+      <div class="pseudo-row head"><div class="pseudo-cell">Open-source core</div><div class="pseudo-cell">Private managed cloud</div><div class="pseudo-cell">Boundary</div></div>
+      <div class="pseudo-row"><div class="pseudo-cell good"><span class="pv">Proxy, privacy, Cedar runtime, MCP gate</span></div><div class="pseudo-cell"><span class="pv">Scoped keys and per-environment release pointers</span></div><div class="pseudo-cell">Enforcement is inspectable; operations are managed.</div></div>
+      <div class="pseudo-row"><div class="pseudo-cell good"><span class="pv">Release schema, hashing, diff, CLI</span></div><div class="pseudo-cell"><span class="pv">Release registry, baselines, Releases page</span></div><div class="pseudo-cell">Identity is portable; collaboration is hosted.</div></div>
+      <div class="pseudo-row"><div class="pseudo-cell good"><span class="pv">Ledger, anchoring, certifications, audit packs, verifiers</span></div><div class="pseudo-cell"><span class="pv">Production sentinels; per-release audit pack download</span></div><div class="pseudo-cell">Evidence verifies without trusting CloakPipe Cloud.</div></div>
+      <div class="pseudo-row"><div class="pseudo-cell good"><span class="pv">EvaluationRun format and importers</span></div><div class="pseudo-cell"><span class="pv">Evaluation upload from CI and the dashboard</span></div><div class="pseudo-cell">Existing tools integrate; orchestration funds the service.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== STATUS ============== -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l"><div class="eyebrow">Product status</div><h2>Built foundation.<br><span class="acc">Focused roadmap.</span></h2></div>
+      <p>We label product state explicitly. The developer preview now runs the full loop: release identity, imported evaluations, signed certification, runtime enforcement, and offline verification. <code class="mono">make demo</code> runs all of it locally. External anchoring and release audit packs are on <code class="mono">main</code>.</p>
+    </div>
+    <div class="feature-grid reveal">
+      <div class="feature-card"><div class="ix"></div><h3>Available now</h3><p>Rust privacy proxy, streaming rehydration, PII pseudonymization, vault, signed ledger, and offline verifier. Agent Release manifests and registry, eval importers, signed certification with revocation, runtime release enforcement, scoped keys, production sentinels, the MCP tool gate, and the dashboard. External anchoring to RFC 3161 timestamp authorities and Sigstore Rekor, signed per-release audit packs verified offline, evaluation upload from CI and the dashboard, and an India DPDP policy pack.</p></div>
+      <div class="feature-card"><div class="ix"></div><h3>Building next</h3><p>Importing Langfuse experiments, per-tenant Cedar policies from the dashboard, Rekor v2 and incremental multi-batch sealing, and certificate revocation checks. An RBI conduct pack is planned.</p></div>
+      <div class="feature-card"><div class="ix"></div><h3>Design-partner phase</h3><p>Drift detection, approval workflows, canary hooks, incident timelines, SSO, and regional deployment.</p></div>
+      <div class="feature-card"><div class="ix"></div><h3>Not claimed</h3><p>CloakPipe is not currently SOC 2 certified and does not yet offer a HIPAA BAA, production SAML or SCIM, managed KMS, automatic key rotation, or autonomous rollback.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CLOSER ============== -->
+<section class="closer">
+  <div class="wrap">
+    <h2 class="reveal">Certify the release.<br><span class="acc">Control the runtime.</span><br>Verify the evidence.</h2>
+    <p class="reveal" data-d="1">We are working with design partners operating real AI agents in production. Bring one agent, one critical workflow, and the changes you need to control.</p>
+    <div class="ctas reveal" data-d="2"><a class="btn btn-lg btn-cta" href="mailto:hello@rohan.sh?subject=CloakPipe%20design%20partner"><span class="corner"></span>Talk to us <span class="arr">→</span></a><a class="btn btn-lg" href="https://github.com/rohansx/cloakpipe">View open source <span class="arr">→</span></a></div>
+  </div>
+</section>
+
+<style>
+  .release-frame { padding-bottom: 0; }
+  .release-title { padding: 28px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 20px; align-items: baseline; }
+  .release-title span { font: 500 21px var(--mono); color: var(--text); }
+  .release-title small { font: 400 11px var(--mono); color: var(--text-3); }
+  .manifest-grid { display: grid; grid-template-columns: 1fr 1fr; }
+  .manifest-grid div { padding: 15px 20px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); min-width: 0; }
+  .manifest-grid div:nth-child(even) { border-right: 0; }
+  .manifest-grid span, .release-gate span, .release-gate small { display: block; font: 400 10px var(--mono); color: var(--text-3); text-transform: uppercase; letter-spacing: .08em; }
+  .manifest-grid strong { display: block; margin-top: 6px; font: 500 12px var(--mono); color: var(--text-2); overflow-wrap: anywhere; }
+  .release-gate { padding: 20px 28px; border-bottom: 1px solid var(--line); }
+  .release-gate strong { display: block; margin: 8px 0 5px; font: 600 24px var(--mono); }
+  .release-gate small { text-transform: none; letter-spacing: 0; }
+  .ownership-table .pseudo-row { grid-template-columns: 1.15fr 1.15fr 1.7fr; }
+  #platform .surface { grid-column: span 3; grid-row: auto; min-height: 330px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  #platform .surface:nth-child(even) { border-right: 0; }
+  #platform .surface:nth-child(n+3) { border-bottom: 0; }
+  #platform .surface.proxy .name { font-size: 28px; }
+  @media (max-width: 720px) {
+    .release-title { display: block; }
+    .release-title small { display: block; margin-top: 8px; }
+    .manifest-grid { grid-template-columns: 1fr; }
+    .manifest-grid div { border-right: 0; }
+    .ownership-table .pseudo-row { grid-template-columns: 1fr; }
+    #platform .surface { grid-column: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+    #platform .surface:last-child { border-bottom: 0; }
+  }
+</style>

@@ -1,0 +1,40 @@
+---
+// Bare layout for the static "See it live" dashboard demo. No marketing
+// nav/footer — the page renders its own app-style chrome. Fake-data only.
+import '../styles/dashboard.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description = '' } = Astro.props;
+---
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Geist-400.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Geist-600.woff2" crossorigin />
+    <script is:inline>
+      (function () {
+        try {
+          var t = localStorage.getItem('cp-theme');
+          if (t) document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
+    <script
+      is:inline
+      defer
+      src="https://analytics.rohan.sh/script.js"
+      data-website-id="7d7d1457-877e-49d4-8de2-7dcf060e7cbe"></script>
+  </head>
+  <body>
+    <slot />
+    <script>import '../scripts/dashboard.js';</script>
+  </body>
+</html>

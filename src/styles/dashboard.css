@@ -597,6 +597,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
 
 /* ============== COMPLIANCE ============== */
 .compliance { display: flex; flex-direction: column; gap: 12px; }
+.compliance.releases .comp-row { grid-template-columns: 90px 1fr 120px; }
 .comp-row {
   display: grid; grid-template-columns: 90px 1fr 44px;
   gap: 14px; align-items: center;

@@ -1,0 +1,69 @@
+---
+// Shared marketing layout: static <head>, nav + footer (rendered at build),
+// pre-paint theme, analytics, and client chrome wiring. Page body goes in <slot/>.
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/styles.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  page?: string;
+}
+const { title, description = '', page = '' } = Astro.props;
+---
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Geist-400.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Geist-600.woff2" crossorigin />
+
+    <script is:inline>
+      (function () {
+        try {
+          var t = localStorage.getItem('cp-theme');
+          if (t) document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
+
+    <script
+      is:inline
+      defer
+      src="https://analytics.rohan.sh/script.js"
+      data-website-id="7d7d1457-877e-49d4-8de2-7dcf060e7cbe"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Nav page={page} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <script>import '../scripts/chrome-client.js';</script>
+  </body>
+</html>
+
+<style is:global>
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 12px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    padding: 8px 14px;
+    font: 600 13px var(--sans);
+    z-index: 100;
+    border-radius: 0 0 4px 4px;
+    transition: top 160ms ease;
+  }
+  .skip-link:focus {
+    top: 0;
+  }
+</style>
