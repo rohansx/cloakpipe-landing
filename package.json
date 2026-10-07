@@ -1,15 +1,17 @@
 {
-  "name": "cloakpipe-landing",
+  "name": "landing",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "CloakPipe marketing landing page and dashboard preview (Design V2).",
+  "description": "CloakPipe marketing site and docs — Astro static multi-page.",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check-links": "node scripts/check-links.mjs",
+    "test": "npm run build && npm run check-links"
   },
-  "devDependencies": {
-    "vite": "^6.3.5"
+  "dependencies": {
+    "astro": "^7.3.5"
   }
 }

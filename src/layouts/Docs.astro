@@ -1,0 +1,172 @@
+---
+// Docs layout: left sidebar, readable content column, prev/next links.
+// Markdown pages in src/pages/docs use it via `layout:` frontmatter.
+import Base from './Base.astro';
+import { DOCS, DOC_ORDER, normalise } from '../lib/docs';
+
+interface Props {
+  frontmatter?: { title: string; description?: string; eyebrow?: string };
+  title?: string;
+  description?: string;
+}
+const fm = Astro.props.frontmatter ?? { title: Astro.props.title ?? 'Docs', description: Astro.props.description };
+const here = normalise(Astro.url.pathname);
+const i = DOC_ORDER.findIndex((d) => d.href === here);
+const prev = i > 0 ? DOC_ORDER[i - 1] : undefined;
+const next = i >= 0 && i < DOC_ORDER.length - 1 ? DOC_ORDER[i + 1] : undefined;
+const group = DOCS.find((g) => g.items.some((d) => d.href === here));
+---
+<Base title={`${fm.title} · CloakPipe Docs`} description={fm.description ?? ''} page="docs">
+  <div class="wrap docs">
+    <button class="docs-menu" id="docs-menu" aria-expanded="false" aria-controls="docs-side">
+      <span>Docs menu</span><span class="docs-menu-cur">{fm.title}</span>
+    </button>
+    <aside class="docs-side" id="docs-side" aria-label="Documentation">
+      {DOCS.map((g) => (
+        <div class="docs-group">
+          <div class="docs-group-label">{g.label}</div>
+          {g.items.map((d) => (
+            <a href={d.href} class={d.href === here ? 'active' : undefined} aria-current={d.href === here ? 'page' : undefined}>{d.title}</a>
+          ))}
+        </div>
+      ))}
+      <div class="docs-group">
+        <div class="docs-group-label">Elsewhere</div>
+        <a href="/integrations">Integrations page</a>
+        <a href="/playground">Playground</a>
+        <a href="https://github.com/rohansx/cloakpipe">GitHub</a>
+      </div>
+    </aside>
+    <article class="docs-body">
+      <div class="eyebrow">{fm.eyebrow ?? group?.label ?? 'Docs'}</div>
+      <slot />
+      <nav class="docs-pager" aria-label="Previous and next page">
+        {prev ? <a class="prev" href={prev.href}><span>← Previous</span>{prev.title}</a> : <span></span>}
+        {next ? <a class="next" href={next.href}><span>Next →</span>{next.title}</a> : <span></span>}
+      </nav>
+    </article>
+  </div>
+  <noscript><style>.docs-side { display: block !important; } .docs-menu { display: none !important; }</style></noscript>
+  <script is:inline>
+    (function () {
+      var b = document.getElementById('docs-menu');
+      var s = document.getElementById('docs-side');
+      if (!b || !s) return;
+      b.addEventListener('click', function () {
+        var open = s.classList.toggle('open');
+        b.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    })();
+  </script>
+</Base>
+
+<style is:global>
+  .docs {
+    display: grid;
+    grid-template-columns: 232px minmax(0, 1fr);
+    gap: 56px;
+    padding-top: 48px;
+    padding-bottom: 96px;
+  }
+  .docs-menu { display: none; }
+  .docs-side {
+    position: sticky; top: 84px; align-self: start;
+    max-height: calc(100vh - 100px); overflow-y: auto;
+    padding-right: 8px;
+  }
+  .docs-group { margin-bottom: 26px; }
+  .docs-group-label {
+    font: 500 10.5px var(--mono); letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-3); margin-bottom: 10px;
+  }
+  .docs-side a {
+    display: block; padding: 6px 0 6px 12px;
+    border-left: 1px solid var(--line);
+    font-size: 14px; color: var(--text-2);
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+  .docs-side a:hover { color: var(--text); }
+  .docs-side a.active { color: var(--accent); border-left: 2px solid var(--accent); padding-left: 11px; font-weight: 500; }
+
+  .docs-body { max-width: 760px; min-width: 0; }
+  .docs-body .eyebrow { margin-bottom: 18px; }
+  .docs-body h1 { font-size: clamp(30px, 4vw, 44px); letter-spacing: -0.028em; line-height: 1.08; margin-bottom: 18px; }
+  .docs-body h2 { font: 600 24px var(--sans); letter-spacing: -0.018em; margin: 48px 0 14px; padding-top: 20px; border-top: 1px solid var(--line); scroll-margin-top: 84px; }
+  .docs-body h3 { font: 600 18px var(--sans); letter-spacing: -0.01em; margin: 32px 0 10px; scroll-margin-top: 84px; }
+  .docs-body h4 { font: 600 15px var(--sans); margin: 24px 0 8px; }
+  .docs-body p, .docs-body li { font-size: 15.5px; line-height: 1.7; color: var(--text-2); }
+  .docs-body p { margin-bottom: 16px; }
+  .docs-body strong { color: var(--text); font-weight: 600; }
+  .docs-body ul, .docs-body ol { margin: 0 0 18px 22px; }
+  .docs-body li { margin-bottom: 6px; }
+  .docs-body li > ul, .docs-body li > ol { margin-top: 6px; margin-bottom: 6px; }
+  .docs-body a:not(.btn) { color: var(--accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .docs-body :not(pre) > code {
+    font: 0.86em var(--mono);
+    background: var(--surface-2); border: 1px solid var(--line);
+    padding: 1px 5px; color: var(--text);
+    overflow-wrap: anywhere;
+  }
+  .docs-body pre {
+    margin: 0 0 20px; padding: 16px 18px;
+    border: 1px solid var(--line); background: var(--surface) !important;
+    font: 13px/1.65 var(--mono);
+    overflow-x: auto; position: relative;
+  }
+  .docs-body pre::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 9px; height: 9px;
+    background: linear-gradient(135deg, var(--accent-2), var(--accent));
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+  }
+  .docs-body pre code { font: inherit; }
+  [data-theme="light"] .docs-body .astro-code span { color: var(--shiki-light) !important; }
+  [data-theme="dark"] .docs-body .astro-code span { color: var(--shiki-dark) !important; }
+  .docs-body table { width: 100%; border-collapse: collapse; margin: 0 0 22px; font-size: 14px; display: block; overflow-x: auto; }
+  .docs-body th, .docs-body td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--text-2); }
+  .docs-body th { font: 500 10.5px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); border-bottom-color: var(--text-4); }
+  .docs-body blockquote { border-left: 2px solid var(--accent); padding: 4px 0 4px 16px; margin: 0 0 18px; }
+  .docs-body blockquote p { margin-bottom: 0; }
+  .docs-body hr { border: none; border-top: 1px solid var(--line); margin: 32px 0; }
+
+  .badge {
+    display: inline-block; vertical-align: middle;
+    font: 600 10px var(--mono); letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 2px 7px; border: 1px solid currentColor; margin-left: 6px;
+    line-height: 1.5;
+  }
+  p > .badge:first-child { margin-left: 0; margin-right: 4px; }
+  .badge.building { color: var(--warn); }
+  .badge.pre { color: var(--info); }
+  .badge.cloud { color: var(--accent-2); }
+  .badge.oss { color: var(--accent); }
+  .docs-body h1 .badge, .docs-body h2 .badge, .docs-body h3 .badge { font-size: 10px; position: relative; top: -2px; }
+
+  .docs-pager {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--line);
+  }
+  .docs-body .docs-pager a {
+    display: flex; flex-direction: column; gap: 4px;
+    padding: 14px 16px; border: 1px solid var(--line); background: var(--surface);
+    color: var(--text); text-decoration: none; font-weight: 500;
+    transition: border-color 150ms ease;
+  }
+  .docs-body .docs-pager a:hover { border-color: var(--accent); }
+  .docs-pager a span { font: 500 10.5px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+  .docs-pager a.next { text-align: right; grid-column: 2; }
+
+  @media (max-width: 900px) {
+    .docs { grid-template-columns: minmax(0, 1fr); gap: 0; padding-top: 20px; }
+    .docs-menu {
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      width: 100%; padding: 12px 14px; margin-bottom: 12px;
+      border: 1px solid var(--line); background: var(--surface);
+      font: 500 11px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3);
+    }
+    .docs-menu-cur { color: var(--text); text-transform: none; letter-spacing: 0; font: 500 14px var(--sans); }
+    .docs-side { display: none; position: static; max-height: none; border: 1px solid var(--line); padding: 16px; margin-bottom: 24px; }
+    .docs-side.open { display: block; }
+    .docs-pager { grid-template-columns: 1fr; }
+    .docs-pager a.next { grid-column: auto; }
+  }
+</style>

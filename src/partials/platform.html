@@ -1,20 +1,3 @@
-<!doctype html>
-<html lang="en" data-theme="dark">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CloakPipe — Platform: Proxy, Vault, Policy, Audit</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-<meta name="description" content="The four CloakPipe product surfaces in depth — the Rust proxy, the encrypted vault, the policy engine, and the audit layer — plus architecture, deployment topologies, and compliance posture." />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="stylesheet" href="/src/styles.css" />
-</head>
-<body>
-
-<div id="site-nav"></div>
-
 <!-- ============== PAGE HERO ============== -->
 <section class="page-hero">
   <div class="wrap">
@@ -25,13 +8,20 @@
     </h1>
     <p class="lede reveal" data-d="2">
       CloakPipe is built as four distinct product surfaces — the
-      <span class="hl">Rust proxy, the encrypted vault, the policy engine, and the audit layer</span>.
-      The proxy is open source under Apache 2.0. Everything above it is the commercial platform
-      that closes enterprise deals in regulated industries. Each layer adds value on top of the last.
+      <span class="hl">Rust proxy, the encrypted vault, the agent-hop policy engine, and the verifiable evidence ledger</span>.
+      The proxy is currently MIT licensed. The vault, signed evidence path, release certification, and
+      release-aware runtime enforcement are implemented, as are external anchoring and the per-release
+      audit pack. KMS, SSO, and enterprise deployment packaging are roadmap work.
     </p>
     <div class="hero-ctas reveal" data-d="3">
       <a class="btn btn-lg btn-cta" href="https://app.cloakpipe.co/signup"><span class="corner"></span>Try for free <span class="arr">→</span></a>
-      <a class="btn btn-lg" href="https://github.com/rohansx/cloakpipe">Read the source <span class="arr">→</span></a>
+      <a class="btn btn-lg" href="/docs">Read the docs <span class="arr">→</span></a>
+    </div>
+    <div class="hero-links reveal" data-d="4">
+      <a class="learn-more" href="/docs/quickstart">Quick start <span class="arr">→</span></a>
+      <a class="learn-more" href="/integrations">Integrations <span class="arr">→</span></a>
+      <a class="learn-more" href="/playground">Try the playground <span class="arr">→</span></a>
+      <a class="learn-more" href="https://github.com/rohansx/cloakpipe">Read the source <span class="arr">→</span></a>
     </div>
   </div>
 </section>
@@ -47,7 +37,7 @@
       </div>
       <p>
         A Rust-native reverse proxy that intercepts AI API calls, pseudonymizes outbound data,
-        and rehydrates inbound responses in real-time — <span class="hl">under 50 ms p95, including the full detection pipeline</span>.
+        and rehydrates inbound responses in real-time. <span class="hl">Sub-50 ms p95 is a design target, not a universal guarantee</span>;
         Eight Rust crates compiled to a single native binary. Your application changes exactly one line: the base URL.
       </p>
     </div>
@@ -136,7 +126,7 @@
       <div class="head-l">
         <div class="eyebrow">Surface 02 · Vault</div>
         <h2>Reversible by design.<br><span class="acc">You hold the keys.</span></h2>
-        <a class="learn-more" href="trust.html">Why reversibility matters <span class="arr">→</span></a>
+        <a class="learn-more" href="/trust">Why reversibility matters <span class="arr">→</span></a>
       </div>
       <p>
         An encrypted tokenization vault that stores the mapping between real sensitive data and pseudonymized tokens.
@@ -153,8 +143,8 @@
       </div>
       <div class="feature-card">
         <div class="ix"></div>
-        <h3>Customer-managed keys</h3>
-        <p>Bring your own keys via AWS KMS, GCP Cloud KMS, Azure Key Vault, or HashiCorp Vault Transit. Envelope encryption with customer-managed root keys — you never hand CloakPipe the keys to your customer's data.</p>
+        <h3>Customer-managed keys · roadmap</h3>
+        <p>The current vault supports local encryption keys. AWS KMS, GCP Cloud KMS, Azure Key Vault, and Vault Transit adapters are planned.</p>
       </div>
       <div class="feature-card">
         <div class="ix"></div>
@@ -173,8 +163,59 @@
       </div>
       <div class="feature-card">
         <div class="ix"></div>
-        <h3>Automatic key rotation</h3>
-        <p>Encryption keys rotate on a configurable schedule without disrupting active tokens. Old tokens remain decryptable; new tokens use the latest key. No downtime, no migration.</p>
+        <h3>Automatic key rotation · roadmap</h3>
+        <p>Rotation policy and managed key-version migration are planned and are not yet production capabilities.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== RELEASE CONTROL ============== -->
+<section class="section" id="release">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">Release control · Across every surface</div>
+        <h2>Only certified releases<br><span class="acc">reach production.</span></h2>
+        <a class="learn-more" href="#audit">How the evidence verifies <span class="arr">→</span></a>
+      </div>
+      <p>
+        An Agent Release pins code, prompt, model, tools, retrieval, and policy to one canonical sha256
+        manifest hash. <span class="hl">Evaluation results, the certification, runtime decisions, and ledger
+        records all refer to that hash</span>, so the release that passed is the release that runs.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Agent Release manifests</h3>
+        <p><code class="mono">cloakpipe release validate</code>, <code class="mono">hash</code>, <code class="mono">diff</code>, <code class="mono">inspect</code>, and <code class="mono">register</code>. A diff maps each changed component to the assurance suites it requires. The cloud registry keeps releases and baselines.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Imported evaluation evidence</h3>
+        <p><code class="mono">cloakpipe eval import</code> converts JUnit XML, Braintrust experiments, and Langfuse dataset runs into a native EvaluationRun. Scoring fails closed: an unscored case is an error, and a pass needs every score above the threshold.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Signed certification</h3>
+        <p>A deterministic decision over critical failures, pass-rate regression against the baseline, suite coverage, and metric rules. Signed as an Ed25519 DSSE envelope bound to the manifest hash, verified offline, revocable, and runnable as a GitHub Action.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Production promotion gate</h3>
+        <p>Promoting a release to production requires a valid certification. A break-glass override is possible, but it is recorded with its reason.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Scoped API keys</h3>
+        <p>Keys are scoped to an agent and an environment. The server picks the release from that environment's pointer, not from the caller, and runtime keys cannot write to the registry.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Production sentinels</h3>
+        <p>SLO rules over live calls: error, guardrail-block, and policy-deny rates, with a minimum call count and a time window. A breach raises an alert or revokes the release automatically.</p>
       </div>
     </div>
   </div>
@@ -185,37 +226,38 @@
   <div class="wrap">
     <div class="section-head reveal">
       <div class="head-l">
-        <div class="eyebrow">Surface 03 · Policy</div>
-        <h2>Code, not config.<br><span class="acc">Versioned in Git.</span></h2>
-        <a class="learn-more" href="#audit">Every decision is logged <span class="arr">→</span></a>
+        <div class="eyebrow">Surface 03 · Agent-Hop Policy</div>
+        <h2>Every hop,<br><span class="acc">decided outside the model.</span></h2>
+        <a class="learn-more" href="#audit">Every decision is sealed as evidence <span class="arr">→</span></a>
       </div>
       <p>
-        A policy engine that defines what gets masked, for which models, for which teams, and who can unmask.
-        Policies are <span class="hl">code, versioned in Git, and enforced automatically on every request</span> —
-        backed by OPA (Open Policy Agent) or Cedar for sub-millisecond authorization decisions.
+        LLM provider hops and MCP tool calls receive a deterministic decision outside the model. Cedar policies
+        see the release context: whether a release is bound, what it declares, its certification status, and
+        its environment. <span class="hl">Sub-agent messages, conduct rules, and regulatory policy packs are still
+        roadmap work</span>.
       </p>
     </div>
 
     <div class="feature-grid reveal">
       <div class="feature-card">
         <div class="ix"></div>
-        <h3>Entity policies</h3>
-        <p>"Mask all patient names when routing to external models." "Block financial amounts from reaching any provider." "Allow internal model calls unmasked." Per entity type, per action.</p>
+        <h3>Release-aware decisions</h3>
+        <p>Requests from a revoked release are blocked. Unmasking requires a certified release; otherwise the response stays pseudonymized. Provider masking rules still apply per hop: "mask all patient names when routing to external models."</p>
       </div>
       <div class="feature-card">
         <div class="ix"></div>
-        <h3>Provider policies</h3>
-        <p>Maximum masking for OpenAI, Anthropic, and Google. Bypass for self-hosted vLLM. Mask only financial data for Venice TEE models. Per provider, per masking level.</p>
+        <h3>MCP tool gate</h3>
+        <p><code class="mono">cloakpipe mcp-proxy --manifest --certification</code> allows only the tools a certified release declares and refuses anything it cannot parse (JSON-RPC <code class="mono">-32001</code>). Every hop is recorded in the signed ledger, bound to the release hash.</p>
       </div>
       <div class="feature-card">
         <div class="ix"></div>
-        <h3>Team / role policies</h3>
-        <p>"Legal: mask everything, no exceptions. Engineering: mask PII, allow code. Data science: unmasked access to internal models only." Per RBAC role, mapped from SAML / OIDC.</p>
+        <h3>Conduct policy · roadmap</h3>
+        <p>Planned: calling-hour windows, mandatory-disclosure verification, session sequencing — behavioral rules no redactor touches. A 7:05pm call is recorded as a reportable event, deterministically, every time.</p>
       </div>
       <div class="feature-card">
         <div class="ix"></div>
         <h3>Context-based access (CBAC)</h3>
-        <p>Unmasking decided at runtime from who is asking, their role, the data's sensitivity, and the workflow context. A sales agent cannot unmask medical records; a supervising physician can — but only during an active case review.</p>
+        <p>Unmasking decided at runtime from who is asking, their role, the data's sensitivity, and the workflow context. A sales agent cannot unmask medical records; a supervising physician can — but only during an active case review, and only from a certified release.</p>
       </div>
       <div class="feature-card">
         <div class="ix"></div>
@@ -224,8 +266,8 @@
       </div>
       <div class="feature-card">
         <div class="ix"></div>
-        <h3>Policy-as-code</h3>
-        <p>Defined in YAML, backed by OPA or Cedar. Every change is a versioned commit; every evaluation is an audit event. Policies are testable, reviewable, and deployable through standard CI/CD.</p>
+        <h3>Policy packs</h3>
+        <p>The India DPDP pack in CloakPipe Cloud enforces purpose, consent, children's data, and cross-border rules in Cedar at the proxy, and records every decision in the ledger. It is a technical control, not legal advice. An RBI conduct pack is planned.</p>
       </div>
     </div>
 
@@ -256,47 +298,48 @@
   </div>
 </section>
 
-<!-- ============== SURFACE 04 · AUDIT ============== -->
+<!-- ============== SURFACE 04 · EVIDENCE LEDGER ============== -->
 <section class="section" id="audit">
   <div class="wrap">
     <div class="section-head reveal">
       <div class="head-l">
-        <div class="eyebrow">Surface 04 · Audit</div>
-        <h2>Every decision<br><span class="acc">logged. Never raw.</span></h2>
+        <div class="eyebrow">Surface 04 · Evidence Ledger</div>
+        <h2>Every decision<br><span class="acc">sealed. Verify it yourself.</span></h2>
         <a class="learn-more" href="#compliance">See the compliance posture <span class="arr">→</span></a>
       </div>
       <p>
-        A compliance and observability layer that records every privacy-relevant event, generates compliance evidence,
-        and integrates with your existing monitoring stack. <span class="hl">Audit logs never contain raw sensitive data</span> —
-        they record what <em>types</em> of data were processed and what actions were taken, not the values. The audit trail is itself privacy-safe.
+        A hash-chained, signed ledger records privacy-relevant proxy decisions and supports offline
+        bundle verification. It records what <em>types</em> of data were processed, never the values.
+        <span class="hl">Exported bundles are anchored to a public RFC 3161 timestamp authority and the Sigstore Rekor transparency log</span>,
+        and both receipts verify offline.
       </p>
     </div>
 
     <div class="feature-grid reveal">
       <div class="feature-card">
         <div class="ix"></div>
-        <h3>What gets logged</h3>
-        <p>Every request (timestamp, caller, source IP, destination provider), every detection event (entity types, confidence, model used), every masking action, every unmask request, and every policy evaluation — plus full latency metrics.</p>
+        <h3>What gets sealed</h3>
+        <p>Every request (timestamp, caller, source IP, destination provider), every detection event, every masking action, every unmask request, every policy evaluation, and every MCP tool hop — hash-chained, Ed25519-signed, and bound to the release hash.</p>
       </div>
       <div class="feature-card">
         <div class="ix"></div>
-        <h3>Never the raw values</h3>
-        <p>The trail records that a <code class="mono">DIAGNOSIS</code> was masked for request <code class="mono">req_8af9c2</code> — never the diagnosis itself. Evidence of control without becoming a second copy of the data you are protecting.</p>
+        <h3>External anchoring</h3>
+        <p><code class="mono">cloakpipe anchor</code> timestamps a signed batch head at an RFC 3161 authority and in Sigstore Rekor. The verifier checks both receipts offline against a TSA root and Rekor key you pin; revocation (CRL/OCSP) is not checked. CloakPipe Cloud does not anchor its ledger automatically yet.</p>
       </div>
       <div class="feature-card">
         <div class="ix"></div>
-        <h3>Compliance evidence on demand</h3>
-        <p>Exportable evidence for HIPAA (PHI masked before processors), GDPR/DPDP (data minimization), SOC 2 Type II (access &amp; encryption controls), EU AI Act (de-identification), and PCI-DSS (tokenized cardholder data).</p>
+        <h3>Open verifiers · audit pack</h3>
+        <p>Auditors check chain integrity, signatures, anchors, and certifications offline with the open CLI. A signed per-release audit pack bundles the manifest, evaluations, certifications, governance history, and ledger, and verifies offline too.</p>
       </div>
       <div class="feature-card">
         <div class="ix"></div>
-        <h3>OpenTelemetry-native</h3>
-        <p>Structured traces, metrics, and logs from day one. Export to Datadog, Grafana, Splunk, Honeycomb, Prometheus, or any OTEL collector. Pre-built dashboards for detection rates, entity distribution, latency percentiles, and unmask patterns.</p>
+        <h3>Compliance workflows · roadmap</h3>
+        <p>The ledger can support audit workflows, but CloakPipe is not certified for HIPAA, SOC 2, PCI-DSS, GDPR/DPDP, or the EU AI Act.</p>
       </div>
     </div>
 
     <div class="prose reveal" data-d="1" style="margin-top:36px;">
-      <h3>A privacy-safe trail, in practice</h3>
+      <h3>A sealed trail, in practice</h3>
     </div>
     <div class="alog reveal" data-d="1" style="margin-top:12px;">
       <div class="alog-row">
@@ -306,18 +349,23 @@
       </div>
       <div class="alog-row">
         <span class="at">14:32:09</span>
-        <span class="ae"><span class="info">detect</span> T1 regex + T2 privacy-filter · F1 0.96</span>
+        <span class="ae"><span class="info">detect</span> T1 regex + optional T2 privacy-filter</span>
         <span class="aw">otel·trace</span>
       </div>
       <div class="alog-row">
         <span class="at">14:32:11</span>
-        <span class="ae"><span class="info">rehydrate</span> 11 chunks · vault lookup 3.8 ms</span>
-        <span class="aw">vault·prod</span>
+        <span class="ae"><span class="info">verify</span> local chain + signatures valid</span>
+        <span class="aw">ledger·prod</span>
       </div>
       <div class="alog-row">
         <span class="at">14:32:14</span>
         <span class="ae"><span class="deny">unmask deny</span> role: sales · entity: MRN</span>
         <span class="aw">cbac-v1</span>
+      </div>
+      <div class="alog-row">
+        <span class="at">14:32:16</span>
+        <span class="ae"><span class="deny">tool deny</span> refund.issue not declared by support-agent@184</span>
+        <span class="aw">mcp-gate</span>
       </div>
       <div class="alog-row">
         <span class="at">14:32:18</span>
@@ -334,12 +382,12 @@
     <div class="section-head reveal">
       <div class="head-l">
         <div class="eyebrow">Architecture · The hot path</div>
-        <h2>One request.<br><span class="acc">Under 50 ms.</span></h2>
-        <a class="learn-more" href="https://github.com/rohansx/cloakpipe#readme">Read the architecture docs <span class="arr">→</span></a>
+        <h2>One request.<br><span class="acc">One hot path.</span></h2>
+        <a class="learn-more" href="https://github.com/rohansx/cloakpipe/blob/main/docs/ARCHITECTURE.md">Read the architecture docs <span class="arr">→</span></a>
       </div>
       <p>
         Every prompt, response, and tool call passes the same per-request hot path: authenticate, evaluate policy,
-        detect, pseudonymize and write to the vault, forward a clean prompt, stream back, rehydrate, and emit an audit event.
+        detect, pseudonymize and write to the vault, forward a clean prompt, stream back, rehydrate, and seal an evidence record.
         <span class="hl">All of it in Rust, transparently, with a sub-50 ms p95 target.</span>
       </p>
     </div>
@@ -348,16 +396,16 @@
       <div class="surface proxy" style="grid-column: span 6; grid-row: auto; border-right:none; border-bottom:none;">
         <div class="ix"></div>
         <div class="num">REQUEST FLOW · PER-REQUEST · &lt; 50 MS TARGET</div>
-        <div class="name">Auth → Policy → Detect → Vault → Forward → Rehydrate → Audit</div>
-        <div class="tagline">Built on Rust / Axum / Tower with Tokio streams. Detection escalates through tiers; the vault makes the round-trip reversible; the audit log closes every request.</div>
+        <div class="name">Auth → Policy → Detect → Vault → Forward → Rehydrate → Ledger</div>
+        <div class="tagline">Built on Rust / Axum / Tower with Tokio streams. Detection escalates through tiers; the vault makes the round-trip reversible; the evidence ledger closes every request.</div>
         <ul class="points">
-          <li><strong>1 · Auth</strong> — JWT / mTLS verification at the proxy edge</li>
-          <li><strong>2 · Policy</strong> — OPA evaluation: allow / deny plus per-entity rules</li>
+          <li><strong>1 · Auth</strong> — a scoped API key resolves the agent, the environment, and its current release</li>
+          <li><strong>2 · Policy</strong> — Cedar evaluation with release context: allow / deny plus per-entity and per-hop rules</li>
           <li><strong>3 · Detection</strong> — T1 regex + checksum (&lt;1ms) → T2 Privacy Filter (ONNX, 30–50ms) → T3 GLiNER2 for custom entities (optional)</li>
           <li><strong>4 · Pseudonymize + vault write</strong> — deterministic tokens encrypted at rest</li>
           <li><strong>5 · Forward</strong> — clean prompt to the LLM provider; zero real data leaves</li>
           <li><strong>6 · Stream + rehydrate</strong> — detect tokens in the SSE stream, vault lookup, authorize, splice real values back</li>
-          <li><strong>7 · Audit</strong> — emit a privacy-safe event via OpenTelemetry, then return the response with real values restored</li>
+          <li><strong>7 · Ledger</strong> — hash-chain and sign a privacy-safe evidence record, then return the response with real values restored</li>
         </ul>
       </div>
     </div>
@@ -396,8 +444,8 @@
         </tr>
         <tr>
           <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:500;">Key management</td>
-          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">Vault Transit / cloud KMS</span></td>
-          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Envelope encryption. Customer-managed root keys. Automatic rotation.</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">Local keys · KMS planned</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Local encryption keys today. Customer-managed KMS and automatic rotation are roadmap, not shipped.</td>
         </tr>
         <tr>
           <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:500;">Token registry</td>
@@ -406,8 +454,13 @@
         </tr>
         <tr>
           <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:500;">Policy engine</td>
-          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">OPA · Cedar</span></td>
-          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">OPA: industry standard, Rego DSL, sub-millisecond decisions. Cedar: typed alternative for compile-time guarantees.</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">Cedar</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Formally-verified Rust crate, not a homegrown DSL. Policies see the release context; git-versioned and diffable.</td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:500;">Certification</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">Ed25519 · DSSE · in-toto</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Standard signed envelopes bound to the manifest hash, verifiable offline without CloakPipe.</td>
         </tr>
         <tr>
           <td style="padding:14px 18px; color:var(--text); font-weight:500;">Observability</td>
@@ -426,7 +479,7 @@
       <div class="head-l">
         <div class="eyebrow">Deployment · Five topologies</div>
         <h2>Laptop to <span class="acc">air-gapped.</span></h2>
-        <a class="learn-more" href="pricing.html">See what each tier includes <span class="arr">→</span></a>
+        <a class="learn-more" href="/pricing">See what each tier includes <span class="arr">→</span></a>
       </div>
       <p>
         Same Rust binary. Same detection pipeline. Same vault encryption.
@@ -440,7 +493,7 @@
         <div class="ix"></div>
         <div class="d-num">01</div>
         <div class="d-name">Managed cloud</div>
-        <div class="d-desc">Hosted at cloakpipe.co. Endpoint, dashboard, vault, audit logs all managed. Data processed in-transit only, never stored outside the vault. SOC 2 infrastructure.</div>
+        <div class="d-desc">Hosted developer preview with endpoint, dashboard, vault and audit logs. Not currently SOC 2 certified.</div>
         <div class="d-tag">SAAS</div>
       </div>
       <div class="deploy">
@@ -454,8 +507,8 @@
         <div class="ix"></div>
         <div class="d-num">03</div>
         <div class="d-name">Kubernetes</div>
-        <div class="d-desc">Production Helm chart for K8s clusters. Horizontal autoscaling, rolling deploys, health checks — for teams running AI workloads on Kubernetes.</div>
-        <div class="d-tag">HELM · HPA</div>
+        <div class="d-desc">Helm packaging, horizontal autoscaling and production runbooks are roadmap work.</div>
+        <div class="d-tag">ROADMAP</div>
       </div>
       <div class="deploy">
         <div class="ix"></div>
@@ -481,13 +534,12 @@
     <div class="section-head reveal">
       <div class="head-l">
         <div class="eyebrow">Compliance · Posture</div>
-        <h2>Built to be<br><span class="acc">deployable in audits.</span></h2>
+        <h2>Evidence for audits.<br><span class="acc">No borrowed badges.</span></h2>
         <a class="learn-more" href="mailto:hello@rohan.sh?subject=CloakPipe%20Compliance">Request compliance docs <span class="arr">→</span></a>
       </div>
       <p>
-        CloakPipe helps your AI application meet regulatory requirements — and the product itself meets
-        the standards needed to be deployable in regulated environments.
-        <span class="hl">Each framework maps to what it unlocks for your customers</span>.
+        CloakPipe produces evidence your own compliance work can use. It does not hold these certifications
+        itself. <span class="hl">Each row states where CloakPipe is today</span>, and what it can support.
       </p>
     </div>
 
@@ -502,23 +554,23 @@
       <tbody>
         <tr>
           <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:600;">SOC 2 Type II</td>
-          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--warn);">In progress · Vanta</span></td>
-          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Cite CloakPipe's report in your own audits. Required for enterprise procurement in healthcare, finance, and legal.</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--text-3);">Not certified</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">No SOC 2 report exists yet. The signed ledger can serve as access and change evidence in your own audit.</td>
         </tr>
         <tr>
           <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:600;">HIPAA</td>
-          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">BAA available</span></td>
-          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Demonstrate PHI is masked before reaching model providers. Fulfills the HIPAA de-identification safe harbor.</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--text-3);">No BAA yet</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Ledger records show which PHI types were pseudonymized before reaching model providers. Not a de-identification determination.</td>
         </tr>
         <tr>
           <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:600;">GDPR / DPDP</td>
-          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">DPA template · Art. 25/32</span></td>
-          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Proof of data minimization. Answer data subject access and deletion requests from the audit trail. Data residency controls.</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--accent);">DPDP pack · preview</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Pseudonymization supports data minimization today. The DPDP pack enforces Cedar rules for purpose, consent, children's data, and cross-border transfer. Not legal advice and not a certification.</td>
         </tr>
         <tr>
           <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:600;">EU AI Act</td>
-          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--warn);">High-risk · Aug 2026</span></td>
-          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Demonstrate personal data is de-identified before high-risk AI processing, with a human-oversight audit trail.</td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft);"><span class="mono" style="color:var(--text-3);">Evidence support</span></td>
+          <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text-2);">Signed certifications and ledger records document which release was tested, approved, and run. Not a conformity assessment.</td>
         </tr>
         <tr>
           <td style="padding:14px 18px; border-bottom:1px solid var(--line-soft); color:var(--text); font-weight:600;">PCI-DSS</td>
@@ -544,13 +596,7 @@
     </h2>
     <div class="ctas reveal" data-d="1">
       <a class="btn btn-lg btn-cta" href="https://app.cloakpipe.co/signup"><span class="corner"></span>Try for free <span class="arr">→</span></a>
-      <a class="btn btn-lg" href="dashboard.html">See it live <span class="arr">→</span></a>
+      <a class="btn btn-lg" href="/dashboard">See it live <span class="arr">→</span></a>
     </div>
   </div>
 </section>
-
-<div id="site-footer"></div>
-
-<script type="module" src="/src/chrome.js"></script>
-</body>
-</html>

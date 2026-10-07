@@ -1,38 +1,113 @@
-<!doctype html>
-<html lang="en" data-theme="dark">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CloakPipe — The trust layer (pseudonymization, not redaction)</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-<meta name="description" content="How CloakPipe pseudonymizes sensitive data with deterministic, format-preserving, reversible fake entities — preserving LLM utility while keeping real values in an encrypted vault." />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="stylesheet" href="/src/styles.css" />
-</head>
-<body>
-
-<div id="site-nav"></div>
-
 <!-- ============== PAGE HERO ============== -->
 <section class="page-hero">
   <div class="wrap">
-    <div class="eyebrow reveal">The trust layer · Pseudonymization, not redaction</div>
+    <div class="eyebrow reveal">Evidence · Provable, not self-attested</div>
     <h1 class="reveal" data-d="1">
-      Redaction destroys data.<br>
-      <span class="acc">Pseudonymization keeps it.</span>
+      Don't trust the log.<br>
+      <span class="acc">Verify it yourself.</span>
     </h1>
     <p class="lede reveal" data-d="2">
-      Every other tool replaces sensitive entities with dead tokens like
-      <code class="mono" style="background: var(--surface-2); padding: 1px 6px; color: var(--text-2);">[PERSON]</code>
-      — the original information is gone forever, and your application can never reassemble a useful answer.
-      CloakPipe replaces them with <span class="hl">deterministic, format-preserving fake entities the LLM can still reason about</span>,
-      stores the real values in an encrypted vault, then restores them on the way back. Reversible — but only under policy.
+      Every hop of agent traffic gets a deterministic policy decision made outside the model, and every
+      decision produces <span class="hl">signed, hash-chained evidence a third party can verify offline</span>, bound to the
+      certified release that made it. Anchor an exported bundle at a public timestamp authority and transparency log, and the operator cannot back-date it either.
+      Pseudonymization — not redaction — is the foundation it's built on: real values live in an encrypted vault
+      and are restored on the way back, reversible only under policy.
     </p>
     <div class="hero-ctas reveal" data-d="3">
       <a class="btn btn-lg btn-cta" href="https://app.cloakpipe.co/signup"><span class="corner"></span>Try for free <span class="arr">→</span></a>
-      <a class="btn btn-lg" href="dashboard.html">See it live <span class="arr">→</span></a>
+      <a class="btn btn-lg" href="/dashboard">See it live <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== VERIFIABLE EVIDENCE LEDGER ============== -->
+<section class="section" id="ledger">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">01 · The evidence ledger</div>
+        <h2>Evidence,<br><span class="acc">not a fire drill.</span></h2>
+        <a class="learn-more" href="/platform#audit">See the platform surface <span class="arr">→</span></a>
+      </div>
+      <p>
+        A 6-hour incident clock makes reconstructing logs after the fact impossible. CloakPipe makes evidence
+        a <span class="hl">byproduct of traffic, not a scramble</span> — every hop is hash-chained, signed, and
+        sealed as it happens.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Hash-chained &amp; signed</h3>
+        <p>Every hop produces a record: PII types detected (never raw values), what was masked, the policy applied and the decision, agent identity, upstream, region. Chained and Ed25519-signed.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>External anchoring</h3>
+        <p><code class="mono">cloakpipe anchor</code> seals an exported bundle under a signed batch head and anchors it outside operator control: at an RFC 3161 timestamp authority and in the Sigstore Rekor transparency log. <code class="mono">cloakpipe-verify</code> checks both receipts offline against roots you pin.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Open verifier CLI</h3>
+        <p>Free forever, by design — "verify it yourself" only works if the verifier is unencumbered. Auditors check chain integrity, signatures, and release certifications themselves, offline, with no vendor trust required.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Release audit pack</h3>
+        <p>One signed file per release: the manifest, evaluation runs, certifications, governance history, and ledger records, verified offline with <code class="mono">cloakpipe-verify release-pack</code>. Build it with the CLI or download it from CloakPipe Cloud. <a href="/docs/audit-pack">Docs</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== RELEASE-BOUND EVIDENCE ============== -->
+<section class="section" id="release-evidence">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l">
+        <div class="eyebrow">02 · Release-bound evidence</div>
+        <h2>Prove which release ran.<br><span class="acc">And why it was allowed.</span></h2>
+        <a class="learn-more" href="/platform#release">Release control <span class="arr">→</span></a>
+      </div>
+      <p>
+        Every certification, runtime decision, and ledger record carries the release's manifest hash.
+        <span class="hl">The release that passed evaluation is the only release that gets production authority</span>,
+        and the evidence shows it.
+      </p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Signed certification</h3>
+        <p>An Ed25519-signed DSSE statement records the policy decision for one manifest hash. <code class="mono">verify-cert</code> checks it offline; a signed revocation statement withdraws it.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Production promotion gate</h3>
+        <p>A release reaches production only with a valid certification. A break-glass override is recorded with its reason, so the exception is part of the evidence.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Scoped API keys</h3>
+        <p>Each key is scoped to an agent and an environment. The server picks the release from the environment pointer, so callers cannot claim a release they were not given. Runtime keys cannot write to the registry.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Production sentinels</h3>
+        <p>SLO rules watch live error, guardrail-block, and policy-deny rates over a window with a minimum call count. A breach alerts, or revokes the release automatically.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>MCP tool gate</h3>
+        <p>The MCP proxy allows only the tools the certified release declares, refuses anything it cannot parse, and records every hop in the signed ledger under the release hash.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ix"></div>
+        <h3>Revocation at runtime</h3>
+        <p>A revoked release is blocked at the proxy. Unmasking requires a certified release; without one, the response stays pseudonymized.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -42,9 +117,9 @@
   <div class="wrap">
     <div class="section-head reveal">
       <div class="head-l">
-        <div class="eyebrow">01 · The difference</div>
+        <div class="eyebrow">03 · The foundation</div>
         <h2>Same input.<br><span class="acc">Three outcomes.</span></h2>
-        <a class="learn-more" href="platform.html">How the proxy does it <span class="arr">→</span></a>
+        <a class="learn-more" href="/platform">How the proxy does it <span class="arr">→</span></a>
       </div>
       <p>
         Detection-only tools — Microsoft Presidio, AWS Comprehend, the OpenAI Privacy Filter on its own —
@@ -123,14 +198,14 @@
   <div class="wrap">
     <div class="section-head reveal">
       <div class="head-l">
-        <div class="eyebrow">02 · The round trip</div>
+        <div class="eyebrow">04 · The round trip</div>
         <h2>Detect. Mask.<br><span class="acc">Forward. Restore.</span></h2>
-        <a class="learn-more" href="platform.html">The full hot path <span class="arr">→</span></a>
+        <a class="learn-more" href="/platform">The full hot path <span class="arr">→</span></a>
       </div>
       <p>
         Every prompt your application makes passes through the Rust proxy. The whole loop —
         detection, vault write, forward, and rehydration —
-        <span class="hl">completes in under 50&nbsp;ms p95</span>, transparently. One line of code changes: the base URL.
+        <span class="hl">targets under 50&nbsp;ms p95</span>, transparently. One line of code changes: the base URL.
       </p>
     </div>
 
@@ -157,7 +232,7 @@
         <div class="ix"></div>
         <h3>03 · Vault write</h3>
         <p>
-          The real&nbsp;→&nbsp;fake mapping is written to an AES-256-GCM encrypted vault with customer-managed keys.
+          The real&nbsp;→&nbsp;fake mapping is written to an AES-256-GCM encrypted vault. Keys are local today; customer-managed KMS is on the roadmap.
           The vault is the source of truth and the only place a real value ever exists outside your application.
         </p>
       </div>
@@ -195,9 +270,9 @@
   <div class="wrap">
     <div class="section-head reveal">
       <div class="head-l">
-        <div class="eyebrow">03 · Format-preserving</div>
+        <div class="eyebrow">05 · Format-preserving</div>
         <h2>Fakes that pass<br><span class="acc">validation.</span></h2>
-        <a class="learn-more" href="platform.html#vault">Inside the vault <span class="arr">→</span></a>
+        <a class="learn-more" href="/platform#vault">Inside the vault <span class="arr">→</span></a>
       </div>
       <p>
         A redacted token like <code class="mono" style="background: var(--surface-2); padding: 1px 6px; color: var(--text-2);">[CREDIT_CARD]</code>
@@ -259,9 +334,9 @@
   <div class="wrap">
     <div class="section-head reveal">
       <div class="head-l">
-        <div class="eyebrow">04 · Deterministic consistency</div>
+        <div class="eyebrow">06 · Deterministic consistency</div>
         <h2>Same input.<br><span class="acc">Same token.</span></h2>
-        <a class="learn-more" href="integrations.html">Works across your stack <span class="arr">→</span></a>
+        <a class="learn-more" href="/integrations">Works across your stack <span class="arr">→</span></a>
       </div>
       <p>
         Tokenization is deterministic within a tenant's scope: the same value always produces the same token.
@@ -309,9 +384,9 @@
   <div class="wrap">
     <div class="section-head reveal">
       <div class="head-l">
-        <div class="eyebrow">05 · Reversibility under policy</div>
+        <div class="eyebrow">07 · Reversibility under policy</div>
         <h2>This is not a feature.<br><span class="acc">It is the product.</span></h2>
-        <a class="learn-more" href="platform.html#policy">Policy &amp; CBAC <span class="arr">→</span></a>
+        <a class="learn-more" href="/platform#policy">Policy &amp; CBAC <span class="arr">→</span></a>
       </div>
       <p>
         Without a vault, pseudonymization is one-way: data goes in, nothing comes back. With a vault, it is
@@ -324,24 +399,23 @@
       <p>
         The vault stores every real&nbsp;→&nbsp;fake mapping, encrypted at rest with AES-256-GCM and per-tenant isolation.
         Unmasking is never automatic. Every unmask request runs through the policy engine first:
-        <strong>the caller's identity, role, and request context</strong> are checked against rules defined in code and
+        <strong>the caller's identity, role, request context, and release status</strong> are checked against rules defined in code and
         versioned in Git — context-based access control (CBAC).
       </p>
       <p>
         A sales agent cannot unmask a medical record. A supervising physician can — but only during an active case review,
-        and only for the entity types policy permits. Every decision, allowed or denied, is written to a privacy-safe audit
-        trail that never contains a raw value.
+        and only for the entity types policy permits. An uncertified release never unmasks. Every decision, allowed or denied,
+        is written to the verifiable evidence ledger — hash-chained, signed, and never containing a raw value.
       </p>
     </div>
 
     <div class="feature-grid reveal" data-d="1" style="margin-top: 24px;">
       <div class="feature-card">
         <div class="ix"></div>
-        <h3>Customer-managed keys</h3>
+        <h3>Customer-managed keys · roadmap</h3>
         <p>
-          AES-256-GCM at rest with keys held in AWS KMS, GCP KMS, Azure Key Vault, or HashiCorp Vault Transit.
-          CloakPipe never holds the keys to your customer's data, and keys rotate automatically without breaking
-          existing tokens.
+          AES-256-GCM at rest with local keys today. AWS KMS, GCP KMS, Azure Key Vault, and HashiCorp Vault Transit
+          adapters, and automatic rotation, are planned and not yet available.
         </p>
       </div>
       <div class="feature-card">
@@ -349,7 +423,7 @@
         <h3>CBAC on every unmask</h3>
         <p>
           Who is asking, what is their role, how sensitive is the data, what is the workflow context — all evaluated
-          at runtime via OPA or Cedar in sub-millisecond time before any real value is revealed.
+          at runtime via Cedar in sub-millisecond time before any real value is revealed.
         </p>
       </div>
       <div class="feature-card">
@@ -362,10 +436,11 @@
       </div>
       <div class="feature-card">
         <div class="ix"></div>
-        <h3>Privacy-safe audit</h3>
+        <h3>Verifiable, never raw</h3>
         <p>
-          Audit logs record what <em>types</em> of data were processed and what actions were taken — never the actual
-          values. The trail proves compliance for HIPAA, GDPR, SOC&nbsp;2, and PCI-DSS without becoming a new liability.
+          The evidence ledger records what <em>types</em> of data were processed and what actions were taken — never
+          the actual values — hash-chained and signed. It supports audit evidence for HIPAA, GDPR, and PCI-DSS programs
+          without becoming a new liability, and without asking anyone to trust our word for it.
         </p>
       </div>
     </div>
@@ -376,8 +451,8 @@
 <section class="closer">
   <div class="wrap">
     <h2 class="reveal">
-      Redaction destroys data.<br>
-      <span class="acc">Pseudonymization keeps it.</span>
+      Don't trust the log.<br>
+      <span class="acc">Verify it yourself.</span>
     </h2>
     <div class="ctas reveal" data-d="1">
       <a class="btn btn-lg btn-cta" href="https://app.cloakpipe.co/signup"><span class="corner"></span>Try for free <span class="arr">→</span></a>
@@ -385,9 +460,3 @@
     </div>
   </div>
 </section>
-
-<div id="site-footer"></div>
-
-<script type="module" src="/src/chrome.js"></script>
-</body>
-</html>

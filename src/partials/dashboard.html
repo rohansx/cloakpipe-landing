@@ -1,19 +1,3 @@
-<!doctype html>
-<html lang="en" data-theme="dark">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CloakPipe — Dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-
-<meta name="description" content="CloakPipe pipeline overview — live request stream, latency, entities masked, policies, and compliance posture." />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="stylesheet" href="/src/dashboard.css" />
-</head>
-<body>
-
 <div class="app">
 
   <!-- ============== SIDEBAR ============== -->
@@ -29,14 +13,12 @@
       <span class="v2-tag">V2</span>
     </div>
 
-    <div class="workspace">
-      <div class="ws-mark">C</div>
-      <div class="ws-meta">
-        <strong>cloakpipe</strong>
-        <small>prod · us-west-2</small>
-      </div>
-      <svg class="chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5 L6 8 L9 5"/></svg>
-    </div>
+    <!-- Mirrors the app sidebar (dashboard/src/components/Layout.tsx). -->
+    <div class="side-section">Agents</div>
+    <a class="side-item" href="https://app.cloakpipe.co/releases">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2 L14 5 L8 8 L2 5 Z M2 8 L8 11 L14 8 M2 11 L8 14 L14 11"/></svg>
+      <span>Releases</span>
+    </a>
 
     <div class="side-section">Monitor</div>
     <a class="side-item active" href="https://app.cloakpipe.co/dashboard">
@@ -47,43 +29,35 @@
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12 L6 8 L9 11 L14 4"/></svg>
       <span>Live traffic</span><span class="count">2.4K/m</span>
     </a>
-    <a class="side-item" href="https://app.cloakpipe.co/compliance">
+    <a class="side-item" href="https://app.cloakpipe.co/evidence">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 4 V8 L11 10"/></svg>
-      <span>Audit log</span>
-    </a>
-    <a class="side-item" href="https://app.cloakpipe.co/settings">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5 L8 8 L13 5 M3 5 V12 H13 V5"/></svg>
-      <span>Vault</span><span class="count">47K</span>
+      <span>Evidence</span>
     </a>
 
     <div class="side-section">Configure</div>
-    <a class="side-item" href="https://app.cloakpipe.co/guardrails">
+    <a class="side-item" href="https://app.cloakpipe.co/policies">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4 H13 M3 8 H13 M3 12 H9"/></svg>
       <span>Policies</span>
     </a>
-    <a class="side-item" href="https://app.cloakpipe.co/settings?tab=team">
+    <a class="side-item" href="https://app.cloakpipe.co/privacy">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2 L13 4 V8 C13 11 11 13 8 14 C5 13 3 11 3 8 V4 Z"/></svg>
+      <span>Privacy</span>
+    </a>
+    <a class="side-item" href="https://app.cloakpipe.co/packs">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1 L14 3.5 V8 C14 11.5 11.5 14 8 15 C4.5 14 2 11.5 2 8 V3.5 Z"/><path d="M5.5 8 L7.3 9.8 L10.5 6.5"/></svg>
+      <span>Compliance packs</span>
+    </a>
+    <a class="side-item" href="https://app.cloakpipe.co/keys">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="8" r="3"/><path d="M8 8 H14 M12 6 V8 M10 6 V8"/></svg>
+      <span>API keys</span>
+    </a>
+    <a class="side-item" href="https://app.cloakpipe.co/team">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="2.5"/><path d="M3 14 C3 11.5 5 10 8 10 C11 10 13 11.5 13 14"/></svg>
-      <span>Roles &amp; teams</span>
-    </a>
-    <a class="side-item" href="https://app.cloakpipe.co/guardrails">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10 C4 7 6 7 8 10 C10 7 12 7 14 10 M2 6 C4 3 6 3 8 6 C10 3 12 3 14 6"/></svg>
-      <span>Detection engines</span>
-    </a>
-    <a class="side-item" href="https://app.cloakpipe.co/settings">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8 H5 M11 8 H14"/><rect x="5" y="5" width="6" height="6"/></svg>
-      <span>Providers</span>
-    </a>
-    <a class="side-item" href="https://app.cloakpipe.co/compliance">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="3"/><path d="M8 1 V3 M8 13 V15 M1 8 H3 M13 8 H15"/></svg>
-      <span>Compliance</span>
+      <span>Team</span>
     </a>
 
     <div class="side-section">Developer</div>
-    <a class="side-item" href="https://app.cloakpipe.co/settings?tab=api-keys">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 4 L2 8 L5 12 M11 4 L14 8 L11 12"/></svg>
-      <span>API keys</span>
-    </a>
-    <a class="side-item" href="https://github.com/rohansx/cloakpipe#readme">
+    <a class="side-item" href="/docs">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10"/><path d="M5 7 H11 M5 10 H9"/></svg>
       <span>Documentation</span>
     </a>
@@ -122,7 +96,7 @@
           <button>7D</button>
           <button>30D</button>
         </div>
-        <a class="btn-mini" href="index.html">
+        <a class="btn-mini" href="/">
           <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8 L14 8 M9 4 L14 8 L9 12"/></svg>
           Landing
         </a>
@@ -139,7 +113,7 @@
         <div>
           <h1>Pipeline <span class="acc">overview.</span></h1>
           <div class="meta">
-            <span class="live">LIVE</span>
+            <span class="live">DEMO DATA</span>
             <span>·</span>
             <span>Synced 2s ago</span>
             <span>·</span>
@@ -193,7 +167,7 @@
             <div class="kpi-label">Entities masked</div>
             <div class="kpi-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6 L8 3 L13 6 L13 10 L8 13 L3 10 Z"/></svg></div>
           </div>
-          <div class="kpi-value" id="kpi-ent">418,392</div>
+          <div class="kpi-value" id="kpi-ent">12,480</div>
           <div class="kpi-delta up">↑ 24.1% vs yesterday</div>
           <svg class="kpi-spark" viewBox="0 0 100 40" preserveAspectRatio="none">
             <path d="M0 32 L12 28 L24 24 L36 20 L48 14 L60 10 L75 8 L88 4 L100 2" stroke="var(--accent)" stroke-width="1.2" fill="none"/>
@@ -257,7 +231,7 @@
           <div class="panel-head">
             <div>
               <div class="panel-title">Entities by class</div>
-              <div class="panel-sub">Last 24h · 418,392 total</div>
+              <div class="panel-sub">Illustrative dataset · 12,480 total</div>
             </div>
           </div>
           <div class="panel-body">
@@ -400,19 +374,15 @@
           <div class="panel">
             <div class="panel-head">
               <div>
-                <div class="panel-title">Compliance posture</div>
-                <div class="panel-sub">Coverage by framework</div>
+                <div class="panel-title">Release status</div>
+                <div class="panel-sub">What each environment runs</div>
               </div>
-              <button class="btn-mini">Export</button>
             </div>
             <div class="panel-body">
-              <div class="compliance">
-                <div class="comp-row"><div class="l">HIPAA</div><div class="bar"><div style="width: 98%"></div></div><div class="v">98%</div></div>
-                <div class="comp-row"><div class="l">GDPR</div><div class="bar"><div style="width: 96%"></div></div><div class="v">96%</div></div>
-                <div class="comp-row"><div class="l">SOC 2</div><div class="bar"><div style="width: 91%"></div></div><div class="v">91%</div></div>
-                <div class="comp-row"><div class="l">CCPA</div><div class="bar"><div style="width: 94%"></div></div><div class="v">94%</div></div>
-                <div class="comp-row"><div class="l">DPDP</div><div class="bar"><div style="width: 88%"></div></div><div class="v">88%</div></div>
-                <div class="comp-row"><div class="l">EU AI Act</div><div class="bar"><div style="width: 82%"></div></div><div class="v">82%</div></div>
+              <div class="compliance releases">
+                <div class="comp-row"><div class="l">production</div><div class="bar"><div style="width: 100%"></div></div><div class="v">184 · certified</div></div>
+                <div class="comp-row"><div class="l">staging</div><div class="bar"><div style="width: 100%; background: var(--warn);"></div></div><div class="v">185 · blocked</div></div>
+                <div class="comp-row"><div class="l">candidate</div><div class="bar"><div style="width: 100%"></div></div><div class="v">186 · certified</div></div>
               </div>
             </div>
           </div>
@@ -467,7 +437,3 @@
     </div>
   </main>
 </div>
-
-<script type="module" src="/src/dashboard.js"></script>
-</body>
-</html>

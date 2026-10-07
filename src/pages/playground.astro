@@ -1,0 +1,10 @@
+---
+import Base from '../layouts/Base.astro';
+import body from '../partials/playground.html?raw';
+const title = "CloakPipe — Playground: mask PII live with the Privacy Filter";
+const description = "Paste any text and watch CloakPipe pseudonymize it live with the real detection pipeline — regex + checksum for structured IDs and the OpenAI Privacy Filter for names, addresses, emails, and more. Nothing is stored.";
+---
+<Base title={title} description={description} page="playground">
+  <Fragment set:html={body} />
+  <script>import '../scripts/playground.js';</script>
+</Base>

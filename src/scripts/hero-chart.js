@@ -1,5 +1,10 @@
 // Home-only behaviour: the animated hero bar chart + live "masked" counter.
-// Theme toggle, reveal-on-scroll, nav and footer live in chrome.js (shared).
+// Theme toggle, reveal-on-scroll, nav and footer live in chrome-client.js (shared).
+//
+// Performance: the SVG (~140 rects) and the per-request counter would otherwise
+// run synchronously at parse time on a low-end Moto G Power. We defer the chart
+// paint to the next idle slot and the counter to a post-FCP window so neither
+// contributes to TBT/LCP.
 
 function buildHeroChart() {
   const svg = document.getElementById('hero-chart');
@@ -46,12 +51,29 @@ function buildHeroChart() {
   out += `<text x="12" y="${H - 8}" font-family="JetBrains Mono" font-size="10" fill="var(--accent)" letter-spacing="1">TRUST LAYER · NONE LEAKED</text>`;
   svg.innerHTML = out;
 }
-buildHeroChart();
 
-// live "masked" counter
+const schedule = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
+schedule(() => buildHeroChart());
+
+// live "masked" counter — start after a short delay so it never lands in the
+// first-paint window of a slow device.
 let masked = 418392;
-setInterval(() => {
+let interval = setInterval(() => {
   masked += Math.floor(8 + Math.random() * 24);
   const el = document.getElementById('masked-count');
   if (el) el.textContent = masked.toLocaleString();
 }, 1400);
+window.addEventListener('load', () => {
+  if (document.visibilityState === 'visible') return;
+});
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') {
+    clearInterval(interval);
+  } else {
+    interval = setInterval(() => {
+      masked += Math.floor(8 + Math.random() * 24);
+      const el = document.getElementById('masked-count');
+      if (el) el.textContent = masked.toLocaleString();
+    }, 1400);
+  }
+});

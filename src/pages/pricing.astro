@@ -1,0 +1,9 @@
+---
+import Base from '../layouts/Base.astro';
+import body from '../partials/pricing.html?raw';
+const title = "CloakPipe — Pricing: open core, pay for the platform";
+const description = "CloakPipe pricing and design-partner plans. The current Rust open core is MIT licensed; managed, SSO, KMS, and enterprise capabilities are clearly marked as preview or roadmap.";
+---
+<Base title={title} description={description} page="pricing">
+  <Fragment set:html={body} />
+</Base>
