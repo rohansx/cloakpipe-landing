@@ -1,4 +1,4 @@
-// Public core repository. (rohansx/cloakpipe-cloud is private: never link it.)
+// Public core repository.
 export const GH_REPO = 'rohansx/cloakpipe';
 export const GH_URL = `https://github.com/${GH_REPO}`;
 /** Source links must point at files that exist on this branch. */
