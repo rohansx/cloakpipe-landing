@@ -21,7 +21,7 @@ All commands are offline and deterministic given their inputs (`--now` pins time
 A `CertificationPolicy` is YAML, or JSON when the file ends in `.json`. Unknown fields are rejected.
 
 ```yaml
-apiVersion: cloakpipe.dev/v1alpha1
+apiVersion: cloakpipe.co/v1alpha1
 kind: CertificationPolicy
 name: support-prod
 version: "11"
@@ -82,7 +82,7 @@ cloakpipe release certify MANIFEST --policy FILE --run FILE...
 
 ## Signing format
 
-The certification is an in-toto v1 Statement (`predicateType` `https://cloakpipe.dev/attestations/certification/v1alpha1`, subject the release's SHA-256) in a DSSE envelope with payload type `application/vnd.in-toto+json`, signed with Ed25519 over the DSSE PAE. Policies, runs and manifests all have canonical hashes (RFC 8785) with their own domains, `cloakpipe.dev/certification-policy/v1` and `cloakpipe.dev/evaluation-run/v1`, the same scheme as [release manifests](/docs/releases#hash).
+The certification is an in-toto v1 Statement (`predicateType` `https://cloakpipe.co/attestations/certification/v1alpha1`, subject the release's SHA-256) in a DSSE envelope with payload type `application/vnd.in-toto+json`, signed with Ed25519 over the DSSE PAE. Policies, runs and manifests all have canonical hashes (RFC 8785) with their own domains, `cloakpipe.co/certification-policy/v1` and `cloakpipe.co/evaluation-run/v1`, the same scheme as [release manifests](/docs/releases#hash). Policies, runs and certifications issued under the legacy `cloakpipe.dev` identifiers are still accepted and keep their original hashes and signatures.
 
 ## Verify-cert
 

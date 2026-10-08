@@ -13,7 +13,7 @@ The `cloakpipe release` commands are on `main` of the open-source repository (in
 ## Manifest
 
 ```yaml
-apiVersion: cloakpipe.dev/v1alpha1
+apiVersion: cloakpipe.co/v1alpha1
 kind: AgentRelease
 metadata:
   agent: support-agent        # identity — hashed
@@ -33,6 +33,8 @@ spec:
   featureFlags: {}
 ```
 
+Manifests written by CloakPipe up to 0.10 use the legacy `apiVersion: cloakpipe.dev/v1alpha1`. They are still accepted, never rewritten, and keep the hash they were issued with (see [Hash](#hash)).
+
 References are `<kind>:<name>@<version>`, where `version` is a digest (`sha256:<64 hex>`) or an immutable version: an optional `v` followed by a digit (`31`, `v2`, `2.4.1`, `2.0.1-rc.1`, `2026-08-01`). This is an allowlist, so moving labels (`@latest`, `@production`, `@nightly`, `@beta`, …) and unversioned references are rejected.
 
 A release is **certifiable** only if:
@@ -45,8 +47,10 @@ A release is **certifiable** only if:
 ## Hash
 
 ```text
-manifest_hash = "sha256:" + hex(SHA-256("cloakpipe.dev/agent-release/v1" || "\n" || JCS(view)))
+manifest_hash = "sha256:" + hex(SHA-256("cloakpipe.co/agent-release/v1" || "\n" || JCS(view)))
 ```
+
+A legacy `cloakpipe.dev/v1alpha1` manifest is hashed with the legacy domain `cloakpipe.dev/agent-release/v1`, so release hashes issued before the move to `cloakpipe.co` stay valid.
 
 `view` contains `apiVersion`, `kind`, `metadata.agent` and the full `spec`, with every string NFC-normalised, references flattened to strings, unordered collections (`tools`, `mcpServers`, `policies`, `dependencies`) sorted, prompt order preserved, and an absent `retrieval` as `null`. `JCS` is RFC 8785, and numbers are written as RFC 8785 requires (`1e-7`, `100000000000000000000`, `1e+21`).
 
@@ -86,8 +90,8 @@ Exit codes for all `release` commands: **0** ok, **1** invalid input, **2** usag
 Changes to tools, MCP servers or policies also print `approval required: change expands or alters tool, MCP or policy authority`. Example:
 
 ```text
-baseline   sha256:ae7bc9e4…  support-agent@184
-candidate  sha256:804cd05f…  support-agent@185
+baseline   sha256:28b40cf5…  support-agent@184
+candidate  sha256:2feecf83…  support-agent@185
 
 changes:
   changed  prompt       prompt:support-answer@31 -> prompt:support-answer@32
