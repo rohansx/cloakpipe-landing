@@ -17,7 +17,7 @@ curl https://api.cloakpipe.co/v1/chat/completions \
   -H "X-CloakPipe-Key: cpk_live_xxxxxxxxxxxxxxxx" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -H "Content-Type: application/json" \
-  -H "X-CloakPipe-Release: sha256:ae7bc9e404c194c9fcf80d95cafe4c322e4e9f69595c693ffb48441647d03c32" \
+  -H "X-CloakPipe-Release: sha256:28b40cf5db41c164624094de4df3943e3a5f1d7238e78727af9eb5c88be2efea" \
   -H "X-CloakPipe-Environment: production" \
   -d '{
     "model": "gpt-4o",

@@ -25,7 +25,7 @@ Check it: `cloakpipe --help` should list `release` and `eval` among the commands
 A release pins every behaviour-affecting component to an immutable version. Save this as `release.yaml`:
 
 ```yaml
-apiVersion: cloakpipe.dev/v1alpha1
+apiVersion: cloakpipe.co/v1alpha1
 kind: AgentRelease
 metadata:
   agent: support-agent
@@ -66,10 +66,10 @@ The field rules are in [Agent releases](/docs/releases#manifest).
 
 ```bash
 cloakpipe release validate release.yaml
-# valid  sha256:ae7bc9e404c194c9fcf80d95cafe4c322e4e9f69595c693ffb48441647d03c32  support-agent@184
+# valid  sha256:28b40cf5db41c164624094de4df3943e3a5f1d7238e78727af9eb5c88be2efea  support-agent@184
 
 cloakpipe release hash release.yaml
-# sha256:ae7bc9e404c194c9fcf80d95cafe4c322e4e9f69595c693ffb48441647d03c32
+# sha256:28b40cf5db41c164624094de4df3943e3a5f1d7238e78727af9eb5c88be2efea
 ```
 
 A manifest with a moving reference is refused with the field path, exit code 1:
@@ -101,7 +101,7 @@ cloakpipe release keygen --out key.json   # mode 0600; prints only keyid and pub
 `policy.yaml`:
 
 ```yaml
-apiVersion: cloakpipe.dev/v1alpha1
+apiVersion: cloakpipe.co/v1alpha1
 kind: CertificationPolicy
 name: support-prod
 version: "11"
@@ -125,7 +125,7 @@ cloakpipe release certify release.yaml --policy policy.yaml --run run.json \
 
 ```text
 CERTIFIED
-release   sha256:ae7bc9e4…03c32  support-agent@184
+release   sha256:28b40cf5…2efea  support-agent@184
 policy    support-prod@11  sha256:…
 required  functional, privacy
 runs      1
@@ -145,7 +145,7 @@ cloakpipe release verify-cert release.cert.dsse.json --trust key.json --release 
 ```text
 VALID
 outcome    certified
-release    sha256:ae7bc9e4…03c32
+release    sha256:28b40cf5…2efea
 statement  78ba8788…
 certified  yes
 ```

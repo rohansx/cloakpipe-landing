@@ -17,7 +17,7 @@ A **release audit pack** is the one file a security reviewer gets for an Agent R
 | `spec.ledgerExports` | signed ledger exports (`cloakpipe.bundle` v4), unmodified, with any anchor receipts |
 | `spec.limitations` | caveats the exporter declares |
 
-The pack is signed with Ed25519 over the [RFC 8785](https://www.rfc-editor.org/rfc/rfc8785) canonical form of `apiVersion`, `kind` and `spec` (`cloakpipe.dev/v1alpha1`, `ReleaseAuditPack`), so nothing in the file is outside the signature.
+The pack is signed with Ed25519 over the [RFC 8785](https://www.rfc-editor.org/rfc/rfc8785) canonical form of `apiVersion`, `kind` and `spec` (`cloakpipe.co/v1alpha1`, `ReleaseAuditPack`), so nothing in the file is outside the signature. Packs issued under the legacy `cloakpipe.dev/v1alpha1` still verify.
 
 ## Produce a pack with the CLI
 
