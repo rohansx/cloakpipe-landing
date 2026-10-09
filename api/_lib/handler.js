@@ -1,14 +1,16 @@
-// POST /api/waitlist: validate a signup and append it to a Google Sheet.
+// POST /api/waitlist: validate a signup and forward it to the Google Apps
+// Script web app that appends it to the waitlist sheet (apps-script/Code.gs).
 // Web-standard Request -> Response, so it runs on Vercel's Node runtime and in
 // tests without a server.
 
 import { validateSubmission } from './validate.js';
 import { isAllowedOrigin, clientIp } from './guard.js';
-import { createTokenProvider, GoogleError } from './google.js';
-import { createSheetsClient, buildRow } from './sheets.js';
+import { createAppsScriptClient, isScriptUrl, UpstreamError, DEFAULT_TIMEOUT_MS } from './apps-script.js';
+import { buildEntry } from './row.js';
 
-export const REQUIRED_ENV = ['GOOGLE_SERVICE_ACCOUNT_EMAIL', 'GOOGLE_PRIVATE_KEY', 'WAITLIST_SHEET_ID'];
-export const DEFAULT_TAB = 'Waitlist';
+export const REQUIRED_ENV = ['WAITLIST_SCRIPT_URL', 'WAITLIST_SCRIPT_SECRET'];
+/** Shorter secrets are refused as misconfiguration (`openssl rand -hex 32` gives 64). */
+export const MIN_SECRET_LENGTH = 32;
 const MAX_BODY = 16 * 1024;
 const PAGE = '/waitlist';
 
@@ -82,15 +84,16 @@ async function readFields(request) {
   }
 }
 
-export function createHandler({ fetch = globalThis.fetch, now = () => Date.now(), rateLimiter, log = console } = {}) {
-  // Token providers live as long as the (warm) function instance.
-  const providers = new Map();
-  const tokenProvider = (clientEmail, privateKey) => {
-    const key = `${clientEmail}\u0000${privateKey}`;
-    if (!providers.has(key)) providers.set(key, createTokenProvider({ clientEmail, privateKey, fetch, now }));
-    return providers.get(key);
-  };
+/** Names of the env problems, for the server log only (never values). */
+function configProblems(env) {
+  const missing = REQUIRED_ENV.filter((k) => !String(env[k] ?? '').trim());
+  if (missing.length) return `missing env var(s): ${missing.join(', ')}`;
+  if (!isScriptUrl(env.WAITLIST_SCRIPT_URL.trim())) return 'WAITLIST_SCRIPT_URL is not an Apps Script web app URL (https://script.google.com/macros/s/<id>/exec)';
+  if (env.WAITLIST_SCRIPT_SECRET.trim().length < MIN_SECRET_LENGTH) return `WAITLIST_SCRIPT_SECRET is shorter than ${MIN_SECRET_LENGTH} characters (use: openssl rand -hex 32)`;
+  return '';
+}
 
+export function createHandler({ fetch = globalThis.fetch, now = () => Date.now(), rateLimiter, log = console, timeoutMs = DEFAULT_TIMEOUT_MS } = {}) {
   return async function handle(request, env = {}) {
     if (request.method !== 'POST') {
       return json(405, { error: 'method_not_allowed', message: 'Use POST.' }, { allow: 'POST' });
@@ -99,9 +102,9 @@ export function createHandler({ fetch = globalThis.fetch, now = () => Date.now()
     const fail = (status, error, extra = {}, headers = {}) =>
       asJson ? json(status, { error, ...extra, message: MESSAGES[error] ?? MESSAGES.server }, headers) : redirect(formLocation(error));
 
-    const missing = REQUIRED_ENV.filter((k) => !String(env[k] ?? '').trim());
-    if (missing.length) {
-      log.error(`waitlist: not configured, missing env var(s): ${missing.join(', ')}`);
+    const problem = configProblems(env);
+    if (problem) {
+      log.error(`waitlist: not configured, ${problem}`);
       return fail(503, 'unavailable');
     }
 
@@ -125,23 +128,25 @@ export function createHandler({ fetch = globalThis.fetch, now = () => Date.now()
       return fail(400, v.error, v.field ? { field: v.field } : {});
     }
 
-    const tab = String(env.WAITLIST_SHEET_TAB ?? '').trim() || DEFAULT_TAB;
-    const provider = tokenProvider(env.GOOGLE_SERVICE_ACCOUNT_EMAIL.trim(), env.GOOGLE_PRIVATE_KEY);
-    const sheets = createSheetsClient({ sheetId: env.WAITLIST_SHEET_ID.trim(), tab, getToken: () => provider.getToken(), fetch });
-
+    const script = createAppsScriptClient({
+      url: env.WAITLIST_SCRIPT_URL.trim(),
+      secret: env.WAITLIST_SCRIPT_SECRET.trim(),
+      fetch,
+      timeoutMs,
+    });
+    let outcome;
     try {
-      const { empty, emails } = await sheets.readEmails();
-      if (emails.has(v.data.email)) return asJson ? json(200, { status: 'already' }) : redirect(formLocation('already'));
-      if (empty) await sheets.writeHeader();
-      await sheets.appendRow(buildRow(v.data, { now: now(), userAgent: request.headers.get('user-agent') ?? '' }));
+      outcome = await script.submit(buildEntry(v.data, { now: now(), userAgent: request.headers.get('user-agent') ?? '' }));
     } catch (e) {
-      if (e instanceof GoogleError) {
-        log.error(`waitlist: Google ${e.stage} failed (HTTP ${e.status}${e.detail ? `, ${e.detail}` : ''})`);
-        return asJson ? json(502, { error: 'upstream', message: MESSAGES.upstream }) : redirect(formLocation('server'));
+      if (e instanceof UpstreamError) {
+        log.error(`waitlist: ${e.message}${e.hint ? ` (hint: ${e.hint})` : ''}`);
+        const status = e.stage === 'timeout' ? 504 : 502;
+        return asJson ? json(status, { error: 'upstream', message: MESSAGES.upstream }) : redirect(formLocation('server'));
       }
       log.error(`waitlist: unexpected ${e?.name ?? 'error'}`);
       return asJson ? json(500, { error: 'server', message: MESSAGES.server }) : redirect(formLocation('server'));
     }
+    if (outcome === 'already') return asJson ? json(200, { status: 'already' }) : redirect(formLocation('already'));
     return asJson ? json(201, { status: 'joined' }) : redirect(formLocation('joined'));
   };
 }

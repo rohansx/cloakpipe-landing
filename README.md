@@ -15,81 +15,153 @@ npm run test:site  # build + link check
 - Pages: `src/pages/` (docs are Markdown in `src/pages/docs/`, sidebar order in `src/lib/docs.ts`).
 - Page bodies: `src/partials/*.html`; shared chrome: `src/components/`, `src/layouts/`.
 - Headers, redirects and the Content-Security-Policy: `vercel.json`.
-- Waitlist: page `src/pages/waitlist.astro`, Vercel Function `api/waitlist.js` (logic in `api/_lib/`, tests in `test/`).
+- Waitlist: page `src/pages/waitlist.astro`, Vercel Function `api/waitlist.js` (logic in `api/_lib/`, tests in
+  `test/`), Google Apps Script `apps-script/Code.gs`.
 
 The product itself is open source at [rohansx/cloakpipe](https://github.com/rohansx/cloakpipe).
 
 ## Waitlist setup
 
 CloakPipe Cloud is in early access, so the site's only call to action is the waitlist at `/waitlist`. The form
-posts to the Vercel Function `POST /api/waitlist`, which appends one row per signup to a Google Sheet. It has
-no dependencies: it signs a service-account JWT with `node:crypto` and calls the Sheets API v4 with `fetch`.
-Vercel deploys `api/waitlist.js` as a Node.js function next to the static Astro build (no adapter needed).
+posts to the Vercel Function `POST /api/waitlist` (`api/waitlist.js`), which checks the request (method, origin,
+rate limit, honeypot, timing, field validation and limits, formula neutralisation) and forwards the clean row
+to a **Google Apps Script web app** bound to the sheet ([`apps-script/Code.gs`](apps-script/Code.gs)). The
+script runs as you, checks a shared secret, de-duplicates by email under a lock and appends the row. There is no
+Google Cloud project, service account or key.
 
-Until the env vars below are set, the function answers `503` and the form shows a "temporarily unavailable"
+Until the two env vars below are set, the function answers `503` and the form shows a "temporarily unavailable"
 message with a mailto fallback.
 
-### 1. Google Cloud: service account and Sheets API
+### 1. Generate the shared secret
 
-1. In the [Google Cloud console](https://console.cloud.google.com/), pick or create a project.
-2. **APIs & Services → Library → Google Sheets API → Enable.**
-3. **IAM & Admin → Service accounts → Create service account** (e.g. `cloakpipe-waitlist`). It needs no
-   project roles; access comes from sharing the sheet.
-4. Open the service account → **Keys → Add key → Create new key → JSON**. A `.json` file downloads. It holds
-   `client_email` and `private_key`. Treat it as a secret: never commit it, and delete the local copy once the
-   values are in Vercel.
+```sh
+openssl rand -hex 32
+```
 
-### 2. The sheet
+This prints 64 hex characters. You paste the same value into the script (step 3) and into Vercel (step 5). The
+function refuses secrets shorter than 32 characters. Keep it out of the repository and out of chat logs.
 
-1. Create a Google Sheet (e.g. "CloakPipe waitlist").
-2. **Share** it with the service account's `client_email` (`…@….iam.gserviceaccount.com`) as **Editor**.
-   Untick "Notify people".
-3. The sheet ID is the part of the URL between `/d/` and `/edit`:
-   `https://docs.google.com/spreadsheets/d/<WAITLIST_SHEET_ID>/edit#gid=0`.
-4. Tab name: `Waitlist` by default (set `WAITLIST_SHEET_TAB` to use another). If the tab does not exist the
-   function creates it; if it is empty the function writes the header row. To create it by hand, row 1 is:
+### 2. The sheet and the script
 
-   | A | B | C | D | E | F | G | H | I | J | K |
-   |---|---|---|---|---|---|---|---|---|---|---|
-   | Timestamp (UTC) | Email | Name | Company | Role | Use case | Source page | UTM source | UTM medium | UTM campaign | User agent |
+1. Create a Google Sheet (e.g. "CloakPipe waitlist") in the Google account that should own the signups.
+2. In the sheet: **Extensions → Apps Script**. The editor opens with a `Code.gs` file bound to this sheet.
+3. Delete the placeholder `function myFunction() {}`, paste the whole of
+   [`apps-script/Code.gs`](apps-script/Code.gs), and press **Save project** (the disk icon, or ⌘S / Ctrl+S).
+   Optionally rename the project (click "Untitled project") to "CloakPipe waitlist".
 
-   Email must stay in column B: it is read for de-duplication. IP addresses are never stored; "User agent" is a
-   short family such as `Chrome/macOS`. Cells are written with `valueInputOption=RAW` and values starting with
-   `= + - @` are prefixed with `'`, so nothing is evaluated as a formula.
+### 3. Script properties
 
-### 3. Vercel environment variables
+1. In the Apps Script editor, click **Project Settings** (the gear icon in the left sidebar).
+2. Scroll to **Script properties → Add script property** (or **Edit script properties** if some exist).
+3. Add:
+
+   | Property | Value |
+   |---|---|
+   | `WAITLIST_SECRET` | the secret from step 1 |
+   | `WAITLIST_TAB` | optional tab name; default `Waitlist` |
+
+4. **Save script properties.**
+
+The script creates the tab if it is missing and writes the header row when the tab is empty:
+
+| A | B | C | D | E | F | G | H | I | J | K |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Timestamp (UTC) | Email | Name | Company | Role | Use case | Source page | UTM source | UTM medium | UTM campaign | User agent |
+
+Email must stay in column B: it is read for de-duplication (case-insensitive). IP addresses are never stored;
+"User agent" is a short family such as `Chrome/macOS`. Values starting with `= + - @` are prefixed with `'` by
+the function and again by the script, so nothing is evaluated as a formula.
+
+### 4. Deploy the web app
+
+1. In the Apps Script editor: **Deploy → New deployment**.
+2. Next to "Select type", click the gear icon → **Web app**.
+3. Description: e.g. `waitlist v1`. **Execute as: Me** (your account). **Who has access: Anyone**.
+   "Anyone" is required: Vercel calls it without a Google login. The shared secret is what keeps others out.
+4. **Deploy**. The first time, Google asks you to **Authorize access**: pick your account. On "Google hasn't
+   verified this app", click **Advanced → Go to CloakPipe waitlist (unsafe)** (it is your own script), then
+   **Allow**. The script asks only for access to the spreadsheet it is bound to.
+5. Copy the **Web app URL**. It looks like `https://script.google.com/macros/s/AKfy…/exec`. Use the `/exec` URL,
+   not the `/dev` test URL.
+
+Check it answers (this runs `doGet`, which returns no data):
+
+```sh
+curl -sL "https://script.google.com/macros/s/AKfy…/exec"
+# {"ok":true}
+```
+
+If you get an HTML Google sign-in page instead, "Who has access" is not "Anyone".
+
+### 5. Vercel environment variables
 
 Set these for **Production** and **Preview** (Project → Settings → Environment Variables), then redeploy:
 
 | Name | Value |
 |---|---|
-| `GOOGLE_SERVICE_ACCOUNT_EMAIL` | `client_email` from the JSON key |
-| `GOOGLE_PRIVATE_KEY` | `private_key` from the JSON key, the whole `-----BEGIN PRIVATE KEY-----…` block. Literal `\n` sequences (as in the JSON file) are fine. |
-| `WAITLIST_SHEET_ID` | the sheet ID from the URL |
-| `WAITLIST_SHEET_TAB` | optional, default `Waitlist` |
+| `WAITLIST_SCRIPT_URL` | the web app `/exec` URL from step 4 |
+| `WAITLIST_SCRIPT_SECRET` | the secret from step 1 (same as the `WAITLIST_SECRET` script property) |
 
 With the CLI (each command prompts for the value, so it never lands in shell history):
 
 ```sh
-vercel env add GOOGLE_SERVICE_ACCOUNT_EMAIL production
-vercel env add GOOGLE_SERVICE_ACCOUNT_EMAIL preview
-vercel env add GOOGLE_PRIVATE_KEY production
-vercel env add GOOGLE_PRIVATE_KEY preview
-vercel env add WAITLIST_SHEET_ID production
-vercel env add WAITLIST_SHEET_ID preview
+vercel env add WAITLIST_SCRIPT_URL production
+vercel env add WAITLIST_SCRIPT_URL preview
+vercel env add WAITLIST_SCRIPT_SECRET production
+vercel env add WAITLIST_SCRIPT_SECRET preview
 ```
 
-Never put the key in `vercel.json`, the repository, or a committed `.env` file.
+Never put the secret in `vercel.json`, the repository, or a committed `.env` file. To rotate it, change the
+script property and the Vercel variable together, then redeploy the site.
 
-### 4. Test
+### 6. Updating the script
 
-- Unit tests (validation, origin check, rate limit, JWT signature, token cache, Sheets calls against a fake
-  Google, JSON vs redirect responses): `npm test`.
-- After deploying with the env vars set, open `/waitlist` on the deployment, submit your own email and check a
-  row appears; submit it again and you should see "You're already on the list" with no second row.
-- Without JS (disable it in devtools) the form still posts and the page shows the result.
-- `curl -i https://cloakpipe.co/api/waitlist` should answer `405`; a POST from another origin answers `403`.
-  Preview deployments may sit behind Vercel Authentication, in which case curl gets Vercel's login page.
+After editing `apps-script/Code.gs`, paste it into the editor and save, then **Deploy → Manage deployments**,
+select the deployment, click the pencil (**Edit**), set **Version: New version**, and **Deploy**. The `/exec` URL
+stays the same, so Vercel needs no change. (Saving alone does not update a deployment, and **New deployment**
+would create a second URL.) Script property changes take effect immediately, without redeploying.
+
+### 7. Test
+
+- Unit tests: `npm test`. They cover validation, the origin check, the rate limit, the Apps Script client (the
+  302 to `script.googleusercontent.com`, sign-in pages, HTML and non-JSON answers, timeouts) and `Code.gs`
+  itself, run in a `node:vm` sandbox against fake Sheets, Lock and Properties services.
+- The script directly. `curl -L` follows Google's 302 to `script.googleusercontent.com` and, as curl does for a
+  302, turns the POST into a GET there, which is exactly what is needed (don't add `-X POST`, which would make
+  curl re-POST to the redirect target):
+
+  ```sh
+  SECRET=…   # the shared secret
+  curl -sL "https://script.google.com/macros/s/AKfy…/exec" \
+    -H 'content-type: application/json' \
+    --data "{\"secret\":\"$SECRET\",\"entry\":{\"email\":\"you+test@example.com\",\"name\":\"curl test\"}}"
+  # {"status":"joined"}, then {"status":"already"} the second time; {"error":"unauthorized"} with a wrong secret
+  ```
+
+- The site function, after deploying with the env vars set (the Origin header is required):
+
+  ```sh
+  curl -si https://cloakpipe.co/api/waitlist \
+    -H 'origin: https://cloakpipe.co' -H 'content-type: application/json' -H 'accept: application/json' \
+    --data '{"email":"you+test2@example.com","role":"Other"}'
+  # HTTP/2 201 … {"status":"joined"}
+  ```
+
+  `curl -i https://cloakpipe.co/api/waitlist` answers `405`; a POST from another origin answers `403`. Preview
+  deployments may sit behind Vercel Authentication, in which case curl gets Vercel's login page.
+- In a browser: open `/waitlist`, submit your own email and check a row appears; submit it again and you should
+  see "You're already on the list" with no second row. Without JS (disable it in devtools) the form still posts
+  and the page shows the result. Delete test rows from the sheet afterwards.
+- On failure the Vercel function log names the step and a hint, e.g. `Apps Script redirect failed (HTTP 302):
+  redirected to Google sign-in (hint: the web app is not public: …)` or `script answered error "unauthorized"
+  (hint: WAITLIST_SCRIPT_SECRET in Vercel does not match …)`. Script-side errors are under **Executions** in
+  the Apps Script editor.
+
+### Analytics
+
+On success the page sends an Umami event `waitlist_joined` (or `waitlist_already`) with the selected `role`
+only; email, name and company are never sent. After a no-JS post the event is sent when the page loads with
+`?joined=…` (without a role).
 
 ### API contract
 
@@ -117,8 +189,9 @@ localhost outside production. Each warm instance allows about 5 requests per min
 | Rate limited | `429 {"error":"rate_limited"}` + `Retry-After: 60` | same, `?error=rate_limited` |
 | Bad content type / too large | `415` / `413` | same |
 | Not configured | `503 {"error":"unavailable"}` | `?error=unavailable` |
-| Google API error | `502 {"error":"upstream"}` | `?error=server` |
+| Apps Script error (bad secret, sign-in page, HTML, non-JSON) | `502 {"error":"upstream"}` | `?error=server` |
+| Apps Script timeout (10 s) | `504 {"error":"upstream"}` | `?error=server` |
 | Any other method | `405`, `Allow: POST` | |
 
-Error responses never include credentials, Google's response bodies or stack traces; the server log names the
-failing step, the HTTP status and Google's short error code.
+Error responses never include the secret, the script URL, Google's response bodies or stack traces; the server
+log names the failing step, the HTTP status, the script's short error code and a setup hint.

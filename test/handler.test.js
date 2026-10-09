@@ -1,31 +1,23 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { generateKeyPairSync } from 'node:crypto';
 import { createHandler, REQUIRED_ENV } from '../api/_lib/handler.js';
 import { createRateLimiter } from '../api/_lib/guard.js';
-import { HEADER } from '../api/_lib/sheets.js';
-import { fakeGoogle, SHEET_ID, TOKEN } from './fake-google.js';
+import { HEADER } from '../api/_lib/row.js';
+import { fakeAppsScript, SCRIPT_URL, SECRET } from './fake-apps-script.js';
 
-const { privateKey } = generateKeyPairSync('rsa', {
-  modulusLength: 2048,
-  privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
-  publicKeyEncoding: { type: 'spki', format: 'pem' },
-});
-const SA_EMAIL = 'waitlist@proj.iam.gserviceaccount.com';
 const NOW = Date.UTC(2026, 9, 9, 12, 0, 0);
 const ENV = {
-  GOOGLE_SERVICE_ACCOUNT_EMAIL: SA_EMAIL,
-  GOOGLE_PRIVATE_KEY: privateKey.replace(/\n/g, '\\n'),
-  WAITLIST_SHEET_ID: SHEET_ID,
+  WAITLIST_SCRIPT_URL: SCRIPT_URL,
+  WAITLIST_SCRIPT_SECRET: SECRET,
   VERCEL_ENV: 'production',
 };
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
 
-function setup({ env = ENV, google = fakeGoogle(), limit = 100 } = {}) {
+function setup({ env = ENV, google = fakeAppsScript(), limit = 100, timeoutMs = 1000 } = {}) {
   const logs = [];
   const log = { error: (...a) => logs.push(a.join(' ')), warn: (...a) => logs.push(a.join(' ')) };
   const rateLimiter = createRateLimiter({ limit, windowMs: 60_000, now: () => NOW });
-  const handle = createHandler({ fetch: google.fetch, now: () => NOW, rateLimiter, log });
+  const handle = createHandler({ fetch: google.fetch, now: () => NOW, rateLimiter, log, timeoutMs });
   return { handle: (req) => handle(req, env), google, logs };
 }
 
@@ -55,7 +47,7 @@ test('non-POST methods get 405 with Allow: POST', async () => {
   }
 });
 
-test('missing env vars → 503 JSON, names logged server-side, no Google call', async () => {
+test('missing env vars → 503 JSON, names logged server-side, no upstream call', async () => {
   for (const missing of REQUIRED_ENV) {
     const env = { ...ENV };
     delete env[missing];
@@ -66,9 +58,24 @@ test('missing env vars → 503 JSON, names logged server-side, no Google call', 
     assert.equal(body.error, 'unavailable');
     assert.equal(google.calls.length, 0);
     assert.ok(logs.some((l) => l.includes(missing)), `logs name ${missing}`);
-    assert.ok(!JSON.stringify(body).includes('GOOGLE'), 'env names not echoed to the client');
+    assert.ok(!JSON.stringify(body).includes('WAITLIST_'), 'env names not echoed to the client');
   }
-  assert.deepEqual(REQUIRED_ENV, ['GOOGLE_SERVICE_ACCOUNT_EMAIL', 'GOOGLE_PRIVATE_KEY', 'WAITLIST_SHEET_ID']);
+  assert.deepEqual(REQUIRED_ENV, ['WAITLIST_SCRIPT_URL', 'WAITLIST_SCRIPT_SECRET']);
+});
+
+test('misconfigured env (not an /exec URL, short secret) → 503, logged without values', async () => {
+  for (const [over, needle] of [
+    [{ WAITLIST_SCRIPT_URL: 'https://docs.google.com/spreadsheets/d/abc/edit' }, 'WAITLIST_SCRIPT_URL'],
+    [{ WAITLIST_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbx/dev' }, 'WAITLIST_SCRIPT_URL'],
+    [{ WAITLIST_SCRIPT_SECRET: 'short-secret' }, 'WAITLIST_SCRIPT_SECRET'],
+  ]) {
+    const { handle, google, logs } = setup({ env: { ...ENV, ...over } });
+    const res = await handle(jsonReq(fields()));
+    assert.equal(res.status, 503);
+    assert.equal(google.calls.length, 0);
+    assert.ok(logs.some((l) => l.includes(needle)), needle);
+    assert.ok(!logs.join('\n').includes('short-secret'), 'secret value not logged');
+  }
 });
 
 test('missing env on a no-JS form post redirects with ?error=unavailable', async () => {
@@ -78,36 +85,39 @@ test('missing env on a no-JS form post redirects with ?error=unavailable', async
   assert.match(res.headers.get('location'), /^\/waitlist\?error=unavailable#/);
 });
 
-test('happy path (JSON): header row auto-created, then one RAW append', async () => {
+test('happy path (JSON): forwarded to the script, header row auto-created, row appended', async () => {
   const { handle, google } = setup();
   const res = await handle(jsonReq(fields({ source: '/waitlist', utm_source: 'x' })));
   assert.equal(res.status, 201);
   assert.deepEqual(await res.json(), { status: 'joined' });
   assert.equal(res.headers.get('cache-control'), 'no-store');
 
-  const rows = google.sheet.tabs.Waitlist;
+  const rows = google.rows();
   assert.deepEqual(rows[0], HEADER);
   assert.deepEqual(rows[1], ['2026-10-09T12:00:00.000Z', 'ada@example.com', 'Ada', 'Analytical', 'Engineering/ML', 'support agents', '/waitlist', 'x', '', '', 'Chrome/macOS']);
-  const append = google.calls.find((c) => c.url.pathname.endsWith(':append'));
-  assert.equal(append.url.searchParams.get('valueInputOption'), 'RAW');
+  const [post, echo] = google.calls;
+  assert.equal(post.method, 'POST');
+  assert.equal(JSON.parse(post.body).secret, SECRET);
+  assert.equal(echo.method, 'GET');
   assert.ok(!JSON.stringify(rows).includes('203.0.113'), 'IP never stored');
+  assert.ok(!post.body.includes('203.0.113'), 'IP never sent');
 });
 
-test('the header row is not rewritten when the tab already has data', async () => {
-  const google = fakeGoogle({ tabs: { Waitlist: [HEADER, ['t', 'old@example.com']] } });
-  const { handle } = setup({ google });
-  assert.equal((await handle(jsonReq(fields()))).status, 201);
-  assert.equal(google.calls.filter((c) => c.method === 'PUT').length, 0);
-  assert.equal(google.sheet.tabs.Waitlist.length, 3);
+test('formula-looking input is neutralised before it reaches the sheet', async () => {
+  const { handle, google } = setup();
+  assert.equal((await handle(jsonReq(fields({ name: '=IMPORTXML("http://x")', company: '@evil' })))).status, 201);
+  const row = google.rows()[1];
+  assert.equal(row[2], `'=IMPORTXML("http://x")`);
+  assert.equal(row[3], "'@evil");
 });
 
 test('duplicate email → 200 {status:"already"} and no append', async () => {
-  const google = fakeGoogle({ tabs: { Waitlist: [HEADER, ['t', 'ada@example.com']] } });
+  const google = fakeAppsScript({ tabs: { Waitlist: [HEADER, ['t', 'ada@example.com']] } });
   const { handle } = setup({ google });
   const res = await handle(jsonReq(fields({ email: '  ADA@example.COM ' })));
   assert.equal(res.status, 200);
   assert.deepEqual(await res.json(), { status: 'already' });
-  assert.equal(google.calls.filter((c) => c.url.pathname.endsWith(':append')).length, 0);
+  assert.equal(google.rows().length, 2);
 });
 
 test('form post (no JS): 303 to ?joined=1, UTM and source taken from the Referer', async () => {
@@ -115,12 +125,12 @@ test('form post (no JS): 303 to ?joined=1, UTM and source taken from the Referer
   const res = await handle(formReq(fields()));
   assert.equal(res.status, 303);
   assert.equal(res.headers.get('location'), '/waitlist?joined=1#wl-joined');
-  const row = google.sheet.tabs.Waitlist[1];
+  const row = google.rows()[1];
   assert.deepEqual(row.slice(6, 10), ['/waitlist', 'hn', 'post', 'launch']);
 });
 
 test('form post duplicate → 303 to ?joined=already', async () => {
-  const google = fakeGoogle({ tabs: { Waitlist: [HEADER, ['t', 'ada@example.com']] } });
+  const google = fakeAppsScript({ tabs: { Waitlist: [HEADER, ['t', 'ada@example.com']] } });
   const { handle } = setup({ google });
   const res = await handle(formReq(fields()));
   assert.equal(res.headers.get('location'), '/waitlist?joined=already#wl-already');
@@ -187,41 +197,39 @@ test('unsupported content type → 415; malformed JSON → 400; oversized body �
   assert.equal(res.status, 413);
 });
 
-test('Google error → 502 with a friendly message and no secret leaked', async () => {
-  for (const failAt of ['token', 'read', 'header', 'append']) {
-    const google = fakeGoogle({ failAt });
-    const { handle, logs } = setup({ google });
+test('upstream failures → 502 (504 on timeout) with a friendly message; secret never leaked', async () => {
+  const cases = [
+    [{ properties: { WAITLIST_SECRET: 'c'.repeat(64) } }, 502, /unauthorized.*hint: WAITLIST_SCRIPT_SECRET/],
+    [{ mode: 'signin' }, 502, /sign-in.*Anyone/],
+    [{ mode: 'signin-html' }, 502, /HTML.*Anyone/],
+    [{ mode: 'html' }, 502, /HTML/],
+    [{ mode: 'not-json' }, 502, /not a JSON/],
+    [{ mode: 'http500' }, 502, /HTTP 500/],
+    [{ mode: 'offsite' }, 502, /unexpected redirect/],
+    [{ mode: 'hang' }, 504, /timeout/],
+    [{ mode: 'echo-hang' }, 504, /timeout/],
+  ];
+  for (const [opts, status, logPattern] of cases) {
+    const label = JSON.stringify(opts);
+    const { handle, logs } = setup({ google: fakeAppsScript(opts), timeoutMs: 50 });
     const res = await handle(jsonReq(fields()));
-    assert.equal(res.status, 502, failAt);
+    assert.equal(res.status, status, label);
     const text = await res.text();
     const body = JSON.parse(text);
-    assert.equal(body.error, 'upstream');
+    assert.equal(body.error, 'upstream', label);
     assert.ok(body.message.length > 0);
-    for (const secret of [TOKEN, SHEET_ID, SA_EMAIL, 'PRIVATE KEY', 'boom', 'stack', 'at ']) {
-      assert.ok(!text.includes(secret), `${failAt}: response leaks ${secret}`);
+    const all = `${text}\n${logs.join('\n')}`;
+    for (const secret of [SECRET, SCRIPT_URL, 'AKfycb', 'c'.repeat(64), '<html', 'stack']) {
+      assert.ok(!all.includes(secret), `${label}: leaks ${secret}`);
     }
-    assert.ok(logs.some((l) => l.includes(failAt === 'token' ? 'token' : failAt)), `${failAt} logged`);
-    assert.ok(!logs.join('\n').includes('PRIVATE KEY') && !logs.join('\n').includes(TOKEN), 'logs carry no secrets');
+    assert.ok(!text.includes('hint'), `${label}: hint stays in the server log`);
+    assert.ok(logs.some((l) => logPattern.test(l)), `${label}: log ${logs.join(' | ')}`);
   }
 });
 
-test('Google error on a form post → 303 ?error=server', async () => {
-  const { handle } = setup({ google: fakeGoogle({ failAt: 'append' }) });
+test('upstream error on a form post → 303 ?error=server', async () => {
+  const { handle } = setup({ google: fakeAppsScript({ mode: 'html' }) });
   const res = await handle(formReq(fields()));
   assert.equal(res.status, 303);
   assert.equal(res.headers.get('location'), '/waitlist?error=server#wl-error');
-});
-
-test('WAITLIST_SHEET_TAB overrides the tab name', async () => {
-  const google = fakeGoogle({ tabs: { Signups: [] } });
-  const { handle } = setup({ env: { ...ENV, WAITLIST_SHEET_TAB: 'Signups' }, google });
-  assert.equal((await handle(jsonReq(fields()))).status, 201);
-  assert.equal(google.sheet.tabs.Signups.length, 2);
-});
-
-test('the access token is reused across requests (module-scope cache)', async () => {
-  const { handle, google } = setup();
-  await handle(jsonReq(fields({ email: 'a1@example.com' })));
-  await handle(jsonReq(fields({ email: 'a2@example.com' })));
-  assert.equal(google.calls.filter((c) => c.url.hostname === 'oauth2.googleapis.com').length, 1);
 });
