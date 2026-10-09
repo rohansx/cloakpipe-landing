@@ -1,6 +1,6 @@
 // Client behaviour for the shared marketing chrome: theme toggle, mobile
 // drawer, and reveal-on-scroll. The nav/footer markup itself is rendered
-// statically by Astro (Nav.astro / Footer.astro) — this only wires events.
+// statically by Astro (Nav.astro / Footer.astro); this only wires events.
 // Theme is applied pre-paint by an inline script in the layout <head>.
 
 function wireTheme() {

@@ -10,7 +10,7 @@
       Every hop of agent traffic gets a deterministic policy decision made outside the model, and every
       decision produces <span class="hl">signed, hash-chained evidence a third party can verify offline</span>, bound to the
       certified release that made it. Anchor an exported bundle at a public timestamp authority and transparency log, and the operator cannot back-date it either.
-      Pseudonymization — not redaction — is the foundation it's built on: real values live in an encrypted vault
+      Pseudonymization, not redaction, is the foundation it's built on: real values live in an encrypted vault
       and are restored on the way back, reversible only under policy.
     </p>
     <div class="hero-ctas reveal" data-d="3">
@@ -31,7 +31,7 @@
       </div>
       <p>
         A 6-hour incident clock makes reconstructing logs after the fact impossible. CloakPipe makes evidence
-        a <span class="hl">byproduct of traffic, not a scramble</span> — every hop is hash-chained, signed, and
+        a <span class="hl">byproduct of traffic, not a scramble</span>: every hop is hash-chained, signed, and
         sealed as it happens.
       </p>
     </div>
@@ -50,7 +50,7 @@
       <div class="feature-card">
         <div class="ix"></div>
         <h3>Open verifier CLI</h3>
-        <p>Free forever, by design — "verify it yourself" only works if the verifier is unencumbered. Auditors check chain integrity, signatures, and release certifications themselves, offline, with no vendor trust required.</p>
+        <p>Free forever, by design: "verify it yourself" only works if the verifier is unencumbered. Auditors check chain integrity, signatures, and release certifications themselves, offline, with no vendor trust required.</p>
       </div>
       <div class="feature-card">
         <div class="ix"></div>
@@ -122,7 +122,7 @@
         <a class="learn-more" href="/platform">How the proxy does it <span class="arr">→</span></a>
       </div>
       <p>
-        Detection-only tools — Microsoft Presidio, AWS Comprehend, the OpenAI Privacy Filter on its own —
+        Detection-only tools (Microsoft Presidio, AWS Comprehend, the OpenAI Privacy Filter on its own)
         find sensitive data and stamp out a dead token. That works for anonymizing a training set. It
         <span class="hl">does not work for a real-time AI application</span> where the response has to come back
         with the real values intact. Watch what happens to a single clinical sentence.
@@ -137,11 +137,11 @@
         </div>
         <div class="pseudo-cell bad">
           <div class="head-tag">Other tools</div>
-          <div class="head-name">Redacted — data lost</div>
+          <div class="head-name">Redacted · data lost</div>
         </div>
         <div class="pseudo-cell good">
           <div class="head-tag">CloakPipe</div>
-          <div class="head-name">Pseudonymized — utility kept</div>
+          <div class="head-name">Pseudonymized · utility kept</div>
         </div>
       </div>
       <div class="pseudo-row">
@@ -185,7 +185,7 @@
       <div class="ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 7 L6 11 L12 3"/></svg></div>
       <p>
         <strong>The model never sees a single real value.</strong>
-        It receives structurally valid text and reasons about it normally — &ldquo;PERSON_3 should take MEDICATION_7 at 20mg.&rdquo;
+        It receives structurally valid text and reasons about it normally: &ldquo;PERSON_3 should take MEDICATION_7 at 20mg.&rdquo;
         CloakPipe restores the originals in the response: &ldquo;Dr. Sarah Chen should take Amlodipine at 20mg.&rdquo;
         Redaction throws that round trip away. Pseudonymization is the only approach that keeps it.
       </p>
@@ -193,7 +193,7 @@
   </div>
 </section>
 
-<!-- ============== HOW IT WORKS — THE ROUND TRIP ============== -->
+<!-- ============== HOW IT WORKS: THE ROUND TRIP ============== -->
 <section class="section" id="round-trip">
   <div class="wrap">
     <div class="section-head reveal">
@@ -203,8 +203,8 @@
         <a class="learn-more" href="/platform">The full hot path <span class="arr">→</span></a>
       </div>
       <p>
-        Every prompt your application makes passes through the Rust proxy. The whole loop —
-        detection, vault write, forward, and rehydration —
+        Every prompt your application makes passes through the Rust proxy. The whole loop
+        (detection, vault write, forward, and rehydration)
         <span class="hl">targets under 50&nbsp;ms p95</span>, transparently. One line of code changes: the base URL.
       </p>
     </div>
@@ -224,7 +224,7 @@
         <h3>02 · Pseudonymize</h3>
         <p>
           Each detected entity is replaced with a deterministic, semantically valid fake. &ldquo;Dr. Sarah Chen&rdquo;
-          becomes &ldquo;Dr. PERSON_3&rdquo; — the same token every time, so the LLM can track relationships across the
+          becomes &ldquo;Dr. PERSON_3&rdquo;, the same token every time, so the LLM can track relationships across the
           entire conversation.
         </p>
       </div>
@@ -240,7 +240,7 @@
         <div class="ix"></div>
         <h3>04 · Forward clean prompt</h3>
         <p>
-          The pseudonymized prompt is forwarded to any provider — OpenAI, Anthropic, Google, Bedrock, Azure, or a
+          The pseudonymized prompt is forwarded to any provider: OpenAI, Anthropic, Google, Bedrock, Azure, or a
           self-hosted model. The provider sees structurally valid text with zero real sensitive data.
         </p>
       </div>
@@ -249,7 +249,7 @@
         <h3>05 · Rehydrate response</h3>
         <p>
           As the response streams back token-by-token, CloakPipe runs a sliding window over the SSE chunks, detects
-          pseudonymized tokens, looks up the real values, and splices them in — without buffering or breaking the
+          pseudonymized tokens, looks up the real values, and splices them in without buffering or breaking the
           streaming contract.
         </p>
       </div>
@@ -257,8 +257,8 @@
         <div class="ix"></div>
         <h3>06 · Audit &amp; return</h3>
         <p>
-          Every detection, mask, and unmask decision is logged as a privacy-safe audit event, then the response —
-          with real values restored — is returned to your application. Compliance evidence is generated on the way out.
+          Every detection, mask, and unmask decision is logged as a privacy-safe audit event, then the response
+          (with real values restored) is returned to your application. Compliance evidence is generated on the way out.
         </p>
       </div>
     </div>
@@ -278,14 +278,14 @@
         A redacted token like <code class="mono" style="background: var(--surface-2); padding: 1px 6px; color: var(--text-2);">[CREDIT_CARD]</code>
         breaks the moment it hits a system that expects a card number. CloakPipe generates replacements that
         <span class="hl">pass the same validation checks as the originals</span>, using format-preserving encryption
-        (FF1, NIST SP 800-38G). Downstream systems — and the model itself — keep working exactly as before.
+        (FF1, NIST SP 800-38G). Downstream systems, and the model itself, keep working exactly as before.
       </p>
     </div>
 
     <div class="feature-grid reveal">
       <div class="feature-card">
         <div class="ix"></div>
-        <h3>Credit cards — Luhn-valid</h3>
+        <h3>Credit cards: Luhn-valid</h3>
         <p>
           A card number is replaced with another number that passes the Luhn checksum. Payment-related queries
           flow through your AI pipeline without exposing a single real PAN to the model provider.
@@ -293,7 +293,7 @@
       </div>
       <div class="feature-card">
         <div class="ix"></div>
-        <h3>IBANs — mod-97 valid</h3>
+        <h3>IBANs: mod-97 valid</h3>
         <p>
           Bank account identifiers are regenerated to pass the mod-97 check digit. Any downstream validator that
           rejects malformed IBANs will accept the pseudonym just as it accepts the original.
@@ -303,7 +303,7 @@
         <div class="ix"></div>
         <h3>Emails stay emails</h3>
         <p>
-          <code class="mono">s.chen@northshore.org</code> becomes <code class="mono">EMAIL_3@DOMAIN_1.org</code> —
+          <code class="mono">s.chen@northshore.org</code> becomes <code class="mono">EMAIL_3@DOMAIN_1.org</code>,
           still a syntactically valid address. Forms, regexes, and parsers that expect an email don't choke on a
           dead token.
         </p>
@@ -322,7 +322,7 @@
       <div class="ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 7 L6 11 L12 3"/></svg></div>
       <p>
         <strong>Format preservation is what makes pseudonymization safe to drop into production.</strong>
-        The model — and any database, validator, or webhook that consumes its output — keeps working exactly as before,
+        The model, and any database, validator, or webhook that consumes its output, keeps working exactly as before,
         because every fake is indistinguishable in shape from the real value it stands in for.
       </p>
     </div>
@@ -349,11 +349,11 @@
       <p>
         If &ldquo;Dr. Sarah Chen&rdquo; appears five times in a prompt, it maps to &ldquo;Dr. PERSON_3&rdquo; all five times.
         When the model answers, CloakPipe restores &ldquo;Dr. Sarah Chen&rdquo; in all five places. The model can correctly say
-        <strong>&ldquo;PERSON_3 prescribed MEDICATION_7 to PERSON_5&rdquo;</strong> — and the relationship survives the round trip.
+        <strong>&ldquo;PERSON_3 prescribed MEDICATION_7 to PERSON_5&rdquo;</strong>, and the relationship survives the round trip.
       </p>
       <p>
         Consistency holds across conversations, sessions, and batch processing, not just a single message. Tokens can be
-        scoped to a single conversation, expire after a configurable TTL, or persist indefinitely for long-running workflows —
+        scoped to a single conversation, expire after a configurable TTL, or persist indefinitely for long-running workflows,
         whichever your use case demands.
       </p>
     </div>
@@ -390,8 +390,8 @@
       </div>
       <p>
         Without a vault, pseudonymization is one-way: data goes in, nothing comes back. With a vault, it is
-        <span class="hl">reversible under policy</span>. That is the line between anonymization — which destroys
-        utility — and privacy, which preserves utility while controlling access.
+        <span class="hl">reversible under policy</span>. That is the line between anonymization (which destroys
+        utility) and privacy, which preserves utility while controlling access.
       </p>
     </div>
 
@@ -400,12 +400,12 @@
         The vault stores every real&nbsp;→&nbsp;fake mapping, encrypted at rest with AES-256-GCM and per-tenant isolation.
         Unmasking is never automatic. Every unmask request runs through the policy engine first:
         <strong>the caller's identity, role, request context, and release status</strong> are checked against rules defined in code and
-        versioned in Git — context-based access control (CBAC).
+        versioned in Git: context-based access control (CBAC).
       </p>
       <p>
-        A sales agent cannot unmask a medical record. A supervising physician can — but only during an active case review,
+        A sales agent cannot unmask a medical record. A supervising physician can, but only during an active case review,
         and only for the entity types policy permits. An uncertified release never unmasks. Every decision, allowed or denied,
-        is written to the verifiable evidence ledger — hash-chained, signed, and never containing a raw value.
+        is written to the verifiable evidence ledger: hash-chained, signed, and never containing a raw value.
       </p>
     </div>
 
@@ -422,7 +422,7 @@
         <div class="ix"></div>
         <h3>CBAC on every unmask</h3>
         <p>
-          Who is asking, what is their role, how sensitive is the data, what is the workflow context — all evaluated
+          Who is asking, their role, how sensitive the data is and the workflow context are all evaluated
           at runtime via Cedar in sub-millisecond time before any real value is revealed.
         </p>
       </div>
@@ -438,8 +438,8 @@
         <div class="ix"></div>
         <h3>Verifiable, never raw</h3>
         <p>
-          The evidence ledger records what <em>types</em> of data were processed and what actions were taken — never
-          the actual values — hash-chained and signed. It supports audit evidence for HIPAA, GDPR, and PCI-DSS programs
+          The evidence ledger records what <em>types</em> of data were processed and what actions were taken, never
+          the actual values, hash-chained and signed. It supports audit evidence for HIPAA, GDPR, and PCI-DSS programs
           without becoming a new liability, and without asking anyone to trust our word for it.
         </p>
       </div>

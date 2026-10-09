@@ -7,7 +7,7 @@
       One <span class="acc">open core.</span>
     </h1>
     <p class="lede reveal" data-d="2">
-      CloakPipe is built as four distinct product surfaces — the
+      CloakPipe is built as four distinct product surfaces: the
       <span class="hl">Rust proxy, the encrypted vault, the agent-hop policy engine, and the verifiable evidence ledger</span>.
       The proxy is currently MIT licensed. The vault, signed evidence path, release certification, and
       release-aware runtime enforcement are implemented, as are external anchoring and the per-release
@@ -51,12 +51,12 @@
       <div class="feature-card">
         <div class="ix"></div>
         <h3>Streaming SSE rehydration</h3>
-        <p>LLMs stream token-by-token. CloakPipe maintains a sliding window, detects pseudonymized tokens mid-stream, looks up real values from the vault, and splices them in — without buffering or breaking the SSE contract.</p>
+        <p>LLMs stream token-by-token. CloakPipe maintains a sliding window, detects pseudonymized tokens mid-stream, looks up real values from the vault, and splices them in without buffering or breaking the SSE contract.</p>
       </div>
       <div class="feature-card">
         <div class="ix"></div>
         <h3>Multi-provider routing</h3>
-        <p>Route to OpenAI, Anthropic, Google, AWS Bedrock, Azure OpenAI, or any self-hosted model via vLLM or Ollama. Apply different masking policies per provider — strict for closed models, lighter or bypassed for self-hosted.</p>
+        <p>Route to OpenAI, Anthropic, Google, AWS Bedrock, Azure OpenAI, or any self-hosted model via vLLM or Ollama. Apply different masking policies per provider: strict for closed models, lighter or bypassed for self-hosted.</p>
       </div>
       <div class="feature-card">
         <div class="ix"></div>
@@ -68,11 +68,11 @@
     <div class="prose reveal" data-d="1" style="margin-top:36px;">
       <h3>Pluggable, tiered detection pipeline</h3>
       <p>
-        Detection is deliberately commoditized — CloakPipe does not lock you into a single model.
+        Detection is deliberately commoditized; CloakPipe does not lock you into a single model.
         The proxy runs a <strong>tiered pipeline</strong> where each tier escalates only as needed:
         what regex catches deterministically, the neural models never see; what one model misses, the ensemble catches.
         OpenAI Privacy Filter scores 96% on synthetic benchmarks but Tonic.ai measured 18–65% on real-world EHR notes,
-        call transcripts, and loan contracts. <strong>No single model catches everything</strong> — which is why the pipeline tiers.
+        call transcripts, and loan contracts. <strong>No single model catches everything</strong>, which is why the pipeline tiers.
       </p>
     </div>
 
@@ -103,7 +103,7 @@
             <div class="tier">
               <div class="tn">T3</div>
               <div class="tname">GLiNER2-PII</div>
-              <div class="twhat">300M params, multilingual, zero-shot. Fires for custom entity types — MRNs, case IDs, policy numbers.</div>
+              <div class="twhat">300M params, multilingual, zero-shot. Fires for custom entity types: MRNs, case IDs, policy numbers.</div>
               <div class="tms">40–80 ms</div>
             </div>
             <div class="tier">
@@ -130,7 +130,7 @@
       </div>
       <p>
         An encrypted tokenization vault that stores the mapping between real sensitive data and pseudonymized tokens.
-        The vault is the source of truth — and the reason pseudonymization is <span class="hl">reversible under policy</span>,
+        The vault is the source of truth, and the reason pseudonymization is <span class="hl">reversible under policy</span>,
         not a one-way redaction. Without a vault, data goes in and nothing useful comes out.
       </p>
     </div>
@@ -139,7 +139,7 @@
       <div class="feature-card">
         <div class="ix"></div>
         <h3>AES-256-GCM at rest</h3>
-        <p>Every real value stored in the vault is encrypted with AES-256-GCM. Nothing real exists outside the vault — the clean prompt that reaches the provider contains zero original sensitive data.</p>
+        <p>Every real value stored in the vault is encrypted with AES-256-GCM. Nothing real exists outside the vault: the clean prompt that reaches the provider contains zero original sensitive data.</p>
       </div>
       <div class="feature-card">
         <div class="ix"></div>
@@ -252,17 +252,17 @@
       <div class="feature-card">
         <div class="ix"></div>
         <h3>Conduct policy · roadmap</h3>
-        <p>Planned: calling-hour windows, mandatory-disclosure verification, session sequencing — behavioral rules no redactor touches. A 7:05pm call is recorded as a reportable event, deterministically, every time.</p>
+        <p>Planned: calling-hour windows, mandatory-disclosure verification, session sequencing. Behavioral rules no redactor touches. A 7:05pm call is recorded as a reportable event, deterministically, every time.</p>
       </div>
       <div class="feature-card">
         <div class="ix"></div>
         <h3>Context-based access (CBAC)</h3>
-        <p>Unmasking decided at runtime from who is asking, their role, the data's sensitivity, and the workflow context. A sales agent cannot unmask medical records; a supervising physician can — but only during an active case review, and only from a certified release.</p>
+        <p>Unmasking decided at runtime from who is asking, their role, the data's sensitivity, and the workflow context. A sales agent cannot unmask medical records; a supervising physician can, but only during an active case review, and only from a certified release.</p>
       </div>
       <div class="feature-card">
         <div class="ix"></div>
         <h3>Custom entity definitions</h3>
-        <p>Define domain-specific entity types via regex, keyword lists, or NER labels: medical record numbers, case docket IDs, insurance policy numbers, internal employee IDs — whatever your domain requires.</p>
+        <p>Define domain-specific entity types via regex, keyword lists, or NER labels: medical record numbers, case docket IDs, insurance policy numbers, internal employee IDs, whatever your domain requires.</p>
       </div>
       <div class="feature-card">
         <div class="ix"></div>
@@ -272,7 +272,7 @@
     </div>
 
     <div class="prose reveal" data-d="1" style="margin-top:36px;">
-      <h3>Example policy — patient data for external models</h3>
+      <h3>Example policy: patient data for external models</h3>
     </div>
     <div class="yaml reveal" data-d="1" style="margin-top:12px;">
 <span class="yc"># rules — evaluated top to bottom on every request</span>
@@ -319,7 +319,7 @@
       <div class="feature-card">
         <div class="ix"></div>
         <h3>What gets sealed</h3>
-        <p>Every request (timestamp, caller, source IP, destination provider), every detection event, every masking action, every unmask request, every policy evaluation, and every MCP tool hop — hash-chained, Ed25519-signed, and bound to the release hash.</p>
+        <p>Every request (timestamp, caller, source IP, destination provider), every detection event, every masking action, every unmask request, every policy evaluation, and every MCP tool hop: hash-chained, Ed25519-signed, and bound to the release hash.</p>
       </div>
       <div class="feature-card">
         <div class="ix"></div>
@@ -399,13 +399,13 @@
         <div class="name">Auth → Policy → Detect → Vault → Forward → Rehydrate → Ledger</div>
         <div class="tagline">Built on Rust / Axum / Tower with Tokio streams. Detection escalates through tiers; the vault makes the round-trip reversible; the evidence ledger closes every request.</div>
         <ul class="points">
-          <li><strong>1 · Auth</strong> — a scoped API key resolves the agent, the environment, and its current release</li>
-          <li><strong>2 · Policy</strong> — Cedar evaluation with release context: allow / deny plus per-entity and per-hop rules</li>
-          <li><strong>3 · Detection</strong> — T1 regex + checksum (&lt;1ms) → T2 Privacy Filter (ONNX, 30–50ms) → T3 GLiNER2 for custom entities (optional)</li>
-          <li><strong>4 · Pseudonymize + vault write</strong> — deterministic tokens encrypted at rest</li>
-          <li><strong>5 · Forward</strong> — clean prompt to the LLM provider; zero real data leaves</li>
-          <li><strong>6 · Stream + rehydrate</strong> — detect tokens in the SSE stream, vault lookup, authorize, splice real values back</li>
-          <li><strong>7 · Ledger</strong> — hash-chain and sign a privacy-safe evidence record, then return the response with real values restored</li>
+          <li><strong>1 · Auth</strong>: a scoped API key resolves the agent, the environment, and its current release</li>
+          <li><strong>2 · Policy</strong>: Cedar evaluation with release context: allow / deny plus per-entity and per-hop rules</li>
+          <li><strong>3 · Detection</strong>: T1 regex + checksum (&lt;1ms) → T2 Privacy Filter (ONNX, 30–50ms) → T3 GLiNER2 for custom entities (optional)</li>
+          <li><strong>4 · Pseudonymize + vault write</strong>: deterministic tokens encrypted at rest</li>
+          <li><strong>5 · Forward</strong>: clean prompt to the LLM provider; zero real data leaves</li>
+          <li><strong>6 · Stream + rehydrate</strong>: detect tokens in the SSE stream, vault lookup, authorize, splice real values back</li>
+          <li><strong>7 · Ledger</strong>: hash-chain and sign a privacy-safe evidence record, then return the response with real values restored</li>
         </ul>
       </div>
     </div>
@@ -483,7 +483,7 @@
       </div>
       <p>
         Same Rust binary. Same detection pipeline. Same vault encryption.
-        <span class="hl">Pick the topology that matches your security posture</span> — from fully managed cloud
+        <span class="hl">Pick the topology that matches your security posture</span>, from fully managed cloud
         to a fully offline air-gapped install with no network calls and no telemetry.
       </p>
     </div>

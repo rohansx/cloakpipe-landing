@@ -1,4 +1,4 @@
-// Landing playground — calls the public /api/demo/scan endpoint (real Privacy
+// Landing playground: calls the public /api/demo/scan endpoint (real Privacy
 // Filter) and renders the pseudonymized output with token highlighting.
 
 const API = 'https://api.cloakpipe.co/api/demo/scan';
@@ -52,7 +52,7 @@ async function run() {
     if (d.truncated) chips.push('truncated to 4000 chars');
     meta.innerHTML = chips.map((c) => `<span class="pg-chip">${esc(c)}</span>`).join('');
   } catch (e) {
-    out.textContent = 'Network error — could not reach the API. Try again shortly.';
+    out.textContent = 'Network error: could not reach the API. Try again shortly.';
   } finally {
     btn.disabled = false;
   }

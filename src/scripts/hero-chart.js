@@ -55,7 +55,7 @@ function buildHeroChart() {
 const schedule = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
 schedule(() => buildHeroChart());
 
-// live "masked" counter — start after a short delay so it never lands in the
+// live "masked" counter: start after a short delay so it never lands in the
 // first-paint window of a slow device.
 let masked = 418392;
 let interval = setInterval(() => {
