@@ -13,3 +13,6 @@ node_modules/
 
 # logs
 npm-debug.log*
+
+# vercel CLI (local link / build output)
+.vercel/

@@ -1,0 +1,36 @@
+---
+// Changelog, built from rohansx/cloakpipe's CHANGELOG.md (see src/lib/changelog.ts).
+import Docs from '../layouts/Docs.astro';
+import { getChangelog, CHANGELOG_GH_URL } from '../lib/changelog';
+import { GH_URL } from '../lib/github';
+
+const { html, source } = await getChangelog();
+// Until CHANGELOG.md is on core's main, the build uses the vendored copy and
+// links the repository instead of a file that does not exist yet.
+const frontmatter = {
+  title: 'Changelog',
+  eyebrow: 'Reference · Changelog',
+  description: 'Every notable change to CloakPipe, the open-source reliability layer for AI agents, release by release.',
+};
+---
+<Docs frontmatter={frontmatter}>
+  <div class="changelog">
+    <Fragment set:html={html} />
+  </div>
+  <p class="changelog-src">
+    {source === 'github'
+      ? <Fragment>Generated from <a href={CHANGELOG_GH_URL}><code>CHANGELOG.md</code></a> in the open-source repository, the single source of truth for releases.</Fragment>
+      : <Fragment>Generated from <code>CHANGELOG.md</code> in the <a href={GH_URL}>open-source repository</a>, the single source of truth for releases.</Fragment>}
+  </p>
+</Docs>
+
+<style is:global>
+  .changelog h2 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 10px; }
+  .changelog h2 a { color: var(--text) !important; text-decoration: none !important; }
+  .changelog h2 a:hover { color: var(--accent) !important; }
+  .changelog h3 {
+    font: 500 11px var(--mono); letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent); margin: 26px 0 10px;
+  }
+  .changelog-src { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13.5px !important; color: var(--text-3) !important; }
+</style>

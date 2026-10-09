@@ -9,9 +9,11 @@
         model and tool call, and keeps signed evidence anyone can verify offline.
       </p>
       <div class="hero-ctas reveal" data-d="3">
-        <a class="btn btn-lg btn-cta" href="mailto:hello@rohan.sh?subject=CloakPipe%20design%20partner"><span class="corner"></span>Become a design partner <span class="arr">→</span></a>
+        <a class="btn btn-lg btn-cta" href="/waitlist"><span class="corner"></span>Join the waitlist <span class="arr">→</span></a>
         <a class="btn btn-lg" href="/docs">Read the docs <span class="arr">→</span></a>
+        <a class="btn btn-lg btn-gh" href="https://github.com/rohansx/cloakpipe" aria-label="CloakPipe on GitHub"><svg class="gh-mark" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
       </div>
+      <p class="cta-tertiary reveal" data-d="3">Running agents in production? <a href="mailto:rohan@cloakpipe.co?subject=CloakPipe%20design%20partner">Become a design partner →</a></p>
       <div class="hero-stats reveal" data-d="4">
         <div class="hero-stat"><strong>1</strong><span>identity for the full agent release</span></div>
         <div class="hero-stat"><strong>4</strong><span>Evaluate · Certify · Enforce · Prove</span></div>
@@ -42,6 +44,18 @@
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ============== WAITLIST BAND ============== -->
+<section class="wl-band" aria-labelledby="wl-band-title">
+  <div class="wrap wl-band-inner reveal">
+    <div>
+      <div class="eyebrow">CloakPipe Cloud · early access</div>
+      <h2 id="wl-band-title">Hosted registry, certification, runtime enforcement and signed audit packs.</h2>
+      <p>The cloud is opening in waves. The open-source CLI works today; <a href="/docs/quickstart">start with the quick start</a>.</p>
+    </div>
+    <a class="btn btn-lg btn-cta" href="/waitlist"><span class="corner"></span>Join the waitlist <span class="arr">→</span></a>
   </div>
 </section>
 
@@ -79,7 +93,7 @@
       <p>CloakPipe does not replace your evaluation platform, gateway, telemetry, or CI system. It binds their evidence to one Agent Release, applies a deterministic decision, enforces it, and records the result. Every step below is in the open-source core or the cloud today.</p>
     </div>
     <div class="surfaces reveal">
-      <div class="surface proxy"><div class="ix"></div><div class="num">01 · EVALUATE</div><div class="name">Release assurance</div><div class="tagline">Test the exact agent configuration—not an isolated prompt or model.</div><ul class="points"><li><code class="mono">cloakpipe eval import</code> reads JUnit XML, Braintrust experiments, and Langfuse dataset runs</li><li>Fail closed: an unscored case is an error, never a pass</li><li><code class="mono">release diff</code> maps each changed component to the suites it requires</li></ul></div>
+      <div class="surface proxy"><div class="ix"></div><div class="num">01 · EVALUATE</div><div class="name">Release assurance</div><div class="tagline">Test the exact agent configuration, not an isolated prompt or model.</div><ul class="points"><li><code class="mono">cloakpipe eval import</code> reads JUnit XML, Braintrust experiments, and Langfuse dataset runs</li><li>Fail closed: an unscored case is an error, never a pass</li><li><code class="mono">release diff</code> maps each changed component to the suites it requires</li></ul></div>
       <div class="surface vault"><div class="ix"></div><div class="num">02 · CERTIFY</div><div class="name">Signed certification</div><div class="tagline">Turn results into a deterministic, reproducible release decision.</div><ul class="points"><li>Rules for critical failures, pass-rate regression against a baseline, coverage, and metrics</li><li>Ed25519-signed DSSE certification bound to the manifest hash</li><li>Offline <code class="mono">verify-cert</code>, revocation statements, and a GitHub Action</li></ul></div>
       <div class="surface policy"><div class="ix"></div><div class="num">03 · ENFORCE</div><div class="name">Runtime control</div><div class="tagline">Only certified releases receive production authority.</div><ul class="points"><li>Cedar sees the release; revoked releases are blocked and uncertified ones stay pseudonymized</li><li>Production promotion requires a valid certification or a recorded break-glass reason</li><li>Sentinels revoke on live error, block, or deny rates; the MCP gate allows only declared tools</li></ul></div>
       <div class="surface audit"><div class="ix"></div><div class="num">04 · PROVE</div><div class="name">Portable evidence</div><div class="tagline">Verify the basis and outcome of a decision outside the dashboard.</div><ul class="points"><li>Hash-chained, Ed25519-signed ledger records bound to the release hash</li><li>PII types, policy decisions, and tool hops; never raw values</li><li>Offline verifier for ledger bundles and certifications</li></ul></div>
@@ -125,11 +139,24 @@
   <div class="wrap">
     <h2 class="reveal">Certify the release.<br><span class="acc">Control the runtime.</span><br>Verify the evidence.</h2>
     <p class="reveal" data-d="1">We are working with design partners operating real AI agents in production. Bring one agent, one critical workflow, and the changes you need to control.</p>
-    <div class="ctas reveal" data-d="2"><a class="btn btn-lg btn-cta" href="mailto:hello@rohan.sh?subject=CloakPipe%20design%20partner"><span class="corner"></span>Talk to us <span class="arr">→</span></a><a class="btn btn-lg" href="https://github.com/rohansx/cloakpipe">View open source <span class="arr">→</span></a></div>
+    <div class="ctas reveal" data-d="2">
+      <a class="btn btn-lg btn-cta" href="/waitlist"><span class="corner"></span>Join the waitlist <span class="arr">→</span></a>
+      <a class="btn btn-lg" href="/docs">Read the docs <span class="arr">→</span></a>
+      <a class="btn btn-lg btn-gh" href="https://github.com/rohansx/cloakpipe" aria-label="CloakPipe on GitHub"><svg class="gh-mark" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
+    </div>
+    <p class="cta-tertiary reveal" data-d="2"><a href="mailto:rohan@cloakpipe.co?subject=CloakPipe%20design%20partner">Become a design partner →</a></p>
   </div>
 </section>
 
 <style>
+  .wl-band { border-bottom: 1px solid var(--line); background: var(--surface); }
+  .wl-band-inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding-top: 36px; padding-bottom: 36px; }
+  .wl-band .eyebrow { margin-bottom: 12px; }
+  .wl-band h2 { font: 500 clamp(19px, 2vw, 24px)/1.25 var(--sans); letter-spacing: -0.015em; max-width: 720px; margin-bottom: 8px; }
+  .wl-band p { font-size: 14px; color: var(--text-2); }
+  .wl-band p a { color: var(--accent); border-bottom: 1px solid var(--accent); }
+  .wl-band .btn { flex: none; }
+  @media (max-width: 760px) { .wl-band-inner { flex-direction: column; align-items: flex-start; } }
   .release-frame { padding-bottom: 0; }
   .release-title { padding: 28px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 20px; align-items: baseline; }
   .release-title span { font: 500 21px var(--mono); color: var(--text); }

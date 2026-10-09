@@ -1,31 +1,27 @@
 ---
 // Static marketing footer, rendered at build time (was chrome.js renderFooter).
+import LogoMark from './LogoMark.astro';
 import { GH_URL } from '../lib/github';
 
-const APP = 'https://app.cloakpipe.co';
-const CONTACT = 'mailto:hello@rohan.sh';
+const CONTACT = 'mailto:rohan@cloakpipe.co';
+const DESIGN_PARTNERS = 'mailto:rohan@cloakpipe.co?subject=CloakPipe%20design%20partner';
 ---
 <footer>
   <div class="wrap">
     <div class="foot-grid">
       <div>
         <div class="foot-brand-row">
-          <svg class="brand-mark" viewBox="0 0 22 22" fill="none">
-            <path d="M2 20 L8 4 L10 4 L4 20 Z" fill="currentColor"/>
-            <path d="M10 20 L16 4 L18 4 L12 20 Z" fill="currentColor"/>
-            <rect x="18" y="3" width="2" height="3" fill="#00FF66"/>
-            <rect x="18" y="7" width="2" height="3" fill="#00E0FF"/>
-          </svg> CloakPipe
+          <LogoMark /> CloakPipe
         </div>
-        <p>The reliability layer for AI agents. MIT-licensed open core with a managed developer preview.</p>
+        <p>The reliability layer for AI agents. MIT-licensed open core; CloakPipe Cloud is in early access.</p>
       </div>
       <div class="foot-col">
         <h3>Product</h3>
-        <a href="/platform">Product</a>
+        <a href="/platform">Platform</a>
         <a href="/trust">Proof</a>
         <a href="/pricing">Pricing</a>
         <a href="/playground">Playground</a>
-        <a href={`${APP}/demo`}>Live demo</a>
+        <a href="/waitlist">Join the waitlist</a>
       </div>
       <div class="foot-col">
         <h3>Developers</h3>
@@ -33,14 +29,13 @@ const CONTACT = 'mailto:hello@rohan.sh';
         <a href="/docs/quickstart">Quick start</a>
         <a href="/integrations">Integrations</a>
         <a href="/docs/mcp-gate">MCP tool gate</a>
+        <a href="/changelog">Changelog</a>
         <a href={GH_URL}>GitHub</a>
-        <a href={`${GH_URL}/releases`}>Changelog</a>
       </div>
       <div class="foot-col">
         <h3>Company</h3>
-        <a href="/">Overview</a>
-        <a href="/trust">Security</a>
         <a href="/platform#compliance">Compliance</a>
+        <a href={DESIGN_PARTNERS}>Design partners</a>
         <a href={CONTACT}>Contact</a>
       </div>
     </div>

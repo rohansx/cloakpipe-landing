@@ -1,7 +1,8 @@
 ---
 // Bare layout for the static "See it live" dashboard demo. No marketing
-// nav/footer — the page renders its own app-style chrome. Fake-data only.
+// nav/footer; the page renders its own app-style chrome. Fake-data only.
 import '../styles/dashboard.css';
+import HeadMeta from '../components/HeadMeta.astro';
 
 interface Props {
   title: string;
@@ -16,7 +17,7 @@ const { title, description = '' } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <HeadMeta title={title} description={description} />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/Geist-400.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/Geist-600.woff2" crossorigin />
     <script is:inline>

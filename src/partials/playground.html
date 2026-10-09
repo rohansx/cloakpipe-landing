@@ -4,8 +4,8 @@
     <h1 class="reveal" data-d="1">See it <span class="acc">mask, live.</span></h1>
     <p class="lede reveal" data-d="2">
       Paste anything with names, emails, cards, MRNs. CloakPipe runs the real
-      detection pipeline — <span class="hl">regex + checksum for structured IDs, the OpenAI Privacy
-      Filter for the rest</span> — and returns pseudonymized text. Nothing is stored;
+      detection pipeline (<span class="hl">regex + checksum for structured IDs, the OpenAI Privacy
+      Filter for the rest</span>) and returns pseudonymized text. Nothing is stored;
       only the masked output ever leaves the server.
     </p>
   </div>
@@ -20,7 +20,7 @@
         <button id="pg-run" class="btn btn-lg btn-cta"><span class="corner"></span>Mask it <span class="arr">→</span></button>
       </div>
       <div class="pg-pane">
-        <div class="pg-label out">Pseudonymized — safe to send to any LLM</div>
+        <div class="pg-label out">Pseudonymized · safe to send to any LLM</div>
         <div id="pg-output" class="pg-output">Masking…</div>
         <div id="pg-meta" class="pg-meta"></div>
       </div>

@@ -31,7 +31,7 @@ Everything hangs off one identifier: the release's **manifest hash**, `sha256:<h
 
 All of this is on `main`; the [quick start](/docs/quickstart) installs it.
 
-**CloakPipe Cloud** <span class="badge cloud">Cloud</span> is the hosted service at `app.cloakpipe.co` and `api.cloakpipe.co`. It is not open source. It adds:
+**CloakPipe Cloud** <span class="badge cloud">Cloud</span> is the hosted service (early access: [join the waitlist](/waitlist)). It is not open source. It adds:
 
 - The release registry: `cloakpipe release register` from CI, environment pointers and promotion history.
 - Release-aware runtime enforcement in the hosted LLM proxy: Cedar context, unmask rules, the production promotion gate, break-glass, scoped API keys and sentinels. See [Runtime enforcement](/docs/runtime).
@@ -40,7 +40,7 @@ All of this is on `main`; the [quick start](/docs/quickstart) installs it.
 - The India DPDP compliance pack at the proxy. See [Runtime enforcement](/docs/runtime#dpdp-compliance-pack).
 - Evidence export and verification endpoints, the dashboard, and team features.
 
-CloakPipe Cloud is in developer preview with design partners.
+CloakPipe Cloud is in early access with design partners. To get access, [join the waitlist](/waitlist); everything on `main` above works today without it.
 
 ## Status labels
 

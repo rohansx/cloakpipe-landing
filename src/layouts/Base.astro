@@ -3,6 +3,7 @@
 // pre-paint theme, analytics, and client chrome wiring. Page body goes in <slot/>.
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import HeadMeta from '../components/HeadMeta.astro';
 import '../styles/styles.css';
 
 interface Props {
@@ -19,7 +20,7 @@ const { title, description = '', page = '' } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <HeadMeta title={title} description={description} />
 
     <link rel="preload" as="font" type="font/woff2" href="/fonts/Geist-400.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/Geist-600.woff2" crossorigin />

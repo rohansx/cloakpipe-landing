@@ -1,0 +1,332 @@
+---
+// Waitlist for CloakPipe Cloud. The form posts to the Vercel function at
+// /api/waitlist (api/waitlist.js). Without JS it is a plain form POST answered
+// by a 303 back here (?joined=1#wl-joined, ?joined=already#wl-already,
+// ?error=…#wl-error); the matching message is shown with CSS :target. With JS
+// it submits with fetch and reports inline.
+import Base from '../layouts/Base.astro';
+
+const title = 'Join the waitlist · CloakPipe Cloud';
+const description =
+  'CloakPipe Cloud is in early access: a hosted release registry, certification, runtime enforcement, and signed evidence and audit packs for AI agents. Join the waitlist; the open-source CLI works today.';
+const CONTACT = 'rohan@cloakpipe.co';
+const MAILTO = `mailto:${CONTACT}?subject=CloakPipe%20waitlist`;
+const ROLES = ['Engineering/ML', 'Platform/SRE', 'Security/Compliance', 'Founder/Exec', 'Other'];
+---
+<Base title={title} description={description} page="waitlist">
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="eyebrow reveal">CloakPipe Cloud · early access</div>
+      <h1 class="reveal" data-d="1">Join the <span class="acc">waitlist.</span></h1>
+      <p class="lede reveal" data-d="2">
+        CloakPipe is the reliability layer for AI agents. The open-source CLI certifies releases and verifies
+        evidence on your own machines today. CloakPipe Cloud runs the rest for you, and we are letting teams in
+        from the waitlist in small batches.
+      </p>
+    </div>
+  </section>
+
+  <section class="section wl" id="join">
+    <div class="wrap wl-grid">
+      <div class="wl-pitch">
+        <div class="eyebrow">What Cloud adds</div>
+        <ul class="wl-list">
+          <li>
+            <h2>Hosted release registry</h2>
+            <p>Register every agent release from CI, keep environment pointers and a full promotion history.</p>
+          </li>
+          <li>
+            <h2>Certification and a production gate</h2>
+            <p>Upload eval results from CI or the dashboard; only certified releases are promoted to production.</p>
+          </li>
+          <li>
+            <h2>Runtime enforcement</h2>
+            <p>A release-aware proxy acts on certifications at every model and tool call: scoped keys, unmask rules, break-glass and sentinels.</p>
+          </li>
+          <li>
+            <h2>Signed evidence and audit packs</h2>
+            <p>Export the signed ledger and download a per-release audit pack that anyone can verify offline.</p>
+          </li>
+        </ul>
+        <div class="feature-card wl-oss">
+          <div class="ix"></div>
+          <h3>Start with the open-source CLI today</h3>
+          <p>
+            Release manifests, eval import, signed certification, the MCP tool gate and the offline verifier are
+            MIT-licensed and need no account. <a href="/docs/quickstart">Read the quick start</a> or browse the <a href="https://github.com/rohansx/cloakpipe">repository</a>.
+          </p>
+        </div>
+      </div>
+
+      <div class="wl-card">
+        <div class="ix" aria-hidden="true"></div>
+
+        <!-- No-JS outcomes, shown with :target after the 303 redirect. -->
+        <div class="wl-msg wl-ok" id="wl-joined" tabindex="-1">
+          <strong>You're on the list.</strong>
+          <span>Thanks. We'll email you when your CloakPipe Cloud access is ready.</span>
+        </div>
+        <div class="wl-msg wl-ok" id="wl-already" tabindex="-1">
+          <strong>You're already on the list.</strong>
+          <span>No need to sign up again; we'll be in touch.</span>
+        </div>
+        <div class="wl-msg wl-err" id="wl-error" tabindex="-1">
+          <strong>That didn't go through.</strong>
+          <span id="wl-error-text">Check your email address and try again. If it keeps failing, email <a href={MAILTO}>{CONTACT}</a> and we'll add you by hand.</span>
+        </div>
+
+        <form id="wl-form" class="wl-form" method="post" action="/api/waitlist" aria-describedby="wl-consent">
+          <h2 class="wl-form-title">Request early access</h2>
+
+          <div class="wl-field">
+            <label for="wl-email">Email <span class="wl-req">required</span></label>
+            <input id="wl-email" name="email" type="email" required maxlength="254" autocomplete="email" inputmode="email" spellcheck="false" aria-describedby="wl-email-err" />
+            <p class="wl-field-err" id="wl-email-err" hidden></p>
+          </div>
+
+          <div class="wl-row">
+            <div class="wl-field">
+              <label for="wl-name">Name</label>
+              <input id="wl-name" name="name" type="text" maxlength="120" autocomplete="name" />
+            </div>
+            <div class="wl-field">
+              <label for="wl-company">Company</label>
+              <input id="wl-company" name="company" type="text" maxlength="120" autocomplete="organization" />
+            </div>
+          </div>
+
+          <div class="wl-field">
+            <label for="wl-role">Role</label>
+            <select id="wl-role" name="role">
+              <option value="">Select a role (optional)</option>
+              {ROLES.map((r) => <option value={r}>{r}</option>)}
+            </select>
+          </div>
+
+          <div class="wl-field">
+            <label for="wl-use">What are you building?</label>
+            <textarea id="wl-use" name="use_case" rows="4" maxlength="1000" aria-describedby="wl-use-count"></textarea>
+            <p class="wl-hint" id="wl-use-count">Up to 1000 characters.</p>
+          </div>
+
+          <!-- Spam traps: a field people never see, and timestamps set by JS. -->
+          <div class="wl-hp" aria-hidden="true">
+            <label for="wl-hp">Leave this field empty</label>
+            <input id="wl-hp" name="cp_hp" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+          <input type="hidden" name="started_at" value="" />
+          <input type="hidden" name="submitted_at" value="" />
+          <input type="hidden" name="source" value="" />
+          <input type="hidden" name="utm_source" value="" />
+          <input type="hidden" name="utm_medium" value="" />
+          <input type="hidden" name="utm_campaign" value="" />
+
+          <button class="btn btn-lg btn-cta wl-submit" type="submit"><span class="corner"></span><span class="wl-submit-label">Join the waitlist</span> <span class="arr">→</span></button>
+
+          <p class="wl-consent" id="wl-consent">We'll only use this to contact you about CloakPipe early access.</p>
+          <div class="wl-status" id="wl-status" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .wl-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: 64px; align-items: start; }
+  .wl-pitch .eyebrow { margin-bottom: 20px; }
+  .wl-list { list-style: none; border-top: 1px solid var(--line); margin-bottom: 28px; }
+  .wl-list li { padding: 18px 0 18px 22px; border-bottom: 1px solid var(--line); position: relative; }
+  .wl-list li::before { content: ''; position: absolute; left: 0; top: 25px; width: 7px; height: 7px; background: var(--accent); clip-path: polygon(0 0, 100% 0, 0 100%); }
+  .wl-list h2 { font: 600 16px var(--sans); letter-spacing: -0.01em; margin-bottom: 4px; }
+  .wl-list p { font-size: 14px; color: var(--text-2); line-height: 1.55; }
+  .wl-oss p a { border-bottom: 1px solid var(--accent); }
+
+  .wl-card { position: relative; border: 1px solid var(--line); background: var(--surface); padding: 32px; }
+  .wl-card > .ix { position: absolute; top: 0; left: 0; width: 12px; height: 12px; background: linear-gradient(135deg, var(--accent-2), var(--accent)); clip-path: polygon(0 0, 100% 0, 0 100%); }
+  .wl-form-title { font: 600 20px var(--sans); letter-spacing: -0.015em; margin-bottom: 22px; }
+  .wl-form { display: flex; flex-direction: column; gap: 18px; }
+  .wl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .wl-field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+  .wl-field label { font: 500 10.5px var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-2); }
+  .wl-req { color: var(--accent); margin-left: 6px; }
+  .wl-field input, .wl-field select, .wl-field textarea {
+    width: 100%; font: 400 15px var(--sans); color: var(--text);
+    background: var(--bg); border: 1px solid var(--line); border-radius: 0;
+    padding: 11px 12px; transition: border-color 150ms ease;
+  }
+  .wl-field select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--text-3) 50%), linear-gradient(135deg, var(--text-3) 50%, transparent 50%); background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 36px; }
+  .wl-field textarea { resize: vertical; min-height: 104px; line-height: 1.5; }
+  .wl-field input:hover, .wl-field select:hover, .wl-field textarea:hover { border-color: var(--text-4); }
+  .wl-field input:focus-visible, .wl-field select:focus-visible, .wl-field textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+  .wl-field [aria-invalid='true'] { border-color: var(--danger); }
+  .wl-field-err { font-size: 13px; color: var(--danger); }
+  .wl-hint { font: 400 11px var(--mono); color: var(--text-3); }
+
+  .wl-hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+
+  .wl-submit { align-self: flex-start; }
+  .wl-submit:focus-visible, .wl-card a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .wl-submit[aria-busy='true'] { opacity: 0.6; cursor: progress; }
+  .wl-consent { font-size: 12.5px; color: var(--text-3); line-height: 1.5; }
+
+  .wl-status:empty { display: none; }
+  .wl-status, .wl-msg { border: 1px solid var(--line); border-left: 3px solid var(--accent); background: var(--bg); padding: 14px 16px; font-size: 14px; line-height: 1.5; color: var(--text-2); }
+  .wl-status strong, .wl-msg strong { display: block; color: var(--text); font-weight: 600; margin-bottom: 2px; }
+  .wl-status.is-error, .wl-msg.wl-err { border-left-color: var(--danger); }
+  .wl-status a, .wl-msg a { color: var(--accent); border-bottom: 1px solid var(--accent); }
+  .wl-status:focus, .wl-msg:focus { outline: none; }
+
+  .wl-msg { display: none; margin-bottom: 22px; scroll-margin-top: 96px; }
+  .wl-msg:target { display: block; }
+  /* After a successful no-JS post, show the confirmation instead of the form. */
+  .wl-card:has(.wl-ok:target) .wl-form { display: none; }
+  .wl-card:has(.wl-ok:target) .wl-msg { margin-bottom: 0; }
+  .wl-card.is-done .wl-form { display: none; }
+
+  @media (max-width: 1100px) { .wl-grid { grid-template-columns: 1fr; gap: 48px; } .wl-card { max-width: 640px; } }
+  @media (max-width: 620px) { .wl-row { grid-template-columns: 1fr; } .wl-card { padding: 24px 18px; } }
+</style>
+
+<script>
+  // Progressive enhancement: timing/UTM fields, a character counter and a
+  // fetch submit with inline status. Without JS the form posts normally.
+  const CONTACT = 'rohan@cloakpipe.co';
+  const MAILTO = `mailto:${CONTACT}?subject=CloakPipe%20waitlist`;
+  const FALLBACK = `If it keeps failing, email <a href="${MAILTO}">${CONTACT}</a> and we'll add you by hand.`;
+  const ERRORS: Record<string, string> = {
+    invalid_email: 'Please enter a valid email address.',
+    too_long: 'One of the fields is too long. Please shorten it and try again.',
+    invalid_role: 'Please pick a role from the list.',
+    too_fast: 'That was quick. Please wait a moment and submit again.',
+    rate_limited: 'Too many attempts. Please wait a minute and try again.',
+    forbidden: `Please submit the form from cloakpipe.co. ${FALLBACK}`,
+    unavailable: `The waitlist is temporarily unavailable. ${FALLBACK}`,
+    server: `Something went wrong on our side. ${FALLBACK}`,
+    upstream: `Something went wrong on our side. ${FALLBACK}`,
+    network: `We couldn't reach the server. Check your connection and try again. ${FALLBACK}`,
+  };
+
+  // Umami (Base.astro loads it with defer, so it may not exist yet on load).
+  // Only the outcome and the role are sent: never email, name or company.
+  type Umami = { track: (event: string, data?: Record<string, string>) => void };
+  const track = (event: string, data?: Record<string, string>, tries = 20) => {
+    const umami = (window as unknown as { umami?: Umami }).umami;
+    if (umami?.track) {
+      try { umami.track(event, data); } catch {}
+    } else if (tries > 0) {
+      setTimeout(() => track(event, data, tries - 1), 250);
+    }
+  };
+
+  const card = document.querySelector<HTMLElement>('.wl-card');
+  const form = document.getElementById('wl-form') as HTMLFormElement | null;
+  const status = document.getElementById('wl-status');
+
+  if (card && form && status) {
+    const field = (name: string) => form.elements.namedItem(name) as HTMLInputElement;
+    const email = field('email');
+    const emailErr = document.getElementById('wl-email-err')!;
+    const submit = form.querySelector<HTMLButtonElement>('.wl-submit')!;
+    const label = form.querySelector<HTMLElement>('.wl-submit-label')!;
+
+    field('started_at').value = String(Date.now());
+    const params = new URLSearchParams(location.search);
+    for (const k of ['utm_source', 'utm_medium', 'utm_campaign']) field(k).value = (params.get(k) ?? '').slice(0, 100);
+    let source = location.pathname;
+    try {
+      if (document.referrer) {
+        const ref = new URL(document.referrer);
+        if (ref.origin === location.origin && ref.pathname !== location.pathname) source = ref.pathname;
+      }
+    } catch {}
+    field('source').value = source;
+
+    // Back from a no-JS post: count the signup once, then drop the query so a
+    // reload does not count it again (the #fragment keeps the message shown).
+    const joined = params.get('joined');
+    if (joined === '1' || joined === 'already') {
+      track(joined === '1' ? 'waitlist_joined' : 'waitlist_already');
+      try {
+        const clean = new URL(location.href);
+        clean.searchParams.delete('joined');
+        history.replaceState(history.state, '', clean.pathname + clean.search + clean.hash);
+      } catch {}
+    }
+
+    // Refine the no-JS error message when we know the code.
+    const code = params.get('error');
+    if (code && ERRORS[code]) {
+      const text = document.getElementById('wl-error-text');
+      if (text) text.innerHTML = ERRORS[code];
+    }
+
+    const useCase = form.elements.namedItem('use_case') as HTMLTextAreaElement;
+    const counter = document.getElementById('wl-use-count')!;
+    const count = () => { counter.textContent = `${useCase.value.length} / 1000 characters`; };
+    useCase.addEventListener('input', count);
+
+    const setEmailError = (msg: string) => {
+      emailErr.textContent = msg;
+      emailErr.hidden = !msg;
+      if (msg) email.setAttribute('aria-invalid', 'true');
+      else email.removeAttribute('aria-invalid');
+    };
+    email.addEventListener('input', () => setEmailError(''));
+
+    const show = (html: string, isError: boolean) => {
+      status.classList.toggle('is-error', isError);
+      status.innerHTML = html;
+    };
+
+    const done = (already: boolean) => {
+      card.classList.add('is-done');
+      const msg = document.getElementById(already ? 'wl-already' : 'wl-joined')!;
+      for (const m of card.querySelectorAll<HTMLElement>('.wl-msg')) m.style.display = 'none';
+      msg.style.display = 'block';
+      msg.focus();
+    };
+
+    let busy = false;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (busy) return;
+      busy = true;
+      setEmailError('');
+      field('submitted_at').value = String(Date.now());
+      submit.setAttribute('aria-busy', 'true');
+      label.textContent = 'Joining…';
+      show('Sending…', false);
+      const data = Object.fromEntries(new FormData(form) as unknown as Iterable<[string, string]>);
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', accept: 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify(data),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (res.ok && (body.status === 'joined' || body.status === 'already')) {
+          const role = typeof data.role === 'string' && data.role ? { role: data.role } : undefined;
+          track(body.status === 'already' ? 'waitlist_already' : 'waitlist_joined', role);
+          show('', false);
+          done(body.status === 'already');
+          return;
+        }
+        const err = typeof body.error === 'string' && ERRORS[body.error] ? body.error : 'server';
+        if (body.field === 'email' || err === 'invalid_email') {
+          setEmailError(ERRORS.invalid_email);
+          email.focus();
+          show('', false);
+        } else {
+          show(`<strong>That didn't go through.</strong>${ERRORS[err]}`, true);
+        }
+      } catch {
+        show(`<strong>That didn't go through.</strong>${ERRORS.network}`, true);
+      } finally {
+        busy = false;
+        submit.removeAttribute('aria-busy');
+        label.textContent = 'Join the waitlist';
+      }
+    });
+  }
+</script>

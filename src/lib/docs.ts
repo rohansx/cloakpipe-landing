@@ -32,6 +32,7 @@ export const DOCS: DocGroup[] = [
     items: [
       { title: 'Integrations', href: '/docs/integrations' },
       { title: 'FAQ & limitations', href: '/docs/faq' },
+      { title: 'Changelog', href: '/changelog' },
     ],
   },
 ];

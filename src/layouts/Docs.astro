@@ -22,6 +22,10 @@ const group = DOCS.find((g) => g.items.some((d) => d.href === here));
       <span>Docs menu</span><span class="docs-menu-cur">{fm.title}</span>
     </button>
     <aside class="docs-side" id="docs-side" aria-label="Documentation">
+      <a class="docs-cloud" href="/waitlist">
+        <span class="docs-cloud-label">CloakPipe Cloud</span>
+        <span class="docs-cloud-cta">Join the waitlist <span aria-hidden="true">→</span></span>
+      </a>
       {DOCS.map((g) => (
         <div class="docs-group">
           <div class="docs-group-label">{g.label}</div>
@@ -34,7 +38,7 @@ const group = DOCS.find((g) => g.items.some((d) => d.href === here));
         <div class="docs-group-label">Elsewhere</div>
         <a href="/integrations">Integrations page</a>
         <a href="/playground">Playground</a>
-        <a href="https://github.com/rohansx/cloakpipe">GitHub</a>
+        <a href="https://github.com/rohansx/cloakpipe">GitHub repository</a>
       </div>
     </aside>
     <article class="docs-body">
@@ -74,6 +78,15 @@ const group = DOCS.find((g) => g.items.some((d) => d.href === here));
     max-height: calc(100vh - 100px); overflow-y: auto;
     padding-right: 8px;
   }
+  .docs-side a.docs-cloud {
+    display: flex; flex-direction: column; gap: 3px;
+    margin-bottom: 28px; padding: 12px 14px;
+    border: 1px solid var(--line); border-left: 2px solid var(--accent);
+    background: var(--surface);
+  }
+  .docs-side a.docs-cloud:hover { border-color: var(--accent); }
+  .docs-cloud-label { font: 500 10px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-3); }
+  .docs-cloud-cta { font-size: 14px; font-weight: 500; color: var(--accent); }
   .docs-group { margin-bottom: 26px; }
   .docs-group-label {
     font: 500 10.5px var(--mono); letter-spacing: 0.14em; text-transform: uppercase;

@@ -90,5 +90,5 @@ In the dashboard, open **Agents → Releases** and click **Audit pack** on a rel
 
 - **Pin the keys once**, through a channel you trust, and verify every later pack against the pinned copy. Fetching the keys from the same server just before verifying proves only that the server agrees with itself.
 - **The ledger export is the whole chain** of the account: a hash chain cannot be cut to one release. It holds no prompt text or personal data, but it shows the timing, entity categories and policy decisions of every agent and release of the account. Share a pack only with someone you would show that timeline to.
-- **No anchoring.** CloakPipe Cloud does not anchor its ledger yet, so cloud packs carry no anchor receipts; each pack with a ledger export says so in `spec.limitations`.
+- **Anchoring is opt-in.** Hosted anchoring of the Cloud ledger (RFC 3161 + Rekor) is off by default. A cloud pack states how far the owner's ledger is anchored; without anchoring it carries no anchor receipts and says so in `spec.limitations`.
 - A pack whose embedded chain exceeds 100,000 records is refused (`422 audit_pack_too_large`).
