@@ -13,6 +13,7 @@
     "test:site": "npm run build && npm run check-links"
   },
   "dependencies": {
+    "@astrojs/markdown-satteri": "0.4.2",
     "astro": "^7.3.5"
   }
 }
