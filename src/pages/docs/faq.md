@@ -40,4 +40,4 @@ With an unscoped API key, yes: the `X-CloakPipe-Release` header is self-asserted
 
 ## Still stuck?
 
-Email [hello@rohan.sh](mailto:hello@rohan.sh) or open an issue on [GitHub](https://github.com/rohansx/cloakpipe/issues).
+Email [rohan@cloakpipe.co](mailto:rohan@cloakpipe.co) or open an issue on [GitHub](https://github.com/rohansx/cloakpipe/issues).

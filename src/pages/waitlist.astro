@@ -9,7 +9,7 @@ import Base from '../layouts/Base.astro';
 const title = 'Join the waitlist · CloakPipe Cloud';
 const description =
   'CloakPipe Cloud is in early access: a hosted release registry, certification, runtime enforcement, and signed evidence and audit packs for AI agents. Join the waitlist; the open-source CLI works today.';
-const CONTACT = 'hello@rohan.sh';
+const CONTACT = 'rohan@cloakpipe.co';
 const MAILTO = `mailto:${CONTACT}?subject=CloakPipe%20waitlist`;
 const ROLES = ['Engineering/ML', 'Platform/SRE', 'Security/Compliance', 'Founder/Exec', 'Other'];
 ---
@@ -190,7 +190,7 @@ const ROLES = ['Engineering/ML', 'Platform/SRE', 'Security/Compliance', 'Founder
 <script>
   // Progressive enhancement: timing/UTM fields, a character counter and a
   // fetch submit with inline status. Without JS the form posts normally.
-  const CONTACT = 'hello@rohan.sh';
+  const CONTACT = 'rohan@cloakpipe.co';
   const MAILTO = `mailto:${CONTACT}?subject=CloakPipe%20waitlist`;
   const FALLBACK = `If it keeps failing, email <a href="${MAILTO}">${CONTACT}</a> and we'll add you by hand.`;
   const ERRORS: Record<string, string> = {
