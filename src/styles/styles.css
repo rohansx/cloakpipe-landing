@@ -284,7 +284,13 @@ h1, h2, h3, h4 { font-weight: 500; letter-spacing: -0.022em; line-height: 1.05; 
   max-width: 520px;
   margin-bottom: 32px;
 }
-.hero-ctas { display: flex; gap: 10px; align-items: center; margin-bottom: 40px; }
+.hero-ctas { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 18px; }
+.btn-gh { gap: 10px; }
+.btn-gh .gh-mark { flex: none; }
+/* Tertiary CTA: a text link under the buttons. */
+.cta-tertiary { font-size: 14px; color: var(--text-2); margin-bottom: 40px; }
+.cta-tertiary a { color: var(--accent); border-bottom: 1px solid currentColor; }
+.cta-tertiary a:hover { color: var(--text); }
 
 .hero-stats {
   display: grid;
@@ -887,7 +893,9 @@ h1, h2, h3, h4 { font-weight: 500; letter-spacing: -0.022em; line-height: 1.05; 
   margin: 0 auto 36px;
 }
 .closer h2 .acc { color: var(--accent); }
-.closer .ctas { display: flex; gap: 12px; justify-content: center; }
+.closer .ctas { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.closer .cta-tertiary { margin: 22px 0 0; color: var(--invert-text); }
+.closer .cta-tertiary a { color: var(--invert-text); }
 .closer .btn { border-color: var(--invert-text); color: var(--invert-text); }
 .closer .btn:hover { background: var(--invert-text); color: var(--invert-bg); }
 .closer .btn .corner {
