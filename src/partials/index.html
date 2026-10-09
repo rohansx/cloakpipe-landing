@@ -45,6 +45,18 @@
   </div>
 </section>
 
+<!-- ============== WAITLIST BAND ============== -->
+<section class="wl-band" aria-labelledby="wl-band-title">
+  <div class="wrap wl-band-inner reveal">
+    <div>
+      <div class="eyebrow">CloakPipe Cloud · early access</div>
+      <h2 id="wl-band-title">Hosted registry, certification, runtime enforcement and signed audit packs.</h2>
+      <p>The cloud is opening in waves. The open-source CLI works today; <a href="/docs/quickstart">start with the quick start</a>.</p>
+    </div>
+    <a class="btn btn-lg btn-cta" href="/waitlist"><span class="corner"></span>Join the waitlist <span class="arr">→</span></a>
+  </div>
+</section>
+
 <!-- ============== FOUR PILLARS ============== -->
 <section class="stat-strip">
   <div class="wrap"><div class="stat-strip-inner">
@@ -130,6 +142,14 @@
 </section>
 
 <style>
+  .wl-band { border-bottom: 1px solid var(--line); background: var(--surface); }
+  .wl-band-inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding-top: 36px; padding-bottom: 36px; }
+  .wl-band .eyebrow { margin-bottom: 12px; }
+  .wl-band h2 { font: 500 clamp(19px, 2vw, 24px)/1.25 var(--sans); letter-spacing: -0.015em; max-width: 720px; margin-bottom: 8px; }
+  .wl-band p { font-size: 14px; color: var(--text-2); }
+  .wl-band p a { color: var(--accent); border-bottom: 1px solid var(--accent); }
+  .wl-band .btn { flex: none; }
+  @media (max-width: 760px) { .wl-band-inner { flex-direction: column; align-items: flex-start; } }
   .release-frame { padding-bottom: 0; }
   .release-title { padding: 28px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 20px; align-items: baseline; }
   .release-title span { font: 500 21px var(--mono); color: var(--text); }

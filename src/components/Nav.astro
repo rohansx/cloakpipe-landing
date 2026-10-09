@@ -8,9 +8,8 @@ import GitHubStar from './GitHubStar.astro';
 interface Props { page?: string }
 const { page = '' } = Astro.props;
 
-const APP = 'https://app.cloakpipe.co';
-const LOGIN = `${APP}/login`;
-const SIGNUP = `${APP}/signup`;
+// CloakPipe Cloud is in early access: the only call to action is the waitlist.
+const WAITLIST = '/waitlist';
 
 const NAV = [
   { label: 'Product', href: '/platform', slug: 'platform' },
@@ -44,8 +43,7 @@ const NAV = [
       <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14c-1 4-5 7-9 7-5 0-9-4-9-9 0-4 3-8 7-9-2 4 0 9 4 10 3 1 6 0 7-0z"/></svg>
     </button>
     <GitHubStar />
-    <a class="btn nav-desk-cta" href={LOGIN}>Log in</a>
-    <a class="btn btn-cta nav-desk-cta" href={SIGNUP}><span class="corner"></span>Try for free <span class="arr">→</span></a>
+    <a class="btn btn-cta nav-desk-cta" href={WAITLIST} aria-current={page === 'waitlist' ? 'page' : undefined}><span class="corner"></span>Join the waitlist <span class="arr">→</span></a>
     <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -61,8 +59,7 @@ const NAV = [
   </div>
   <div class="nav-drawer-cta">
     <GitHubStar variant="drawer" />
-    <a class="btn" href={LOGIN}>Log in</a>
-    <a class="btn btn-cta" href={SIGNUP}><span class="corner"></span>Try for free <span class="arr">→</span></a>
+    <a class="btn btn-cta" href={WAITLIST} aria-current={page === 'waitlist' ? 'page' : undefined}><span class="corner"></span>Join the waitlist <span class="arr">→</span></a>
   </div>
 </div>
 

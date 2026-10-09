@@ -12,7 +12,7 @@ The core is, under MIT, in [rohansx/cloakpipe](https://github.com/rohansx/cloakp
 
 ## Do I need CloakPipe Cloud to certify a release?
 
-No. `cloakpipe eval import`, `release certify` and `release verify-cert` run offline on your machine or in CI, and the [MCP tool gate](/docs/mcp-gate) enforces certifications without any service. The cloud adds the release registry, promotion gating, release-aware LLM proxy enforcement and sentinels.
+No. `cloakpipe eval import`, `release certify` and `release verify-cert` run offline on your machine or in CI, and the [MCP tool gate](/docs/mcp-gate) enforces certifications without any service. The cloud adds the release registry, promotion gating, release-aware LLM proxy enforcement and sentinels. It is in early access: [join the waitlist](/waitlist).
 
 ## Does a certification prove my agent is safe?
 
