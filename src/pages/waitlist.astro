@@ -206,6 +206,18 @@ const ROLES = ['Engineering/ML', 'Platform/SRE', 'Security/Compliance', 'Founder
     network: `We couldn't reach the server. Check your connection and try again. ${FALLBACK}`,
   };
 
+  // Umami (Base.astro loads it with defer, so it may not exist yet on load).
+  // Only the outcome and the role are sent: never email, name or company.
+  type Umami = { track: (event: string, data?: Record<string, string>) => void };
+  const track = (event: string, data?: Record<string, string>, tries = 20) => {
+    const umami = (window as unknown as { umami?: Umami }).umami;
+    if (umami?.track) {
+      try { umami.track(event, data); } catch {}
+    } else if (tries > 0) {
+      setTimeout(() => track(event, data, tries - 1), 250);
+    }
+  };
+
   const card = document.querySelector<HTMLElement>('.wl-card');
   const form = document.getElementById('wl-form') as HTMLFormElement | null;
   const status = document.getElementById('wl-status');
@@ -228,6 +240,18 @@ const ROLES = ['Engineering/ML', 'Platform/SRE', 'Security/Compliance', 'Founder
       }
     } catch {}
     field('source').value = source;
+
+    // Back from a no-JS post: count the signup once, then drop the query so a
+    // reload does not count it again (the #fragment keeps the message shown).
+    const joined = params.get('joined');
+    if (joined === '1' || joined === 'already') {
+      track(joined === '1' ? 'waitlist_joined' : 'waitlist_already');
+      try {
+        const clean = new URL(location.href);
+        clean.searchParams.delete('joined');
+        history.replaceState(history.state, '', clean.pathname + clean.search + clean.hash);
+      } catch {}
+    }
 
     // Refine the no-JS error message when we know the code.
     const code = params.get('error');
@@ -282,6 +306,8 @@ const ROLES = ['Engineering/ML', 'Platform/SRE', 'Security/Compliance', 'Founder
         });
         const body = await res.json().catch(() => ({}));
         if (res.ok && (body.status === 'joined' || body.status === 'already')) {
+          const role = typeof data.role === 'string' && data.role ? { role: data.role } : undefined;
+          track(body.status === 'already' ? 'waitlist_already' : 'waitlist_joined', role);
           show('', false);
           done(body.status === 'already');
           return;
