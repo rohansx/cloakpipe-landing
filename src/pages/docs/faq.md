@@ -8,7 +8,7 @@ description: Common questions about CloakPipe and an honest list of what it does
 
 ## Is CloakPipe open source?
 
-The core is, under MIT, in [rohansx/cloakpipe](https://github.com/rohansx/cloakpipe): the privacy proxy, vault, MCP server and interceptor, evidence ledger and the offline verifier (the verifier crate is Apache-2.0). Release manifests, evaluation import, certification, the MCP tool gate, external anchoring and release audit packs are on `main` of the same repository. CloakPipe Cloud (the hosted registry, runtime enforcement, evaluation upload, audit pack downloads, the DPDP pack and the dashboard) is not open source.
+The core is, under MIT, in [rohansx/cloakpipe](https://github.com/rohansx/cloakpipe): the privacy proxy, vault, MCP server and interceptor, evidence ledger and the offline verifier (the verifier crate is Apache-2.0). Release manifests, evaluation import, certification, the MCP tool gate, external anchoring and release audit packs are on `main` of the same repository. CloakPipe Cloud (the hosted registry, runtime enforcement, evaluation upload, audit pack downloads, hosted anchoring, date-range auditor packs, the DPDP pack and the dashboard) is not open source. See [Pricing](/pricing) for what each tier includes.
 
 ## Do I need CloakPipe Cloud to certify a release?
 
@@ -34,7 +34,7 @@ With an unscoped API key, yes: the `X-CloakPipe-Release` header is self-asserted
 - **Self-asserted headers.** Unscoped keys let callers omit or misstate their release unless policy requires `bound` or `declared`.
 - **Sentinel coverage.** Only calls whose release the server chose are measured; streamed calls are timed to first byte, and calls whose client disconnects are not recorded.
 - **One Cedar policy set.** Policies are global per deployment; per-tenant policies are <span class="badge building">Building</span>.
-- **Anchoring.** `cloakpipe anchor` seals one exported bundle as a single batch; sealing new records incrementally in further batches, and Rekor v2, are <span class="badge building">Building</span>. The verifier does not check certificate revocation (CRL/OCSP) or Rekor log consistency. CloakPipe Cloud does not anchor its ledger yet. See [External anchoring](/docs/evidence#external-anchoring).
+- **Anchoring.** `cloakpipe anchor` seals one exported bundle as a single batch; sealing new records incrementally in further batches, and Rekor v2, are <span class="badge building">Building</span>. The verifier does not check certificate revocation (CRL/OCSP) or Rekor log consistency. Hosted anchoring in CloakPipe Cloud (opt-in) seals new ledger records in batches at RFC 3161 and Rekor. See [External anchoring](/docs/evidence#external-anchoring).
 - **Audit packs.** Governance events are attested only by the exporter, and a verifier cannot tell whether anything was left out. See [Audit packs](/docs/audit-pack#what-a-pack-does-not-prove).
 - **DPDP pack.** Not legal advice; purpose, consent and age band are asserted by the caller. An RBI pack is <span class="badge building">Planned</span>. See [Runtime enforcement](/docs/runtime#dpdp-compliance-pack).
 
