@@ -3,6 +3,7 @@
 import { GH_URL } from '../lib/github';
 
 const CONTACT = 'mailto:hello@rohan.sh';
+const DESIGN_PARTNERS = 'mailto:hello@rohan.sh?subject=CloakPipe%20design%20partner';
 ---
 <footer>
   <div class="wrap">
@@ -20,7 +21,7 @@ const CONTACT = 'mailto:hello@rohan.sh';
       </div>
       <div class="foot-col">
         <h3>Product</h3>
-        <a href="/platform">Product</a>
+        <a href="/platform">Platform</a>
         <a href="/trust">Proof</a>
         <a href="/pricing">Pricing</a>
         <a href="/playground">Playground</a>
@@ -32,14 +33,13 @@ const CONTACT = 'mailto:hello@rohan.sh';
         <a href="/docs/quickstart">Quick start</a>
         <a href="/integrations">Integrations</a>
         <a href="/docs/mcp-gate">MCP tool gate</a>
+        <a href="/changelog">Changelog</a>
         <a href={GH_URL}>GitHub</a>
-        <a href={`${GH_URL}/releases`}>Changelog</a>
       </div>
       <div class="foot-col">
         <h3>Company</h3>
-        <a href="/">Overview</a>
-        <a href="/trust">Security</a>
         <a href="/platform#compliance">Compliance</a>
+        <a href={DESIGN_PARTNERS}>Design partners</a>
         <a href={CONTACT}>Contact</a>
       </div>
     </div>
