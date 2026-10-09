@@ -9,7 +9,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check-links": "node scripts/check-links.mjs",
-    "test": "npm run build && npm run check-links"
+    "test": "node --test \"test/*.test.js\"",
+    "test:site": "npm run build && npm run check-links"
   },
   "dependencies": {
     "astro": "^7.3.5"
