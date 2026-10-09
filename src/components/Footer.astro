@@ -1,5 +1,6 @@
 ---
 // Static marketing footer, rendered at build time (was chrome.js renderFooter).
+import LogoMark from './LogoMark.astro';
 import { GH_URL } from '../lib/github';
 
 const CONTACT = 'mailto:hello@rohan.sh';
@@ -10,12 +11,7 @@ const DESIGN_PARTNERS = 'mailto:hello@rohan.sh?subject=CloakPipe%20design%20part
     <div class="foot-grid">
       <div>
         <div class="foot-brand-row">
-          <svg class="brand-mark" viewBox="0 0 22 22" fill="none">
-            <path d="M2 20 L8 4 L10 4 L4 20 Z" fill="currentColor"/>
-            <path d="M10 20 L16 4 L18 4 L12 20 Z" fill="currentColor"/>
-            <rect x="18" y="3" width="2" height="3" fill="#00FF66"/>
-            <rect x="18" y="7" width="2" height="3" fill="#00E0FF"/>
-          </svg> CloakPipe
+          <LogoMark /> CloakPipe
         </div>
         <p>The reliability layer for AI agents. MIT-licensed open core; CloakPipe Cloud is in early access.</p>
       </div>

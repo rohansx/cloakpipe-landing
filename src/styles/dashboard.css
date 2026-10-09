@@ -10,6 +10,7 @@
   --text-3: #5C5C5C;
   --text-4: #3A3A3A;
   --accent: #00FF66;
+  --logo: #73F597;
   --accent-2: #00E0FF;
   --accent-ink: #0A0A0A;
   --danger: #FF3838;
@@ -31,6 +32,7 @@
   --text-3: #9A9A9A;
   --text-4: #C4C4C4;
   --accent: #00A640;
+  --logo: #178A45;
   --accent-2: #00A6C7;
   --accent-ink: #0A0A0A;
   --danger: #D11A1A;
@@ -76,7 +78,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
   font: 600 16px var(--sans);
   letter-spacing: -0.01em;
 }
-.side-brand svg { width: 22px; height: 22px; color: var(--text); }
+.side-brand svg { width: 30px; height: 22px; flex: none; color: var(--logo); }
 .side-brand .v2-tag {
   margin-left: auto;
   font: 500 9.5px var(--mono);

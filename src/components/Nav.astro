@@ -4,6 +4,7 @@
 // Four tabs; the logo goes home. Playground and Integrations are reached from
 // Docs, the Product page and the footer.
 import GitHubStar from './GitHubStar.astro';
+import LogoMark from './LogoMark.astro';
 
 interface Props { page?: string }
 const { page = '' } = Astro.props;
@@ -20,12 +21,7 @@ const NAV = [
 ---
 <nav class="nav">
   <a class="brand" href="/" aria-label="CloakPipe home">
-    <svg class="brand-mark" viewBox="0 0 22 22" fill="none">
-      <path d="M2 20 L8 4 L10 4 L4 20 Z" fill="currentColor"/>
-      <path d="M10 20 L16 4 L18 4 L12 20 Z" fill="currentColor"/>
-      <rect x="18" y="3" width="2" height="3" fill="#00FF66"/>
-      <rect x="18" y="7" width="2" height="3" fill="#00E0FF"/>
-    </svg> CloakPipe
+    <LogoMark /> CloakPipe
   </a>
   <div class="nav-links">
     {NAV.map((n, i) => (
