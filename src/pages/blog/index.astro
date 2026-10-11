@@ -1,0 +1,36 @@
+---
+import Base from '../../layouts/Base.astro';
+import '../../styles/blog.css';
+
+const title = "Blog · CloakPipe";
+const description = "Notes from building CloakPipe, the open-source reliability layer for AI agents: action boundaries, certification and evidence an auditor can verify offline.";
+
+// Newest first. Add a post here and to public/sitemap.xml.
+const POSTS = [
+  {
+    href: '/blog/agent-cannot-be-its-own-authority',
+    title: "An agent can't be its own authority",
+    description: 'Sandboxes limit where an agent can reach. An action boundary decides whether this exact call may run, and the evidence proves what happened.',
+    date: '2026-10-11',
+    label: '11 Oct 2026',
+  },
+];
+---
+<Base title={title} description={description} page="blog">
+  <div class="blog">
+    <div class="eyebrow">Blog</div>
+    <h1>Notes from building CloakPipe</h1>
+    <p class="dek">How we think about agents that act: what decides a tool call, and what proves it afterwards.</p>
+    <ul class="post-list">
+      {POSTS.map((p) => (
+        <li>
+          <a href={p.href}>
+            <time datetime={p.date}>{p.label}</time>
+            <span class="post-title">{p.title}</span>
+            <span class="post-desc">{p.description}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</Base>
