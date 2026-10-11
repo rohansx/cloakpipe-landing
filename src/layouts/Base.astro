@@ -10,8 +10,9 @@ interface Props {
   title: string;
   description?: string;
   page?: string;
+  ogType?: 'website' | 'article';
 }
-const { title, description = '', page = '' } = Astro.props;
+const { title, description = '', page = '', ogType = 'website' } = Astro.props;
 ---
 <!doctype html>
 <html lang="en" data-theme="dark">
@@ -20,7 +21,7 @@ const { title, description = '', page = '' } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <HeadMeta title={title} description={description} />
+    <HeadMeta title={title} description={description} ogType={ogType} />
 
     <link rel="preload" as="font" type="font/woff2" href="/fonts/Geist-400.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/Geist-600.woff2" crossorigin />

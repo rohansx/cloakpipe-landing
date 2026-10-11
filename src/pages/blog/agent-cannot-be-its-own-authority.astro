@@ -1,0 +1,137 @@
+---
+import Base from '../../layouts/Base.astro';
+import '../../styles/blog.css';
+
+const title = "An agent can't be its own authority · CloakPipe";
+const description = "Sandboxes limit where an agent can reach. An action boundary decides whether this exact tool call may run, from trusted inputs only, and signed evidence proves what happened.";
+const MEDIUM = 'https://medium.com/@vidhiwaghela./your-ai-agent-finished-the-task-can-your-system-prove-what-happened-2a9015cb1e39';
+---
+<Base title={title} description={description} page="blog" ogType="article">
+  <article class="blog">
+    <div class="eyebrow"><a href="/blog">Blog</a></div>
+    <h1>An agent can't be its own authority</h1>
+    <p class="dek">Sandboxes limit where an agent can reach. Something outside the model has to decide whether this exact call may run, and something outside the operator has to prove what happened when it did.</p>
+    <div class="byline"><time datetime="2026-10-11">11 Oct 2026</time> · CloakPipe</div>
+
+    <p>
+      Vidhi Waghela's article
+      <a href={MEDIUM}>"Your AI agent finished the task. Can your system prove what happened?"</a>
+      asks a question most agent stacks cannot answer today. It is worth reading in full, and it prompted this
+      post. Here is how we think about the answer in CloakPipe, and which parts of it we are building into the
+      open-source core.
+    </p>
+
+    <h2>Where a sandbox stops</h2>
+    <p>
+      The usual first step for running an agent safely is containment. Put it in a container, restrict the
+      network, hand it scoped credentials. That work is necessary, and it answers one question well: which
+      systems can this process reach at all?
+    </p>
+    <p>
+      It does not answer the next question. Inside the sandbox, an agent holding a CRM token can patch any
+      record that token can patch. The credential is scoped to the agent, not to the task the agent was given
+      a minute ago. When the model proposes <code>crm.patch</code> on another customer's record, the sandbox
+      lets it through, because the CRM is within reach and the token is valid.
+    </p>
+    <p>
+      The model chooses what to call from its context, and that context holds text from users, retrieved
+      documents and earlier tool results. Any of those can steer it. If the model's own proposal is what
+      authorizes the call, then the real authority is whoever last wrote into its context. That is the sense in
+      which an agent cannot be its own authority.
+    </p>
+
+    <h2>A boundary decides the exact call</h2>
+    <p>
+      An action boundary sits between the model and the tool. It treats every tool call as a proposal and
+      decides on it using only trusted inputs: the certified release the agent runs as, a contract for each
+      tool, the task context written by the orchestrator, and signed approvals. Nothing the agent sends can
+      change those inputs, including arguments and request metadata. To decide well, the boundary needs four
+      things.
+    </p>
+    <ul>
+      <li>
+        <strong>Argument rules scoped to the task.</strong> A contract lists the arguments each tool accepts and
+        the values they may take, and binds fields like the tenant and record to the current task. An argument
+        the contract does not declare is refused. A refusal names the rule that failed, never the value that
+        failed it.
+      </li>
+      <li>
+        <strong>Approval bound to the exact payload.</strong> An approval that says "the agent may update the
+        CRM" approves a category. A useful approval covers one call: the approver signs a fingerprint of the
+        release, the tool and the full arguments, for one task, with an expiry. Change a single character of
+        the arguments and the approval no longer matches anything.
+      </li>
+      <li>
+        <strong>A stable identity for each operation.</strong> Every side-effecting call gets an operation ID
+        derived from the task and the exact call, or taken from its approval. The model never chooses it. When
+        the same call arrives again, the boundary knows it has seen it before, and a completed call is answered
+        from its stored result instead of running twice.
+      </li>
+      <li>
+        <strong>Holding uncertain outcomes.</strong> This is the hard case. The call went out and the tool
+        server died before answering. Did the refund go through? A blind retry may pay twice. Dropping it may
+        not pay at all. The boundary records the operation as unknown and refuses every retry until an operator
+        checks the real system and records what happened, done or not applied.
+      </li>
+    </ul>
+    <p>
+      None of this needs the model to behave. The model can propose anything it likes. What runs is decided
+      elsewhere.
+    </p>
+
+    <h2>Test both directions</h2>
+    <p>
+      There is an easy way to pass every authorization test: refuse everything. A boundary that blocks the
+      attack and also blocks the customer's legitimate refund has not done its job; it has moved the failure
+      somewhere less visible.
+    </p>
+    <p>
+      So we certify the boundary in both directions. Each test case is labelled with what should happen, allow
+      or deny. A release must block the cases it should block and complete the authorized work it is meant to
+      do. Under-blocking and over-refusal are separate failures with separate reasons, and a suite that is
+      missing either kind of case cannot pass at all.
+    </p>
+
+    <h2>Proof that does not depend on the operator</h2>
+    <p>
+      A decision is only half the story. Afterwards, someone will ask what happened: a customer, an auditor, an
+      incident review. A log written by the same system it describes is a claim, not proof, because whoever
+      runs that system can edit it.
+    </p>
+    <p>
+      CloakPipe records each decision as a hop in a hash-chained, signed evidence ledger, bound to the hash of
+      the certified release that made it. An approved call carries the digest of its approval, so an auditor
+      can match the operator's receipt to the ledger entry. Reconciling an uncertain operation is recorded as
+      its own entry, so "we checked and it went through" is evidence too. The ledger holds no raw argument
+      values, and not even plain hashes of them, since short values like phone numbers can be recovered by
+      brute force.
+    </p>
+    <p>
+      An exported bundle can be anchored at a public timestamp authority and a transparency log, so the operator
+      cannot back-date it. An auditor then verifies it offline with published public keys, with no access to
+      the operator's systems and no need to trust us.
+    </p>
+
+    <h2>Where this stands</h2>
+    <p>
+      The release gate, which refuses tool calls from an agent that is not running a certified release, and the
+      evidence ledger are on <code>main</code> of the open-source core. So are tool contracts, signed approvals,
+      operation tracking and two-way boundary certification, which landed this week. The
+      <a href="/docs/mcp-gate#action-boundary">MCP tool gate docs</a> show how to use them,
+      and the <a href="/docs/certification#boundary-rule">certification docs</a> describe the boundary rule.
+    </p>
+    <p>
+      There are limits worth stating plainly. MCP has no standard way to ask a server whether a call took
+      effect, so reconciliation is a manual step for now. The boundary only sees calls that pass through it.
+      And a contract is only as good as the rules written into it: the boundary enforces them exactly, but it
+      cannot tell you that you forgot one.
+    </p>
+
+    <div class="note">
+      <p>
+        Thanks to Vidhi Waghela, whose <a href={MEDIUM}>article on proving what an agent did</a> prompted this
+        post. CloakPipe is open source; the code is on <a href="https://github.com/rohansx/cloakpipe">GitHub</a>.
+      </p>
+    </div>
+  </article>
+</Base>

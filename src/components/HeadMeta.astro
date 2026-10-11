@@ -1,8 +1,8 @@
 ---
 // Icons, manifest, theme colour and social preview tags, shared by every
 // layout. Icons come from scripts/generate-icons.mjs.
-interface Props { title: string; description?: string }
-const { title, description = '' } = Astro.props;
+interface Props { title: string; description?: string; ogType?: 'website' | 'article' }
+const { title, description = '', ogType = 'website' } = Astro.props;
 const site = Astro.site ?? new URL('https://cloakpipe.co');
 const url = new URL(Astro.url.pathname, site).href;
 const ogImage = new URL('/og.png', site).href;
@@ -17,7 +17,7 @@ const ogImage = new URL('/og.png', site).href;
 <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
 
-<meta property="og:type" content="website" />
+<meta property="og:type" content={ogType} />
 <meta property="og:site_name" content="CloakPipe" />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
