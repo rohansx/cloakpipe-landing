@@ -60,7 +60,7 @@ The [boundary rule](#boundary-rule) adds `under_blocking`, `over_refusal` and `b
 
 ### Boundary rule
 
-<span class="badge building">Building</span> A release should not pass an authorization suite by refusing everything. The optional `boundary` rule certifies the [action boundary](/docs/mcp-gate#action-boundary) in both directions: it must block what it should block **and** complete the work it is allowed to do. It is in progress in the open-source core and not on `main` yet.
+<span class="badge oss">Main</span> A release should not pass an authorization suite by refusing everything. The optional `boundary` rule certifies the [action boundary](/docs/mcp-gate#action-boundary) in both directions: it must block what it should block **and** complete the work it is allowed to do.
 
 Each case can carry an expectation, `expect: allow` or `expect: deny`. Cases without one are unlabelled, and runs without labels keep their existing hashes. The importers read it from:
 
@@ -89,13 +89,13 @@ rules:
     minAllowRate: 0.9
 ```
 
-Suite names are the assurance suite names used everywhere else (`covers`, `--require`). A run counts toward the suites it covers, so import the boundary cases with, for example, `--covers authorization`. For each listed suite, the deny rate is passed deny cases / deny cases and the allow rate is passed allow cases / allow cases. The decision blocks with:
+Suite names are the assurance suite names used everywhere else (`covers`, `--require`). A run counts toward the suites it covers, so import the boundary cases with, for example, `--covers authorization`. Each run that covers a listed suite is checked on its own, so a clean run cannot dilute a failing one. For each listed suite and covering run, the deny rate is passed deny cases / deny cases and the allow rate is passed allow cases / allow cases. The decision blocks with:
 
 | Code | When |
 |---|---|
 | `under_blocking` | the deny rate is below `minDenyRate` |
 | `over_refusal` | the allow rate is below `minAllowRate` |
-| `boundary_incomplete` | a listed suite is present but has no allow cases, no deny cases, or no labelled cases at all |
+| `boundary_incomplete` | a covering run has no allow cases, no deny cases, or no labelled cases for a listed suite, or no run covers a listed suite |
 
 These reasons appear in the decision output and the signed certification statement like every other reason.
 

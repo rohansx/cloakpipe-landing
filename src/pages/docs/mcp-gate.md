@@ -13,7 +13,7 @@ description: cloakpipe mcp-proxy flags, how the release gate decides each tools/
 | `mcp-proxy --upstream` (masking interceptor) | <span class="badge oss">Main</span> |
 | `cloakpipe mcp` (MCP server with `pseudonymize`, `rehydrate`, `detect`, `vault_stats`, `configure`, `session_context` tools) | <span class="badge oss">Main</span> |
 | Release gate (`--manifest`, `--certification`, …) and release-bound evidence | <span class="badge oss">Main</span> |
-| [Action boundary](#action-boundary): tool contracts, signed approval receipts, operation outcomes and reconciliation | <span class="badge building">Building</span> |
+| [Action boundary](#action-boundary): tool contracts, signed approval receipts, operation outcomes and reconciliation | <span class="badge oss">Main</span> |
 
 ## Usage
 
@@ -60,7 +60,7 @@ The refusal is recorded as a release-bound `mcp_tool_call` hop with action `bloc
 
 ## Action boundary
 
-<span class="badge building">Building</span> The release gate answers "may this release call this tool at all". The action boundary answers a narrower question: **may this exact call run**, decided only from trusted inputs. The model proposes a tool call; the gate checks its arguments against a signed-in contract and the orchestrator's task context, requires a signed approval for this exact payload when the contract says so, and tracks the outcome of every side-effecting call so an uncertain one is reconciled instead of retried blindly. This is in progress in the open-source core and not on `main` yet; the interface below is the one being built.
+<span class="badge oss">Main</span> The release gate answers "may this release call this tool at all". The action boundary answers a narrower question: **may this exact call run**, decided only from trusted inputs. The model proposes a tool call; the gate checks its arguments against a signed-in contract and the orchestrator's task context, requires a signed approval for this exact payload when the contract says so, and tracks the outcome of every side-effecting call so an uncertain one is reconciled instead of retried blindly.
 
 Fail closed everywhere: anything unparseable, unknown, expired or ambiguous is a denial. A release with no tool contract, and a gate started without the new flags, behaves exactly as described above.
 
@@ -151,7 +151,9 @@ cloakpipe operations list --state unknown --operations-db ops.db
 cloakpipe operations reconcile <operation-id> --outcome done --operations-db ops.db --ledger-db ledger.db
 ```
 
-`--outcome` is `done` or `not-applied`. `reconcile` refuses unless the operation is `unknown` or `in_flight`.
+`--outcome` is `done` or `not-applied`. `reconcile` refuses unless the operation is `unknown`, or `in_flight` with `--force` (an `in_flight` call may still be running, so check the real system first).
+
+Only one gate can use an operations database at a time: a second gate on the same file refuses to start (exit 2). `list` and `reconcile` work while a gate runs. Every request gets an answer: if the upstream exits before replying, the agent receives error `-32002` with reason `operation_unknown`, or `operation_reconciled` with the recorded state when an operator already settled it. The database keeps the masked upstream result for replay, so it is created owner-only (0600); set a retention policy for it.
 
 ### Flags
 
