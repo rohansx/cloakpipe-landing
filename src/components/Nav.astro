@@ -1,22 +1,20 @@
 ---
 // Static marketing nav + mobile drawer, rendered at build time (was chrome.js).
 // `page` is the current page slug, used to mark the active link.
-// Four tabs; the logo goes home. Playground and Integrations are reached from
-// Docs, the Product page and the footer.
+// Three tabs plus the GitHub star; the logo goes home. The primary call to
+// action is the open-source quick start.
 import GitHubStar from './GitHubStar.astro';
 import LogoMark from './LogoMark.astro';
 
 interface Props { page?: string }
 const { page = '' } = Astro.props;
 
-// CloakPipe Cloud is in early access: the only call to action is the waitlist.
-const WAITLIST = '/waitlist';
+const QUICKSTART = '/docs/quickstart';
 
 const NAV = [
-  { label: 'Product', href: '/platform', slug: 'platform' },
-  { label: 'Proof', href: '/trust', slug: 'trust' },
   { label: 'Docs', href: '/docs', slug: 'docs' },
-  { label: 'Pricing', href: '/pricing', slug: 'pricing' },
+  { label: 'Blog', href: '/blog', slug: 'blog' },
+  { label: 'Changelog', href: '/changelog', slug: 'changelog' },
 ];
 ---
 <nav class="nav">
@@ -39,7 +37,7 @@ const NAV = [
       <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14c-1 4-5 7-9 7-5 0-9-4-9-9 0-4 3-8 7-9-2 4 0 9 4 10 3 1 6 0 7-0z"/></svg>
     </button>
     <GitHubStar />
-    <a class="btn btn-cta nav-desk-cta" href={WAITLIST} aria-current={page === 'waitlist' ? 'page' : undefined}><span class="corner"></span>Join the waitlist <span class="arr">→</span></a>
+    <a class="btn btn-cta nav-desk-cta" href={QUICKSTART}><span class="corner"></span>Get started <span class="arr">→</span></a>
     <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -55,7 +53,7 @@ const NAV = [
   </div>
   <div class="nav-drawer-cta">
     <GitHubStar variant="drawer" />
-    <a class="btn btn-cta" href={WAITLIST} aria-current={page === 'waitlist' ? 'page' : undefined}><span class="corner"></span>Join the waitlist <span class="arr">→</span></a>
+    <a class="btn btn-cta" href={QUICKSTART}><span class="corner"></span>Get started <span class="arr">→</span></a>
   </div>
 </div>
 

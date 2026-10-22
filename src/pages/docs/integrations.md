@@ -6,7 +6,7 @@ description: Providers, frameworks, gateways, MCP, evaluation tools and CI that 
 
 # Integrations
 
-The full catalogue, with what is shipped and what is planned, is on the **[Integrations page](/integrations)**. This page is the short version for developers.
+What CloakPipe works with today, and where the source lives. Anything not listed here is not integrated yet.
 
 ## LLM providers
 
@@ -37,7 +37,3 @@ The open-source proxy also supports the Anthropic Messages API.
 - JUnit XML (pytest, Jest, Go, JUnit, cargo-nextest), Braintrust and Langfuse: [Evaluation import](/docs/evaluation).
 - GitHub Actions: [the certify action](/docs/certification#github-action).
 - <span class="badge cloud">Cloud</span> Uploading the same reports to CloakPipe Cloud from CI or the dashboard: [Evaluation import](/docs/evaluation#upload-to-cloakpipe-cloud).
-
-## Try it in the browser
-
-The [playground](/playground) runs CloakPipe's detection on text you paste and shows the masked output.

@@ -94,7 +94,7 @@ writeFileSync(
     {
       name: 'CloakPipe',
       short_name: 'CloakPipe',
-      description: 'The reliability layer for AI agents.',
+      description: 'Policy enforcement for AI-agent tool calls.',
       start_url: '/',
       display: 'browser',
       background_color: TILE,
@@ -123,7 +123,7 @@ const og = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" vi
   <rect x="0" y="0" width="1200" height="6" fill="${GREEN}"/>
   ${mark(96, 222, 254)}
   <text x="400" y="300" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="92" font-weight="700" fill="#FFFFFF" letter-spacing="-2">CloakPipe</text>
-  <text x="402" y="370" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="38" font-weight="400" fill="#B8C2BB">The reliability layer for AI agents</text>
+  <text x="402" y="370" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="38" font-weight="400" fill="#B8C2BB">Policy enforcement for AI-agent tool calls</text>
   <text x="402" y="540" font-family="Menlo, DejaVu Sans Mono, monospace" font-size="24" fill="${GREEN}" letter-spacing="2">CLOAKPIPE.CO</text>
 </svg>`;
 writeFileSync(join(pub, 'og.png'), await png(og));

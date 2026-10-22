@@ -2,21 +2,22 @@
 <section class="hero">
   <div class="wrap hero-grid">
     <div>
-      <div class="eyebrow reveal">Agent reliability, provable · developer preview</div>
-      <h1 class="reveal" data-d="1">The reliability<br>layer for<br>AI <span class="acc">agents.</span></h1>
+      <div class="eyebrow reveal">Policy enforcement for AI-agent tool calls · developer preview</div>
+      <h1 class="reveal" data-d="1">Model proposes.<br>Code <span class="acc">disposes.</span></h1>
       <p class="lede reveal" data-d="2">
-        CloakPipe certifies every agent release against your evals, enforces that decision on each
-        model and tool call, and keeps signed evidence anyone can verify offline.
+        Policy enforcement for teams running AI agents in production. CloakPipe is a small, self-hosted gate
+        between your agent and the tools it calls: it checks every call against a declared contract with plain
+        code, blocks anything outside it, and records each decision in a log you can verify offline.
       </p>
       <div class="hero-ctas reveal" data-d="3">
-        <a class="btn btn-lg btn-cta" href="/waitlist"><span class="corner"></span>Join the waitlist <span class="arr">→</span></a>
-        <a class="btn btn-lg" href="/docs">Read the docs <span class="arr">→</span></a>
+        <a class="btn btn-lg btn-cta" href="/docs/quickstart"><span class="corner"></span>Get started <span class="arr">→</span></a>
+        <a class="btn btn-lg" href="/docs/mcp-gate">How the gate works <span class="arr">→</span></a>
         <a class="btn btn-lg btn-gh" href="https://github.com/rohansx/cloakpipe" aria-label="CloakPipe on GitHub"><svg class="gh-mark" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
       </div>
       <p class="cta-tertiary reveal" data-d="3">Running agents in production? <a href="mailto:rohan@cloakpipe.co?subject=CloakPipe%20design%20partner">Become a design partner →</a></p>
       <div class="hero-stats reveal" data-d="4">
-        <div class="hero-stat"><strong>1</strong><span>identity for the full agent release</span></div>
-        <div class="hero-stat"><strong>4</strong><span>Evaluate · Certify · Enforce · Prove</span></div>
+        <div class="hero-stat"><strong>0</strong><span>models in the allow/deny decision</span></div>
+        <div class="hero-stat"><strong>3</strong><span>Declare · Enforce · Prove</span></div>
         <div class="hero-stat"><strong>MIT</strong><span>inspectable enforcement core</span></div>
       </div>
     </div>
@@ -51,11 +52,11 @@
 <section class="wl-band" aria-labelledby="wl-band-title">
   <div class="wrap wl-band-inner reveal">
     <div>
-      <div class="eyebrow">CloakPipe Cloud · early access</div>
-      <h2 id="wl-band-title">Hosted registry, certification, runtime enforcement and signed audit packs.</h2>
-      <p>The cloud is opening in waves. The open-source CLI works today; <a href="/docs/quickstart">start with the quick start</a>.</p>
+      <div class="eyebrow">Free gate · self-hosted · MIT</div>
+      <h2 id="wl-band-title">The gate is free and runs on your machines. Hosted alerts &amp; approvals (Team) come when teams ask for them.</h2>
+      <p>Start with the <a href="/docs/quickstart">quick start</a>. If you want denials in Slack and approvals in one inbox, tell us.</p>
     </div>
-    <a class="btn btn-lg btn-cta" href="/waitlist"><span class="corner"></span>Join the waitlist <span class="arr">→</span></a>
+    <a class="btn btn-lg" href="/waitlist">Tell us you want it <span class="arr">→</span></a>
   </div>
 </section>
 
@@ -89,7 +90,7 @@
 <section class="section" id="platform">
   <div class="wrap">
     <div class="section-head reveal">
-      <div class="head-l"><div class="eyebrow">The control loop</div><h2>From change<br>to <span class="acc">verified decision.</span></h2><a class="learn-more" href="/platform">Explore the architecture <span class="arr">→</span></a></div>
+      <div class="head-l"><div class="eyebrow">The control loop</div><h2>From change<br>to <span class="acc">verified decision.</span></h2><a class="learn-more" href="/docs">Read the docs <span class="arr">→</span></a></div>
       <p>CloakPipe does not replace your evaluation platform, gateway, telemetry, or CI system. It binds their evidence to one Agent Release, applies a deterministic decision, enforces it, and records the result. Every step below is in the open-source core or the cloud today.</p>
     </div>
     <div class="surfaces reveal">
@@ -126,7 +127,7 @@
       <p>We label product state explicitly. The developer preview now runs the full loop: release identity, imported evaluations, signed certification, runtime enforcement, and offline verification. <code class="mono">make demo</code> runs all of it locally. External anchoring and release audit packs are on <code class="mono">main</code>.</p>
     </div>
     <div class="feature-grid reveal">
-      <div class="feature-card"><div class="ix"></div><h3>Available now</h3><p>Rust privacy proxy, streaming rehydration, PII pseudonymization, vault, signed ledger, and offline verifier. Agent Release manifests and registry, eval importers, signed certification with revocation, runtime release enforcement, scoped keys, production sentinels, the MCP tool gate, and the dashboard. External anchoring to RFC 3161 timestamp authorities and Sigstore Rekor, signed per-release audit packs verified offline, evaluation upload from CI and the dashboard, and an India DPDP policy pack.</p></div>
+      <div class="feature-card"><div class="ix"></div><h3>Available now</h3><p>Rust PII-masking proxy, streaming rehydration, PII pseudonymization, vault, signed ledger, and offline verifier. Agent Release manifests and registry, eval importers, signed certification with revocation, runtime release enforcement, scoped keys, production sentinels, the MCP tool gate, and the dashboard. External anchoring to RFC 3161 timestamp authorities and Sigstore Rekor, signed per-release audit packs verified offline, evaluation upload from CI and the dashboard, and an India DPDP policy pack.</p></div>
       <div class="feature-card"><div class="ix"></div><h3>Building next</h3><p>Importing Langfuse experiments, per-tenant Cedar policies from the dashboard, Rekor v2 and incremental multi-batch sealing, and certificate revocation checks. An RBI conduct pack is planned.</p></div>
       <div class="feature-card"><div class="ix"></div><h3>Design-partner phase</h3><p>Drift detection, approval workflows, canary hooks, incident timelines, SSO, and regional deployment.</p></div>
       <div class="feature-card"><div class="ix"></div><h3>Not claimed</h3><p>CloakPipe is not currently SOC 2 certified and does not yet offer a HIPAA BAA, production SAML or SCIM, managed KMS, automatic key rotation, or autonomous rollback.</p></div>
@@ -140,7 +141,7 @@
     <h2 class="reveal">Certify the release.<br><span class="acc">Control the runtime.</span><br>Verify the evidence.</h2>
     <p class="reveal" data-d="1">We are working with design partners operating real AI agents in production. Bring one agent, one critical workflow, and the changes you need to control.</p>
     <div class="ctas reveal" data-d="2">
-      <a class="btn btn-lg btn-cta" href="/waitlist"><span class="corner"></span>Join the waitlist <span class="arr">→</span></a>
+      <a class="btn btn-lg btn-cta" href="/docs/quickstart"><span class="corner"></span>Get started <span class="arr">→</span></a>
       <a class="btn btn-lg" href="/docs">Read the docs <span class="arr">→</span></a>
       <a class="btn btn-lg btn-gh" href="https://github.com/rohansx/cloakpipe" aria-label="CloakPipe on GitHub"><svg class="gh-mark" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
     </div>

@@ -1,8 +1,8 @@
 import { defineConfig } from 'astro/config';
 
 // Static multi-page marketing site (Design V2).
-// `format: 'directory'` emits /trust/index.html, served at clean URLs like
-// /trust. Legacy /trust.html links are 301'd to the clean path by nginx.
+// `format: 'directory'` emits /docs/index.html, served at clean URLs like
+// /docs. Legacy /docs.html links are 301'd to the clean path in vercel.json.
 // `inlineStylesheets: 'auto'` inlines small CSS into <head> instead of a
 // blocking <link>, dropping FCP/LCP by ~150ms on slow networks.
 export default defineConfig({

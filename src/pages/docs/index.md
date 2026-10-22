@@ -55,4 +55,4 @@ Every page says what state each feature is in:
 - [Quick start](/docs/quickstart): install the CLI and certify a sample release in a few minutes.
 - [Certification](/docs/certification): the policy rules, signing and verification.
 - [MCP tool gate](/docs/mcp-gate): enforce certification at an agent's tool calls.
-- [Integrations](/docs/integrations): providers, frameworks and the [playground](/playground).
+- [Integrations](/docs/integrations): providers, frameworks, MCP and CI.

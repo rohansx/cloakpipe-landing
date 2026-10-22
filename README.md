@@ -8,13 +8,17 @@ npm ci
 npm run dev        # http://localhost:4321
 npm run build      # static site in dist/
 node scripts/check-links.mjs   # every internal link in dist/ must resolve
-npm test           # unit tests for the waitlist function (node:test, no deps)
+npm test           # unit tests: waitlist function, Apps Script, site content rules (node:test)
 npm run test:site  # build + link check
 ```
 
 - Pages: `src/pages/` (docs are Markdown in `src/pages/docs/`, sidebar order in `src/lib/docs.ts`).
 - Page bodies: `src/partials/*.html`; shared chrome: `src/components/`, `src/layouts/`.
 - Headers, redirects and the Content-Security-Policy: `vercel.json`.
+- Pages: home, `/docs/*`, `/blog`, `/changelog` and `/waitlist`. The old pricing, platform, trust,
+  integrations, playground and dashboard pages are gone; `vercel.json` redirects their URLs.
+- CI (`.github/workflows/ci.yml`) runs `npm test` and `npm run test:site` on every pull request.
+  `test/site-content.test.js` also fails on retired positioning phrases.
 - Waitlist: page `src/pages/waitlist.astro`, Vercel Function `api/waitlist.js` (logic in `api/_lib/`, tests in
   `test/`), Google Apps Script `apps-script/Code.gs`.
 
@@ -22,7 +26,9 @@ The product itself is open source at [rohansx/cloakpipe](https://github.com/roha
 
 ## Waitlist setup
 
-CloakPipe Cloud is in early access, so the site's only call to action is the waitlist at `/waitlist`. The form
+The primary call to action is the open-source quick start (`/docs/quickstart`). `/waitlist` is secondary: it
+is "Hosted alerts & approvals (Team): tell us you want it", the count of teams that want a hosted plane,
+de-duplicated by organisation, so company and a "wants hosted alerts/approvals" checkbox are required. The form
 posts to the Vercel Function `POST /api/waitlist` (`api/waitlist.js`), which checks the request (method, origin,
 rate limit, honeypot, timing, field validation and limits, formula neutralisation) and forwards the clean row
 to a **Google Apps Script web app** bound to the sheet ([`apps-script/Code.gs`](apps-script/Code.gs)). The
@@ -64,9 +70,12 @@ function refuses secrets shorter than 32 characters. Keep it out of the reposito
 
 The script creates the tab if it is missing and writes the header row when the tab is empty:
 
-| A | B | C | D | E | F | G | H | I | J | K |
-|---|---|---|---|---|---|---|---|---|---|---|
-| Timestamp (UTC) | Email | Name | Company | Role | Use case | Source page | UTM source | UTM medium | UTM campaign | User agent |
+| A | B | C | D | E | F | G | H | I | J | K | L |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Timestamp (UTC) | Email | Name | Company | Role | Use case | Source page | UTM source | UTM medium | UTM campaign | User agent | Wants hosted alerts/approvals |
+
+New columns are only ever appended. On a sheet created before column L existed, type the L1 header by hand
+and redeploy the script (a new version of the same deployment) so it writes the column.
 
 Email must stay in column B: it is read for de-duplication (case-insensitive). IP addresses are never stored;
 "User agent" is a short family such as `Chrome/macOS`. Values starting with `= + - @` are prefixed with `'` by
@@ -143,7 +152,7 @@ would create a second URL.) Script property changes take effect immediately, wit
   ```sh
   curl -si https://cloakpipe.co/api/waitlist \
     -H 'origin: https://cloakpipe.co' -H 'content-type: application/json' -H 'accept: application/json' \
-    --data '{"email":"you+test2@example.com","role":"Other"}'
+    --data '{"email":"you+test2@example.com","company":"Test","wants_hosted":"yes","role":"Other"}'
   # HTTP/2 201 … {"status":"joined"}
   ```
 
@@ -170,7 +179,9 @@ only; email, name and company are never sent. After a no-JS post the event is se
 | Field | Rules |
 |---|---|
 | `email` | required, trimmed and lowercased, max 254, must look like an address |
-| `name`, `company` | optional, max 120 |
+| `company` | required (company or organisation), max 120 |
+| `wants_hosted` | required: `yes`, `on` or `true` (the checkbox) |
+| `name` | optional, max 120 |
 | `role` | optional, one of `Engineering/ML`, `Platform/SRE`, `Security/Compliance`, `Founder/Exec`, `Other` |
 | `use_case` | optional, max 1000 |
 | `cp_hp` | honeypot, must be empty (a filled one gets a fake success and nothing is stored) |
@@ -184,7 +195,7 @@ localhost outside production. Each warm instance allows about 5 requests per min
 |---|---|---|
 | Added | `201 {"status":"joined"}` | `303 /waitlist?joined=1#wl-joined` |
 | Already on the list | `200 {"status":"already"}` | `303 /waitlist?joined=already#wl-already` |
-| Invalid input | `400 {"error":"invalid_email"\|"too_long"\|"invalid_role"\|"too_fast"\|"invalid"\|"invalid_timing", "field"?, "message"}` | `303 /waitlist?error=<code>#wl-error` |
+| Invalid input | `400 {"error":"invalid_email"\|"too_long"\|"invalid_role"\|"company_required"\|"hosted_required"\|"too_fast"\|"invalid"\|"invalid_timing", "field"?, "message"}` | `303 /waitlist?error=<code>#wl-error` |
 | Wrong origin | `403 {"error":"forbidden"}` | same, `?error=forbidden` |
 | Rate limited | `429 {"error":"rate_limited"}` + `Retry-After: 60` | same, `?error=rate_limited` |
 | Bad content type / too large | `415` / `413` | same |
