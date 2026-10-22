@@ -1,10 +1,13 @@
 // The waitlist row: column order, formula neutralisation and the short
 // user-agent family. Mirrored in apps-script/Code.gs (COLUMNS, neutralize_).
 
-export const HEADER = ['Timestamp (UTC)', 'Email', 'Name', 'Company', 'Role', 'Use case', 'Source page', 'UTM source', 'UTM medium', 'UTM campaign', 'User agent'];
+export const HEADER = ['Timestamp (UTC)', 'Email', 'Name', 'Company', 'Role', 'Use case', 'Source page', 'UTM source', 'UTM medium', 'UTM campaign', 'User agent', 'Wants hosted alerts/approvals'];
+
+// New columns are appended at the end so rows already in the sheet keep
+// their alignment.
 
 /** JSON keys sent to the Apps Script, in HEADER order. */
-export const KEYS = ['timestamp', 'email', 'name', 'company', 'role', 'useCase', 'source', 'utmSource', 'utmMedium', 'utmCampaign', 'userAgent'];
+export const KEYS = ['timestamp', 'email', 'name', 'company', 'role', 'useCase', 'source', 'utmSource', 'utmMedium', 'utmCampaign', 'userAgent', 'wantsHosted'];
 
 /**
  * Prefix cells that a spreadsheet (or a later CSV export) could read as a
@@ -47,6 +50,7 @@ export function buildEntry(d, { now = Date.now(), userAgent = '' } = {}) {
     new Date(now).toISOString(),
     d.email, d.name, d.company, d.role, d.useCase, d.source, d.utmSource, d.utmMedium, d.utmCampaign,
     uaFamily(userAgent),
+    d.wantsHosted,
   ];
   return Object.fromEntries(KEYS.map((k, i) => [k, neutralize(values[i])]));
 }

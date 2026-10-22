@@ -29,6 +29,7 @@ var COLUMNS = [
   ['utmMedium', 'UTM medium'],
   ['utmCampaign', 'UTM campaign'],
   ['userAgent', 'User agent'],
+  ['wantsHosted', 'Wants hosted alerts/approvals'],
 ];
 var EMAIL_COL = 2; // column B
 var DEFAULT_TAB = 'Waitlist';

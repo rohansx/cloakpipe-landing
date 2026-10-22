@@ -1,9 +1,20 @@
-// Waitlist submission validation. Pure functions, no I/O.
+// Waitlist (hosted alerts & approvals interest) submission validation. Pure functions, no I/O.
 // Files under api/_lib are not deployed as functions (leading underscore).
 
 export const ROLES = ['Engineering/ML', 'Platform/SRE', 'Security/Compliance', 'Founder/Exec', 'Other'];
 
 export const LIMITS = { email: 254, emailLocal: 64, name: 120, company: 120, useCase: 1000, source: 200, utm: 100 };
+
+/**
+ * Accepted values of the required "wants hosted alerts/approvals" checkbox.
+ * `on` is what a checkbox without a value attribute posts.
+ */
+export const HOSTED_YES = ['yes', 'on', 'true'];
+
+function wantsHosted(v) {
+  if (v === true) return true;
+  return typeof v === 'string' && HOSTED_YES.includes(v.trim().toLowerCase());
+}
 
 /** Minimum time between the form loading and being submitted. */
 export const MIN_FILL_MS = 2000;
@@ -82,6 +93,9 @@ export function validateSubmission(fields, { now = Date.now() } = {}) {
     text[field] = s;
   }
   if (text.role && !ROLES.includes(text.role)) return { ok: false, error: 'invalid_role', field: 'role' };
+  // Interest in the hosted plane is counted per organisation, so both are required.
+  if (!text.company) return { ok: false, error: 'company_required', field: 'company' };
+  if (!wantsHosted(f.wants_hosted)) return { ok: false, error: 'hosted_required', field: 'wants_hosted' };
 
   // Time-to-submit. JS sets started_at on load and submitted_at on submit, so
   // the difference is measured on one clock. A missing started_at means a
@@ -107,6 +121,7 @@ export function validateSubmission(fields, { now = Date.now() } = {}) {
       utmSource: utm(f.utm_source),
       utmMedium: utm(f.utm_medium),
       utmCampaign: utm(f.utm_campaign),
+      wantsHosted: 'yes',
     },
   };
 }
