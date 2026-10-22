@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import body from '../partials/index.html?raw';
 const title = "CloakPipe · Policy enforcement for AI-agent tool calls";
-const description = "A self-hosted gate between your AI agents and the tools they call. Deny-by-default argument contracts, payload-bound approvals and a hash-chained, verifiable log of every decision. Model proposes, code disposes.";
+const description = "Policy enforcement for teams running AI agents in production. A self-hosted gate between your agents and the tools they call: deny-by-default argument contracts, payload-bound approvals, reconcile-before-retry and a hash-chained decision log you can verify offline. Model proposes. Code disposes.";
 ---
 <Base title={title} description={description} page="index">
   <Fragment set:html={body} />
