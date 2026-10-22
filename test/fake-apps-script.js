@@ -88,10 +88,15 @@ export function fakeAppsScript({ tabs = {}, properties = { WAITLIST_SECRET: SECR
   vm.createContext(sandbox);
   vm.runInContext(CODE, sandbox, { filename: 'Code.gs' });
 
+  // A hanging request. AbortSignal.timeout() uses an unref'd timer, so on some
+  // Node versions (22) nothing would keep the event loop alive and the test
+  // runner cancels the test. A real in-flight socket keeps it alive; this ref'd
+  // interval stands in for it until the request is aborted.
   const waitForAbort = (signal) =>
     new Promise((_, reject) => {
       if (!signal) return; // never settles
-      signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+      const alive = setInterval(() => {}, 1000);
+      signal.addEventListener('abort', () => { clearInterval(alive); reject(signal.reason); }, { once: true });
     });
 
   async function fetch(input, init = {}) {
