@@ -21,7 +21,7 @@ function setup({ env = ENV, google = fakeAppsScript(), limit = 100, timeoutMs = 
   return { handle: (req) => handle(req, env), google, logs };
 }
 
-const fields = (over = {}) => ({ email: 'Ada@Example.com', name: 'Ada', company: 'Analytical', role: 'Engineering/ML', use_case: 'support agents', started_at: String(NOW - 8000), ...over });
+const fields = (over = {}) => ({ email: 'Ada@Example.com', name: 'Ada', company: 'Analytical', role: 'Engineering/ML', use_case: 'support agents', wants_hosted: 'yes', started_at: String(NOW - 8000), ...over });
 
 function jsonReq(body, { headers = {}, method = 'POST' } = {}) {
   return new Request('https://cloakpipe.co/api/waitlist', {
@@ -94,7 +94,7 @@ test('happy path (JSON): forwarded to the script, header row auto-created, row a
 
   const rows = google.rows();
   assert.deepEqual(rows[0], HEADER);
-  assert.deepEqual(rows[1], ['2026-10-09T12:00:00.000Z', 'ada@example.com', 'Ada', 'Analytical', 'Engineering/ML', 'support agents', '/waitlist', 'x', '', '', 'Chrome/macOS']);
+  assert.deepEqual(rows[1], ['2026-10-09T12:00:00.000Z', 'ada@example.com', 'Ada', 'Analytical', 'Engineering/ML', 'support agents', '/waitlist', 'x', '', '', 'Chrome/macOS', 'yes']);
   const [post, echo] = google.calls;
   assert.equal(post.method, 'POST');
   assert.equal(JSON.parse(post.body).secret, SECRET);
@@ -156,6 +156,28 @@ test('validation errors: 400 JSON or 303 with ?error=', async () => {
   res = await handle(formReq(fields({ email: 'nope' })));
   assert.equal(res.status, 303);
   assert.equal(res.headers.get('location'), '/waitlist?error=invalid_email#wl-error');
+});
+
+test('company/org and the hosted alerts/approvals checkbox are required', async () => {
+  const { handle, google } = setup();
+  let res = await handle(jsonReq(fields({ company: '' })));
+  assert.equal(res.status, 400);
+  let body = await res.json();
+  assert.equal(body.error, 'company_required');
+  assert.equal(body.field, 'company');
+  assert.match(body.message, /company|organisation|organization/i);
+  const noBox = fields();
+  delete noBox.wants_hosted;
+  res = await handle(jsonReq(noBox));
+  body = await res.json();
+  assert.equal(body.error, 'hosted_required');
+  assert.equal(body.field, 'wants_hosted');
+  assert.match(body.message, /hosted alerts/i);
+  // An unticked checkbox is simply absent from a no-JS form post.
+  res = await handle(formReq(noBox));
+  assert.equal(res.status, 303);
+  assert.equal(res.headers.get('location'), '/waitlist?error=hosted_required#wl-error');
+  assert.equal(google.calls.length, 0);
 });
 
 test('honeypot: pretend success, write nothing', async () => {

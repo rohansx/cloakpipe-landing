@@ -8,7 +8,7 @@ description: Common questions about CloakPipe and an honest list of what it does
 
 ## Is CloakPipe open source?
 
-The core is, under MIT, in [rohansx/cloakpipe](https://github.com/rohansx/cloakpipe): the privacy proxy, vault, MCP server and interceptor, evidence ledger and the offline verifier (the verifier crate is Apache-2.0). Release manifests, evaluation import, certification, the MCP tool gate, external anchoring and release audit packs are on `main` of the same repository. CloakPipe Cloud (the hosted registry, runtime enforcement, evaluation upload, audit pack downloads, hosted anchoring, date-range auditor packs, the DPDP pack and the dashboard) is not open source. See [Pricing](/pricing) for what each tier includes.
+The core is, under MIT, in [rohansx/cloakpipe](https://github.com/rohansx/cloakpipe): the privacy proxy, vault, MCP server and interceptor, evidence ledger and the offline verifier (the verifier crate is Apache-2.0). Release manifests, evaluation import, certification, the MCP tool gate, external anchoring and release audit packs are on `main` of the same repository. CloakPipe Cloud (the hosted registry, runtime enforcement, evaluation upload, audit pack downloads, hosted anchoring, date-range auditor packs, the DPDP pack and the dashboard) is not open source.
 
 ## Do I need CloakPipe Cloud to certify a release?
 

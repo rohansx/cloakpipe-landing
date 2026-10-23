@@ -23,8 +23,8 @@ const group = DOCS.find((g) => g.items.some((d) => d.href === here));
     </button>
     <aside class="docs-side" id="docs-side" aria-label="Documentation">
       <a class="docs-cloud" href="/waitlist">
-        <span class="docs-cloud-label">CloakPipe Cloud</span>
-        <span class="docs-cloud-cta">Join the waitlist <span aria-hidden="true">→</span></span>
+        <span class="docs-cloud-label">Hosted alerts &amp; approvals</span>
+        <span class="docs-cloud-cta">Tell us you want it <span aria-hidden="true">→</span></span>
       </a>
       {DOCS.map((g) => (
         <div class="docs-group">
@@ -36,8 +36,6 @@ const group = DOCS.find((g) => g.items.some((d) => d.href === here));
       ))}
       <div class="docs-group">
         <div class="docs-group-label">Elsewhere</div>
-        <a href="/integrations">Integrations page</a>
-        <a href="/playground">Playground</a>
         <a href="https://github.com/rohansx/cloakpipe">GitHub repository</a>
       </div>
     </aside>

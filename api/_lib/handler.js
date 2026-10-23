@@ -18,6 +18,8 @@ const MESSAGES = {
   invalid_email: 'Please enter a valid email address.',
   too_long: 'One of the fields is too long.',
   invalid_role: 'Please pick a role from the list.',
+  company_required: 'Please tell us your company or organisation.',
+  hosted_required: 'Please tick the box to tell us you want hosted alerts and approvals.',
   invalid: 'We could not read that submission. Please try again.',
   invalid_timing: 'We could not read that submission. Please reload the page and try again.',
   too_fast: 'That was quick. Please wait a moment and submit again.',

@@ -6,44 +6,44 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://cloakpipe.co/trust</loc>
-    <changefreq>monthly</changefreq>
+    <loc>https://cloakpipe.co/docs</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://cloakpipe.co/docs/quickstart</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://cloakpipe.co/docs/mcp-gate</loc>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://cloakpipe.co/platform</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://cloakpipe.co/integrations</loc>
+    <loc>https://cloakpipe.co/docs/evidence</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://cloakpipe.co/pricing</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://cloakpipe.co/playground</loc>
+    <loc>https://cloakpipe.co/docs/audit-pack</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://cloakpipe.co/waitlist</loc>
+    <loc>https://cloakpipe.co/docs/releases</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://cloakpipe.co/changelog</loc>
-    <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://cloakpipe.co/dashboard</loc>
+    <loc>https://cloakpipe.co/docs/integrations</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://cloakpipe.co/docs/faq</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://cloakpipe.co/blog</loc>
@@ -54,5 +54,15 @@
     <loc>https://cloakpipe.co/blog/agent-cannot-be-its-own-authority</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://cloakpipe.co/changelog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://cloakpipe.co/waitlist</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
   </url>
 </urlset>

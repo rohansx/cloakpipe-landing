@@ -1,9 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ROLES, LIMITS, MIN_FILL_MS, normalizeEmail, isValidEmail, validateSubmission } from '../api/_lib/validate.js';
+import { ROLES, LIMITS, MIN_FILL_MS, HOSTED_YES, normalizeEmail, isValidEmail, validateSubmission } from '../api/_lib/validate.js';
 
 const NOW = 1_800_000_000_000;
-const base = (over = {}) => ({ email: 'Ada@Example.com', started_at: String(NOW - 10_000), ...over });
+const base = (over = {}) => ({ email: 'Ada@Example.com', company: 'Analytical', wants_hosted: 'yes', started_at: String(NOW - 10_000), ...over });
 
 test('normalizeEmail trims and lowercases', () => {
   assert.equal(normalizeEmail('  Ada.Lovelace@Example.COM \n'), 'ada.lovelace@example.com');
@@ -32,7 +32,7 @@ test('validateSubmission returns cleaned data', () => {
   assert.equal(r.ok, true);
   assert.deepEqual(r.data, {
     email: 'ada@example.com', name: 'Ada', company: 'Analytical', role: 'Platform/SRE', useCase: 'agents\nthat work',
-    source: '/waitlist', utmSource: 'hn', utmMedium: '', utmCampaign: '',
+    source: '/waitlist', utmSource: 'hn', utmMedium: '', utmCampaign: '', wantsHosted: 'yes',
   });
 });
 
@@ -49,6 +49,24 @@ test('field length limits', () => {
     assert.deepEqual(validateSubmission(base({ [field]: 'x'.repeat(max + 1) }), { now: NOW }), { ok: false, error: 'too_long', field });
   }
   assert.equal(LIMITS.useCase, 1000);
+});
+
+test('company/org is required (the demand count is de-duplicated by org)', () => {
+  for (const company of [undefined, null, '', '   ', '\u0000']) {
+    assert.deepEqual(validateSubmission(base({ company }), { now: NOW }), { ok: false, error: 'company_required', field: 'company' }, JSON.stringify(company));
+  }
+  assert.deepEqual(validateSubmission(base({ company: 7 }), { now: NOW }), { ok: false, error: 'invalid', field: 'company' });
+  assert.equal(validateSubmission(base({ company: ' Acme Ltd ' }), { now: NOW }).data.company, 'Acme Ltd');
+});
+
+test('the "wants hosted alerts/approvals" checkbox is required', () => {
+  assert.deepEqual(HOSTED_YES, ['yes', 'on', 'true']);
+  for (const v of HOSTED_YES) assert.equal(validateSubmission(base({ wants_hosted: v }), { now: NOW }).data.wantsHosted, 'yes', v);
+  assert.equal(validateSubmission(base({ wants_hosted: ' YES ' }), { now: NOW }).data.wantsHosted, 'yes');
+  assert.equal(validateSubmission(base({ wants_hosted: true }), { now: NOW }).data.wantsHosted, 'yes');
+  for (const v of [undefined, null, '', 'no', 'false', 'off', 0, false, ['yes'], { a: 1 }]) {
+    assert.deepEqual(validateSubmission(base({ wants_hosted: v }), { now: NOW }), { ok: false, error: 'hosted_required', field: 'wants_hosted' }, JSON.stringify(v));
+  }
 });
 
 test('non-string optional fields are rejected', () => {
@@ -85,7 +103,7 @@ test('timing: client-side elapsed (started_at → submitted_at) wins over server
 test('timing: garbage timestamps are rejected; a missing one (no-JS) is allowed', () => {
   assert.equal(validateSubmission(base({ started_at: 'abc' }), { now: NOW }).error, 'invalid_timing');
   assert.equal(validateSubmission(base({ started_at: String(NOW + 60_000) }), { now: NOW }).error, 'too_fast');
-  assert.equal(validateSubmission({ email: 'a@b.co' }, { now: NOW }).ok, true);
+  assert.equal(validateSubmission({ email: 'a@b.co', company: 'Co', wants_hosted: 'yes' }, { now: NOW }).ok, true);
 });
 
 test('source must be a site path; utm values are trimmed and capped', () => {

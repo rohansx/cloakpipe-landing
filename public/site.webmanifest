@@ -1,7 +1,7 @@
 {
   "name": "CloakPipe",
   "short_name": "CloakPipe",
-  "description": "The reliability layer for AI agents.",
+  "description": "Policy enforcement for AI-agent tool calls.",
   "start_url": "/",
   "display": "browser",
   "background_color": "#0B0F0C",

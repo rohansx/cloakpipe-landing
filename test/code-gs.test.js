@@ -5,7 +5,7 @@ import { HEADER } from '../api/_lib/row.js';
 import { fakeAppsScript, SECRET } from './fake-apps-script.js';
 
 const post = (g, body) => JSON.parse(g.sandbox.doPost({ postData: { contents: typeof body === 'string' ? body : JSON.stringify(body) } }).text);
-const entry = (over = {}) => ({ timestamp: '2026-10-09T12:00:00.000Z', email: 'ada@example.com', name: 'Ada', company: 'Co', role: 'Other', useCase: 'x', source: '/waitlist', utmSource: '', utmMedium: '', utmCampaign: '', userAgent: 'curl', ...over });
+const entry = (over = {}) => ({ timestamp: '2026-10-09T12:00:00.000Z', email: 'ada@example.com', name: 'Ada', company: 'Co', role: 'Other', useCase: 'x', source: '/waitlist', utmSource: '', utmMedium: '', utmCampaign: '', userAgent: 'curl', wantsHosted: 'yes', ...over });
 
 test('creates the tab and header row, then appends; answers JSON', () => {
   const g = fakeAppsScript();
@@ -13,7 +13,7 @@ test('creates the tab and header row, then appends; answers JSON', () => {
   assert.equal(out.mime, 'application/json');
   assert.deepEqual(JSON.parse(out.text), { status: 'joined' });
   assert.deepEqual(g.rows()[0], HEADER);
-  assert.deepEqual(g.rows()[1], ['2026-10-09T12:00:00.000Z', 'ada@example.com', 'Ada', 'Co', 'Other', 'x', '/waitlist', '', '', '', 'curl']);
+  assert.deepEqual(g.rows()[1], ['2026-10-09T12:00:00.000Z', 'ada@example.com', 'Ada', 'Co', 'Other', 'x', '/waitlist', '', '', '', 'curl', 'yes']);
   assert.equal(g.sheet.sheets.get('Waitlist').frozen, 1);
 });
 

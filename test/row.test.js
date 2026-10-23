@@ -31,13 +31,15 @@ test('uaFamily reports a short browser/OS family, never the full string', () => 
 
 test('buildEntry keys follow HEADER order and every value is neutralised', () => {
   const entry = buildEntry(
-    { email: 'ada@example.com', name: '=evil()', company: 'Co', role: 'Other', useCase: '-x', source: '/waitlist', utmSource: '@s', utmMedium: 'm', utmCampaign: 'c' },
+    { email: 'ada@example.com', name: '=evil()', company: 'Co', role: 'Other', useCase: '-x', source: '/waitlist', utmSource: '@s', utmMedium: 'm', utmCampaign: 'c', wantsHosted: 'yes' },
     { now: Date.UTC(2026, 9, 9, 12, 0, 0), userAgent: 'curl/8' },
   );
   assert.deepEqual(Object.keys(entry), KEYS);
   assert.equal(KEYS.length, HEADER.length);
-  assert.deepEqual(Object.values(entry), ['2026-10-09T12:00:00.000Z', 'ada@example.com', "'=evil()", 'Co', 'Other', "'-x", '/waitlist', "'@s", 'm', 'c', 'curl']);
-  assert.deepEqual(HEADER, ['Timestamp (UTC)', 'Email', 'Name', 'Company', 'Role', 'Use case', 'Source page', 'UTM source', 'UTM medium', 'UTM campaign', 'User agent']);
+  assert.deepEqual(Object.values(entry), ['2026-10-09T12:00:00.000Z', 'ada@example.com', "'=evil()", 'Co', 'Other', "'-x", '/waitlist', "'@s", 'm', 'c', 'curl', 'yes']);
+  assert.deepEqual(HEADER, ['Timestamp (UTC)', 'Email', 'Name', 'Company', 'Role', 'Use case', 'Source page', 'UTM source', 'UTM medium', 'UTM campaign', 'User agent', 'Wants hosted alerts/approvals']);
+  // New columns go last, so rows already in the sheet keep their alignment.
+  assert.equal(KEYS.at(-1), 'wantsHosted');
 });
 
 test('Code.gs COLUMNS match KEYS and HEADER (same columns in the sheet)', () => {
