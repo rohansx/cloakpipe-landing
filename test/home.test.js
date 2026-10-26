@@ -36,18 +36,88 @@ function section(html, id) {
   assert.fail(`#${id} is closed`);
 }
 
-test('hero: headline and the one-line stance', () => {
+test('hero: one plain headline, one sentence, two buttons', () => {
   const html = home();
   const h1 = /<h1[^>]*>([\s\S]*?)<\/h1>/.exec(html);
   assert.ok(h1, 'has an h1');
-  assert.equal(text(h1[1]), 'Policy enforcement for teams running AI agents in production');
+  assert.equal(text(h1[1]), 'The gate between your AI agents and their tools');
   assert.equal((html.match(/<h1\b/g) || []).length, 1, 'exactly one h1');
-  assert.ok(text(html).includes('Model proposes. Code disposes. CloakPipe is the code.'));
+  const hero = section(html, 'hero');
+  const lede = /<p class="lede[^"]*"[^>]*>([\s\S]*?)<\/p>/.exec(hero);
+  assert.ok(lede, 'hero has a lede');
+  const words = text(lede[1]).split(' ').length;
+  assert.ok(words <= 40, `lede is short (${words} words)`);
+  assert.match(text(lede[1]), /contract/);
+  assert.match(text(lede[1]), /refused/);
+  assert.equal((hero.match(/<a class="btn\b/g) || []).length, 2, 'two hero buttons');
+  for (const cls of ['hero-stats', 'stance', 'eyebrow', 'term-body']) {
+    assert.ok(!hero.includes(`class="${cls}`), `hero has no .${cls} (keep it uncluttered)`);
+  }
 });
 
-test('hero shows the Example 2 deny transcript, and only the transcript', () => {
-  const hero = section(home(), 'hero-deny');
-  const t = text(hero);
+test('hero scene: agent, gate and tools as layers, with one call allowed and one refused', () => {
+  const scene = section(home(), 'gate-scene');
+  const svg = /<svg[^>]*>/.exec(scene);
+  assert.ok(svg, 'the scene is an inline svg');
+  assert.match(svg[0], /role="img"/);
+  const label = /aria-label="([^"]+)"/.exec(svg[0]);
+  assert.ok(label, 'svg has an aria-label');
+  assert.match(label[1], /allowed/i);
+  assert.match(label[1], /refused/i);
+  for (const layer of ['layer-agent', 'layer-gate', 'layer-tools', 'ledger']) {
+    assert.match(scene, new RegExp(`class="[^"]*\\b${layer}\\b`), `scene has ${layer}`);
+  }
+  assert.match(scene, /class="[^"]*\bcall-ok\b/, 'an allowed call');
+  assert.match(scene, /class="[^"]*\bcall-deny\b/, 'a refused call');
+  const steps = /<ol class="scene-steps"[\s\S]*?<\/ol>/.exec(scene);
+  assert.ok(steps, 'the scene is explained in HTML text, not only inside the svg');
+  assert.equal((steps[0].match(/<li\b/g) || []).length, 3, 'three steps');
+  const t = text(steps[0]);
+  assert.match(t, /proposes/i);
+  assert.match(t, /contract/i);
+  assert.match(t, /log/i);
+});
+
+test('scene v2: the ticket, the contract and the receipt are shown, with a synced caption', () => {
+  const scene = section(home(), 'gate-scene');
+  const svg = /<svg[\s\S]*?<\/svg>/.exec(scene)[0];
+  const t = text(svg);
+  // where the bad call comes from
+  assert.match(svg, /class="[^"]*\bcallout-ticket\b/, 'ticket callout');
+  assert.match(t, /#4472/);
+  assert.match(t, /attacker@evil\.com/);
+  // what the gate checks it against
+  assert.match(svg, /class="[^"]*\bcallout-contract\b/, 'contract callout');
+  assert.match(t, /must be the ticket's customer/);
+  assert.match(t, /forwarded/);
+  assert.match(t, /refused/);
+  assert.match(t, /scope_mismatch/);
+  // what is left behind
+  assert.match(svg, /class="[^"]*\breceipt\b/, 'receipt tag on the ledger');
+  // the caption narrates the loop in five beats
+  const cap = /<div class="scene-caption"[\s\S]*?<\/div>/.exec(scene);
+  assert.ok(cap, 'caption under the scene');
+  assert.equal((cap[0].match(/<p\b/g) || []).length, 5, 'five caption beats');
+  const ct = text(cap[0]);
+  for (const s of ['proposes', 'contract', 'Hidden text', 'refuses', 'ledger']) assert.ok(ct.includes(s), `caption: ${s}`);
+});
+
+test('the scene animation respects reduced motion', () => {
+  const html = home();
+  assert.match(html, /@media \(prefers-reduced-motion: reduce\)/);
+});
+
+test('statement: the one-line stance, under the hero', () => {
+  const t = text(section(home(), 'statement'));
+  assert.ok(t.includes('Model proposes. Code disposes. CloakPipe is the code.'));
+});
+
+test('the Example 2 deny transcript has its own section, not the hero', () => {
+  const html = home();
+  const hero = section(html, 'hero');
+  for (const s of ['-32001', 'term-body', 'jsonrpc']) assert.ok(!hero.includes(s), `hero has no transcript (${s})`);
+  const deny = section(html, 'deny');
+  const t = text(deny);
   for (const s of [
     'send_email',
     'attacker@evil.com',
@@ -59,12 +129,10 @@ test('hero shows the Example 2 deny transcript, and only the transcript', () => 
     'never called',
     'receipt written',
   ]) {
-    assert.ok(t.includes(s), `hero transcript mentions ${s}`);
+    assert.ok(t.includes(s), `transcript mentions ${s}`);
   }
-  // No configuration in the hero (the bindTo-only contract is not shown until
-  // the manifest format with anyOf lands).
   for (const s of ['bindTo', 'ToolContract', 'apiVersion', 'anyOf', 'yaml', 'manifest']) {
-    assert.ok(!hero.includes(s), `hero has no config (${s})`);
+    assert.ok(!deny.includes(s), `transcript has no config (${s})`);
   }
 });
 
