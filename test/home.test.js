@@ -78,6 +78,30 @@ test('hero scene: agent, gate and tools as layers, with one call allowed and one
   assert.match(t, /log/i);
 });
 
+test('scene v2: the ticket, the contract and the receipt are shown, with a synced caption', () => {
+  const scene = section(home(), 'gate-scene');
+  const svg = /<svg[\s\S]*?<\/svg>/.exec(scene)[0];
+  const t = text(svg);
+  // where the bad call comes from
+  assert.match(svg, /class="[^"]*\bcallout-ticket\b/, 'ticket callout');
+  assert.match(t, /#4472/);
+  assert.match(t, /attacker@evil\.com/);
+  // what the gate checks it against
+  assert.match(svg, /class="[^"]*\bcallout-contract\b/, 'contract callout');
+  assert.match(t, /must be the ticket's customer/);
+  assert.match(t, /forwarded/);
+  assert.match(t, /refused/);
+  assert.match(t, /scope_mismatch/);
+  // what is left behind
+  assert.match(svg, /class="[^"]*\breceipt\b/, 'receipt tag on the ledger');
+  // the caption narrates the loop in five beats
+  const cap = /<div class="scene-caption"[\s\S]*?<\/div>/.exec(scene);
+  assert.ok(cap, 'caption under the scene');
+  assert.equal((cap[0].match(/<p\b/g) || []).length, 5, 'five caption beats');
+  const ct = text(cap[0]);
+  for (const s of ['proposes', 'contract', 'Hidden text', 'refuses', 'ledger']) assert.ok(ct.includes(s), `caption: ${s}`);
+});
+
 test('the scene animation respects reduced motion', () => {
   const html = home();
   assert.match(html, /@media \(prefers-reduced-motion: reduce\)/);
