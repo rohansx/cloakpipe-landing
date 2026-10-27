@@ -267,3 +267,13 @@ test('home page title and description', () => {
   assert.match(page, /const description = "[^"]*Model proposes\. Code disposes\.[^"]*"/);
   assert.doesNotMatch(page, /signed receipt/i);
 });
+
+test('Example 3: reusing an approval for another amount is approval_required (no receipt matches the new call)', () => {
+  const cards = [...section(home(), 'examples').matchAll(/<article class="ex[^"]*"[\s\S]*?<\/article>/g)].map((m) => text(m[0]));
+  assert.match(cards[2], /different amount[^.]*approval_required/);
+  assert.doesNotMatch(cards[2], /approval_invalid/);
+});
+
+test('the deny transcript does not claim to be verbatim output', () => {
+  assert.doesNotMatch(text(section(home(), 'deny')), /real output/);
+});
