@@ -1,113 +1,138 @@
 ---
 layout: ../../layouts/Docs.astro
 title: Evidence & verification
-description: The hash-chained, signed evidence ledger, the standalone offline verifier, external anchoring with RFC 3161 and Sigstore Rekor, and cloud export and verify endpoints.
+description: The signed decision ledger, its entry format, anchoring epochs with RFC 3161 and Sigstore Rekor, the tar audit pack and how an auditor verifies it offline with cloakpipe verify.
 ---
 
 # Evidence & verification
 
-Every hop CloakPipe handles produces evidence: a record in a **hash-chained ledger** whose batches are signed with Ed25519. An exported **bundle** can be checked by anyone with the standalone verifier, offline, without trusting CloakPipe.
+<span class="badge next">v0.12</span> Every decision the gate makes is one entry in a **decision ledger**: hash-chained, signed with Ed25519 one entry at a time, and free of argument values. On a schedule, the gate seals new entries into numbered **epochs** and has each one timestamped by an RFC 3161 authority and logged in Sigstore Rekor. An auditor gets one tar file and checks all of it offline, without trusting the operator.
 
-## The ledger
+## The decision ledger
 
-<span class="badge oss">Main</span>
+`cloakpipe mcp-proxy` writes the ledger **by default**, to `$CLOAKPIPE_HOME/ledger.db` (`~/.cloakpipe/ledger.db`), or to `--ledger-db` / `CLOAKPIPE_LEDGER_DB`. `--no-ledger` turns it off, with a warning.
 
-- **Hash chain.** Each record includes the hash of the one before it, with no sequence gaps. Editing, removing or reordering a record breaks the chain at that point.
-- **Signatures.** Batch heads are signed with Ed25519, and the bundle's signed manifest authenticates the whole chain.
-- **No PII.** A privacy hop records entity categories, a count and a random token, never raw text or PII.
-- **Release binding**. Hops from [`mcp-proxy`](/docs/mcp-gate#evidence) with `--manifest` or `CLOAKPIPE_RELEASE` carry `release_hash` inside the signed bytes, so an auditor can see which release called which tool. In CloakPipe Cloud, release lifecycle events (for example `ReleasePromoted`, `CertificationRevoked`) and `POLICY_BLOCK` records are bound the same way.
+An entry is written **before** its call is forwarded or answered. If it cannot be written, the call is refused as `fail_closed` and never reaches the tool, in shadow mode too.
 
-## The offline verifier
+What gets an entry:
 
-<span class="badge oss">Main</span> `cloakpipe-verify` is a separate binary (crate `cloakpipe-verify`, Apache-2.0) with no dependency on `cloakpipe-ledger` or any other CloakPipe crate. A third party can clone only this crate, build it, and verify any bundle CloakPipe produces.
+- every `tools/call` decision: `allow`, `deny` or `require_approval`, including messages refused unread;
+- side-effect outcomes: `committed`, `failed`, or `unknown` when the tool went away before answering;
+- replays answered from the operations store;
+- each `cloakpipe operations reconcile`.
+
+An entry is one flat JSON object (`cloakpipe ledger entries` prints them one per line):
+
+```json
+{"kind":"cloakpipe.decision/v1","seq":1,"ts":"2026-10-27T11:24:34Z","event":"call",
+ "release":"sha256:c55889deb72d677a13ef2962ba7d6ae97d7a13391c9e484484fde9bb084fb0fa","tool":"send_email",
+ "args_fingerprint":"hmac-sha256:3a0a0a2fca96274d768bba367ae4a1ca2598a0aef1e4bf8eb5b219d16c08fec8",
+ "decision":"deny","reason":"scope_mismatch","path":"/to",
+ "policy_version":"sha256:c55889deb72d677a13ef2962ba7d6ae97d7a13391c9e484484fde9bb084fb0fa",
+ "policy_digest":"sha256:fef22029e4619812be1ee292c7aa4b83a1acf754d21b5f59d19658d8fcb1ba3b",
+ "mode":"enforce","task_id":"t-1042","operation_id":null,"approval":null,"outcome":null,"forwarded":false,
+ "signer":"ed25519:96ab1aee2dfe4290","prev_hash":"8234f9f5…","entry_hash":"290a7223…","sig":"c178e976…"}
+```
+
+| Field | Meaning |
+|---|---|
+| `seq`, `ts` | position in the ledger (from 0, no gaps) and time |
+| `event` | `call`, `replay`, `outcome` or `reconcile` |
+| `release`, `policy_version` | the manifest digest |
+| `policy_digest` | the SHA-256 of the Cedar policy file, or null without one |
+| `tool`, `path` | the tool name, and the argument path a refusal names (never a value) |
+| `args_fingerprint` | the call fingerprint keyed with HMAC-SHA256 under a key derived from the gate signing key. A plain hash of low-entropy arguments could be guessed; keyed, only the key holder can link an entry to a call. |
+| `decision`, `reason` | `allow`, `deny` or `require_approval`, and the refusal code (or `ok`) |
+| `mode`, `forwarded` | `enforce` or `shadow`, and whether the call reached the tool |
+| `task_id`, `operation_id`, `approval` | the task, the side-effect operation, and the SHA-256 of the approval receipt that allowed the call |
+| `outcome` | `committed`, `failed`, `unknown`, or null |
+| `prev_hash`, `entry_hash`, `sig`, `signer` | the chain and the signature (below) |
+
+`entry_hash` is SHA-256 of `cloakpipe.decision.v1`, a newline, and the entry without `entry_hash` and `sig` as JSON with sorted keys and no whitespace. `prev_hash` is the previous entry's `entry_hash` (64 zeros for `seq` 0). `sig` is an Ed25519 signature over the 32 bytes of `entry_hash` by the gate signing key that `signer` names. Editing, removing or reordering an entry breaks the chain; forging one needs the gate key. See [Keys](/docs/keys).
+
+The ledger never holds argument values, results, or a plain hash of the arguments.
+
+## Anchoring epochs
+
+The chain and signatures show that entries were not changed after they were signed. They do not show **when** they were signed, and the operator holds the key. Anchoring adds evidence from two outside services:
 
 ```bash
-git clone https://github.com/rohansx/cloakpipe
-cd cloakpipe
-cargo build -p cloakpipe-verify      # binary: target/debug/cloakpipe-verify
+cloakpipe mcp-proxy --upstream "…" --manifest cloakpipe.manifest.yaml \
+  --anchor-every 500 --anchor-interval 10m
 ```
+
+- A background thread, never the request path, seals the entries no epoch covers yet into the next epoch once N are waiting (`--anchor-every`) or the interval has passed with anything new (`--anchor-interval`).
+- Epoch `n` covers `seq` `first_seq..last_seq`, starting right after epoch `n-1`. Its head records the `entry_hash` of its last entry (which commits to every earlier entry through the chain), the previous epoch's hash and the seal time, and is signed by the gate key.
+- Each head is timestamped by an RFC 3161 authority (default `https://freetsa.org/tsr`, `--tsa`) and logged in Sigstore Rekor (default `https://rekor.sigstore.dev`, `--rekor`). `--no-tsa` or `--no-rekor` skips one. The answers are verified before they are kept, and stored with the epoch in the ledger database.
+- A failed anchor prints `cloakpipe: anchor.failed epoch=<n> seq=<a>..<b> anchor=rfc3161|rekor error=…` on stderr and is retried, also by the next run if the gate stops first. Success prints `anchor.ok`.
+
+What leaves your machine: the SHA-256 of each signed epoch head goes to the timestamp authority, and the head's hash, its signature and the gate's public key go to Rekor. **A Rekor entry is public and permanent.** No arguments, results or entry contents are sent. Use your own TSA and Rekor instance with `--tsa`, `--tsa-root`, `--rekor` and `--rekor-key` if you do not want public entries.
+
+## Audit pack
+
+`cloakpipe ledger export` writes one plain tar file for an auditor:
+
+```bash
+cloakpipe ledger export --out audit-pack.tar                 # everything
+cloakpipe ledger export --out audit-pack.tar --since 30d     # or --since 2026-10-01 --until 2026-10-31
+```
+
+| File | Contents |
+|---|---|
+| `pack.json` | the pack manifest: every file with its SHA-256, signed by the gate key |
+| `entries.jsonl` | the decision entries, one per line |
+| `gate.pub.json` | the gate public key |
+| `manifests.json` | the manifest and policy digests the entries name |
+| `anchors/epoch-<n>.json` | each epoch head with its RFC 3161 token and Rekor entry |
+
+A `--since` / `--until` range widens to whole epochs, so every epoch in the pack can be checked against its entries.
+
+## Verifying a pack
+
+```bash
+cloakpipe verify audit-pack.tar --key <gate public key: 64 hex chars, or a key file>
+```
+
+On a pack with three anchored epochs, the report looks like this:
 
 ```text
-cloakpipe-verify chain    <bundle.json>   # hash chain unbroken, no seq gaps
-cloakpipe-verify sigs     <bundle.json>   # Ed25519 batch-head signatures valid
-cloakpipe-verify anchors  <bundle.json> [--tsa-root PEM] [--rekor-key PEM]   # anchor receipts, offline
-cloakpipe-verify proofs   <bundle.json>   # inclusion proofs
-cloakpipe-verify manifest <bundle.json>   # signed manifest
-cloakpipe-verify all      <bundle.json> [--trust-key KEYID=HEX]... [--tsa-root PEM] [--rekor-key PEM]
-cloakpipe-verify release-pack <pack.json> --trust KEYFILE ...                  # see Audit packs
+pack: 7 files, signed by ed25519:… (pinned), OK
+entries: 1204 (seq 0..1203), chain OK, signatures OK
+anchors: 3 epochs (seq 0..1203), RFC3161 OK (3/3), Rekor OK (3/3 inclusion proofs)
+gaps: none
+denials: 41, approvals: 6 required, 5 granted, unknown side effects: 1, reconciled: 1
+manifests: sha256:…
+result: OK
 ```
 
-Exit codes: **0** bundle verified, **1** verification failed (tamper, gap, bad signature), **2** usage error or the bundle could not be read.
+`cloakpipe verify` trusts nothing in the pack:
 
-On the sample bundle in the repository:
+- **Pin the key.** Without `--key` it checks against the pack's own key and says `not pinned`, which proves integrity but not who signed. Get the gate's public key from the operator out of band (`cloakpipe ledger public-key` prints it). Repeat `--key` for rotated keys.
+- **Anchors** must chain to `--tsa-root` (default: the freetsa.org and DigiCert roots built in) and verify under `--rekor-key` (default: the rekor.sigstore.dev key built in), with an RFC 6962 inclusion proof for each Rekor entry. No entry and no seal time in an epoch may be later than that epoch's anchor time, plus `--clock-skew-secs` (default 60).
+- **Gaps** are a missing epoch number, entries no epoch covers before or between epochs, or an epoch with no anchor. Entries after the last epoch are listed as `unanchored` and fail only with `--require-anchors`.
 
-```text
-$ cloakpipe-verify all crates/cloakpipe-verify/tests/fixtures/sample.bundle.json
-OK  records=10 batch_signatures=0 anchors=0 inclusion_proofs=0 chain_tip=fe2c8f0b… WARNING signer not pinned (pass --trust-key to verify who signed)
-```
-
-### Pinning the signer
-
-Without a pinned key, `all` checks the bundle against the key it carries: that proves integrity, not who produced it. `all` takes `--trust-key KEYID=HEX` (repeatable; HEX is the 64-hex-char Ed25519 public key), and the manifest must be signed by one of them:
+Any failure or gap exits 1. The same checks are in the standalone `cloakpipe-verify` binary (`cloakpipe-verify pack audit-pack.tar`), built from the `cloakpipe-verify` crate alone, so an auditor does not need the gate:
 
 ```bash
-cloakpipe-verify all bundle.json --trust-key "$KEYID=$PUBHEX"
+git clone https://github.com/rohansx/cloakpipe && cd cloakpipe
+cargo build --release -p cloakpipe-verify
+./target/release/cloakpipe-verify pack audit-pack.tar --key <gate public key>
 ```
 
-## Export and verify in the cloud
+To check just the entries, without a pack: `cloakpipe ledger entries > entries.jsonl`, then `cloakpipe-verify decisions entries.jsonl --key <gate public key>`.
 
-<span class="badge cloud">Cloud</span>
+## What the evidence does and does not prove
 
-| Endpoint | Auth | Does |
-|---|---|---|
-| `GET /api/evidence/export` | dashboard session | a signed evidence bundle of the caller's tenant ledger |
-| `POST /api/evidence/verify` | none (public) | verifies a bundle; `200` with a summary (`records`, `signatures`, `anchors`, `proofs`, `manifest_ok`, `chain_tip`, `bundle_version`), or `400` naming the failure (e.g. `chain: record #1: hash mismatch`) |
+It proves that the holder of the gate key recorded these decisions in this order, that none was changed or removed afterwards, and, with anchors, that each epoch existed by its anchor time. It does not prove that the gate saw every call the agent made (a call that bypassed the gate leaves no entry), or that the operator ran the gate honestly. See the [threat model](/docs/threat-model).
 
-The ledger signing key is set with `LEDGER_SIGNING_KEY` (hex, 32 bytes); without it the API uses an ephemeral key, which still verifies within a run because the public key is embedded in every bundle. `LEDGER_DB_PATH` sets where the ledger is stored. In the dashboard, the Compliance page exports and verifies the same bundles. The per-release [audit pack](/docs/audit-pack#cloakpipe-cloud) is a separate download.
+Not checked by the verifier: certificate revocation for the TSA (CRL/OCSP needs the network) and consistency between Rekor checkpoints (that the log did not fork; a log monitor does that).
 
-## External anchoring
+## Older evidence bundles
 
-<span class="badge oss">Main</span> The chain and signed manifest prove records were not edited after the bundle was signed, but the operator holds the signing key. Anchoring proves **when** it was signed, with evidence from two independent services, so history cannot be back-dated or rewritten without detection.
-
-`cloakpipe anchor` seals an exported, not yet sealed bundle under one **batch head** (a Merkle root over the record hashes, signed by the operator key, with an inclusion proof per record) and anchors the head at:
-
-| Anchor | Proves | Default endpoint | Trust input |
-|---|---|---|---|
-| RFC 3161 timestamp | a timestamp authority signed the head's SHA-256 at `genTime` | `https://freetsa.org/tsr` | the TSA's root certificate, `--tsa-root` |
-| Sigstore Rekor (v1 API) | a public append-only log integrated the head at `integratedTime`, covered by a signed tree head | `https://rekor.sigstore.dev` | the log's public key, `--rekor-key` |
-
-```bash
-# Trust inputs: fetch once and check the fingerprints out of band.
-curl -sS https://freetsa.org/files/cacert.pem -o freetsa-root.pem
-curl -sS https://rekor.sigstore.dev/api/v1/log/publicKey -o rekor.pub
-
-# --key is the operator key that signed the bundle's manifest (release keygen format).
-cloakpipe anchor bundle.json --key key.json \
-  --tsa-root freetsa-root.pem --rekor-key rekor.pub --out anchored.json
-
-cloakpipe-verify all anchored.json --tsa-root freetsa-root.pem --rekor-key rekor.pub \
-  --trust-key "$KEYID=$PUBHEX"
-```
-
-`cloakpipe anchor` checks both answers offline and re-verifies the whole bundle before writing `--out`; it exits **0** anchored, **1** refused (nothing written), **2** usage or I/O. Other options: `--tsa-url` (for DigiCert, `http://timestamp.digicert.com` with the DigiCert Trusted Root G4), `--rekor-url`, `--no-tsa`, `--no-rekor`, `--batch-id`, `--timeout-secs`, `--clock-skew-secs` (default 60: the seal time is backed off so a slightly fast host clock does not look like back-dating). Each Rekor entry is **public and permanent**: it holds a hash of the head, a signature and the operator's public key, never record content.
-
-Receipts carry the raw evidence (the DER timestamp response, the Rekor entry verbatim), so verification is entirely offline, and the verifier never takes the TSA or log identity from the bundle. It fails closed:
-
-- A bundle with RFC 3161 (Rekor) receipts **fails** without `--tsa-root` (`--rekor-key`). Missing trust is never a skip.
-- Supplying a trust input means the bundle must be anchored there: every batch head needs a verified receipt of that kind, and every record must lie in a head with a valid inclusion proof.
-- **Back-dating**: no record time and no head seal time may be later than the anchored time, with no tolerance.
-- **RFC 3161**: status granted, CMS signature (RSA ≥ 2048 or ECDSA P-256/P-384, SHA-2), message imprint equal to the head hash, nonce equal to the request's, a signer with the critical `timeStamping` extended key usage, and a certificate path to a `--tsa-root` CA where every certificate is valid at `genTime`.
-- **Rekor**: log ID matches the key, signed entry timestamp, `hashedrekord` body signed (Ed25519ph) by the head's signer, RFC 6962 inclusion proof to the tree root, and a checkpoint signed by the log key naming the same root.
-
-Not checked: certificate revocation (CRL/OCSP needs the network, so pin a specific root and check revocation out of band), and consistency between Rekor checkpoints (that the log did not fork; a monitor or witness does that). Rekor v2 and sealing new records incrementally in further batches are <span class="badge building">Building</span>. CloakPipe Cloud does not anchor its ledger yet; whoever holds the ledger signing key can anchor an exported bundle with the CLI. The full specification is [docs/ANCHORING.md](https://github.com/rohansx/cloakpipe/blob/main/docs/ANCHORING.md).
-
-## Release audit packs
-
-<span class="badge oss">Main</span> <span class="badge cloud">Cloud</span> A release audit pack is one signed JSON file per release with the manifest, evaluation runs, certifications, governance history and runtime ledger, verified offline with `cloakpipe-verify release-pack`. See [Audit packs](/docs/audit-pack).
+<span class="badge oss">v0.11</span> v0.11 recorded gate hops in the ledger's PII-hop records and exported JSON evidence bundles that `cloakpipe anchor` sealed under one batch head. Those still verify with `cloakpipe-verify all bundle.json` (and `chain`, `sigs`, `anchors`, `proofs`, `manifest`). In v0.12, those hop records are written only with `--transform pii`, and gate decisions go to the decision ledger above. The format is specified in [docs/ANCHORING.md](https://github.com/rohansx/cloakpipe/blob/main/docs/ANCHORING.md).
 
 ## Source
 
-- Ledger: [`crates/cloakpipe-ledger`](https://github.com/rohansx/cloakpipe/tree/main/crates/cloakpipe-ledger)
+- Ledger, epochs and export: [`crates/cloakpipe-ledger`](https://github.com/rohansx/cloakpipe/tree/main/crates/cloakpipe-ledger)
 - Verifier: [`crates/cloakpipe-verify`](https://github.com/rohansx/cloakpipe/tree/main/crates/cloakpipe-verify)
-- Anchoring clients: [`crates/cloakpipe-anchor`](https://github.com/rohansx/cloakpipe/tree/main/crates/cloakpipe-anchor)
-- Specifications: [docs/ANCHORING.md](https://github.com/rohansx/cloakpipe/blob/main/docs/ANCHORING.md), [docs/AUDIT_PACK.md](https://github.com/rohansx/cloakpipe/blob/main/docs/AUDIT_PACK.md)
+- TSA and Rekor clients: [`crates/cloakpipe-anchor`](https://github.com/rohansx/cloakpipe/tree/main/crates/cloakpipe-anchor)
