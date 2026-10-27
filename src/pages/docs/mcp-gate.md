@@ -134,7 +134,7 @@ cloakpipe operations list --state unknown --operations-db ops.db
 cloakpipe operations reconcile op-3c6d… --outcome done --operations-db ops.db
 ```
 
-`--outcome` is `done` or `not-applied`. Reconciling an `in_flight` operation needs `--force`, since a running gate may still receive its reply. Each reconciliation is a signed ledger entry in the default ledger (or `--ledger-db`). In v0.12, `operations reconcile --manifest` reads only the legacy `AgentRelease` format, so leave it out with a v1 manifest.
+`--outcome` is `done` or `not-applied`. Reconciling an `in_flight` operation needs `--force`, since a running gate may still receive its reply. Each reconciliation is a signed ledger entry in the default ledger (or `--ledger-db`). `operations reconcile --manifest` takes either format, a v1 manifest or a legacy `AgentRelease`, and binds the reconciliation entry to the manifest digest.
 
 The operations database keeps each completed call's result for replay, so it is created owner-only (`0600`). Treat it like any store of tool output and set a retention policy for it.
 

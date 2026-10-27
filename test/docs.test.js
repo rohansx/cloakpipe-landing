@@ -168,6 +168,12 @@ test('the comparison status row says v0.12.0 is released', () => {
   assert.ok(row.includes('v0.12.0 released 27 Oct 2026'), row);
 });
 
+test('operations reconcile --manifest takes a v1 manifest in v0.12.0', () => {
+  const md = page('mcp-gate');
+  assert.doesNotMatch(md, /reconcile --manifest` reads only the legacy/, 'fixed in v0.12.0');
+  assert.match(md, /`operations reconcile --manifest` takes either format/);
+});
+
 test('install lines pin the v0.12.0 tag and mention the Docker image', () => {
   const qs = page('quickstart');
   assert.match(qs, /cargo install --git https:\/\/github\.com\/rohansx\/cloakpipe --tag v0\.12\.0 --locked cloakpipe-cli/);
