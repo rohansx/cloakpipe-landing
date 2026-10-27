@@ -11,26 +11,26 @@ export const DOCS: DocGroup[] = [
     ],
   },
   {
-    label: 'Evaluate & certify',
+    label: 'Declare, enforce, prove',
     items: [
-      { title: 'Agent releases', href: '/docs/releases' },
-      { title: 'Evaluation import', href: '/docs/evaluation' },
-      { title: 'Certification', href: '/docs/certification' },
+      { title: 'MCP tool gate', href: '/docs/mcp-gate' },
+      { title: 'Manifest reference', href: '/docs/manifest' },
+      { title: 'Policy (Cedar)', href: '/docs/policy' },
+      { title: 'Evidence & verification', href: '/docs/evidence' },
     ],
   },
   {
-    label: 'Enforce & prove',
+    label: 'Security',
     items: [
-      { title: 'Runtime enforcement', href: '/docs/runtime' },
-      { title: 'MCP tool gate', href: '/docs/mcp-gate' },
-      { title: 'Evidence & verification', href: '/docs/evidence' },
-      { title: 'Audit packs', href: '/docs/audit-pack' },
+      { title: 'Threat model', href: '/docs/threat-model' },
+      { title: 'Keys', href: '/docs/keys' },
     ],
   },
   {
     label: 'Reference',
     items: [
       { title: 'Integrations', href: '/docs/integrations' },
+      { title: 'Comparison', href: '/docs/comparison' },
       { title: 'FAQ & limitations', href: '/docs/faq' },
       { title: 'Changelog', href: '/changelog' },
     ],
