@@ -1,0 +1,207 @@
+{
+ "source": "cloakpipe --help, built from rohansx/cloakpipe pivot/w3b-verify-anchor (3b3a74b), the v0.12 stack; default features",
+ "commands": {
+  "(root)": [
+   "--config",
+   "--help",
+   "--version"
+  ],
+  "start": [
+   "--help"
+  ],
+  "test": [
+   "--file",
+   "--help",
+   "--text"
+  ],
+  "stats": [
+   "--help"
+  ],
+  "init": [
+   "--help"
+  ],
+  "setup": [
+   "--help"
+  ],
+  "mcp": [
+   "--help"
+  ],
+  "mcp-proxy": [
+   "--anchor-every",
+   "--anchor-interval",
+   "--approvals",
+   "--approver-key",
+   "--help",
+   "--ledger-db",
+   "--manifest",
+   "--mode",
+   "--no-ledger",
+   "--no-rekor",
+   "--no-tsa",
+   "--operations-db",
+   "--rekor",
+   "--rekor-key",
+   "--signing-key",
+   "--state-db",
+   "--task-context",
+   "--tool-contract",
+   "--transform",
+   "--tsa",
+   "--tsa-root",
+   "--upstream"
+  ],
+  "sessions": [
+   "--help"
+  ],
+  "sessions list": [
+   "--help"
+  ],
+  "sessions inspect": [
+   "--help"
+  ],
+  "sessions flush": [
+   "--help"
+  ],
+  "sessions flush-all": [
+   "--help"
+  ],
+  "manifest": [
+   "--help"
+  ],
+  "manifest validate": [
+   "--help"
+  ],
+  "manifest hash": [
+   "--help",
+   "--json"
+  ],
+  "release": [
+   "--help"
+  ],
+  "release validate": [
+   "--help"
+  ],
+  "release hash": [
+   "--help"
+  ],
+  "release diff": [
+   "--help",
+   "--json"
+  ],
+  "release register": [
+   "--help",
+   "--json"
+  ],
+  "release inspect": [
+   "--help",
+   "--json"
+  ],
+  "release keygen": [
+   "--help",
+   "--out"
+  ],
+  "anchor": [
+   "--batch-id",
+   "--clock-skew-secs",
+   "--help",
+   "--key",
+   "--no-rekor",
+   "--no-tsa",
+   "--out",
+   "--rekor-key",
+   "--rekor-url",
+   "--timeout-secs",
+   "--tsa-root",
+   "--tsa-url"
+  ],
+  "action": [
+   "--help"
+  ],
+  "action fingerprint": [
+   "--args",
+   "--help",
+   "--manifest",
+   "--tool"
+  ],
+  "approve": [
+   "--args",
+   "--expires",
+   "--help",
+   "--key",
+   "--manifest",
+   "--now",
+   "--operation-id",
+   "--out",
+   "--task-context",
+   "--tool"
+  ],
+  "operations": [
+   "--help"
+  ],
+  "operations list": [
+   "--help",
+   "--operations-db",
+   "--state"
+  ],
+  "operations reconcile": [
+   "--force",
+   "--help",
+   "--ledger-db",
+   "--manifest",
+   "--no-ledger",
+   "--operations-db",
+   "--outcome",
+   "--signing-key"
+  ],
+  "ledger": [
+   "--help"
+  ],
+  "ledger entries": [
+   "--from-seq",
+   "--help",
+   "--ledger-db"
+  ],
+  "ledger public-key": [
+   "--help",
+   "--signing-key"
+  ],
+  "ledger export": [
+   "--help",
+   "--ledger-db",
+   "--out",
+   "--signing-key",
+   "--since",
+   "--until"
+  ],
+  "verify": [
+   "--clock-skew-secs",
+   "--help",
+   "--key",
+   "--rekor-key",
+   "--require-anchors",
+   "--tsa-root"
+  ],
+  "scan": [
+   "--detect-only",
+   "--help",
+   "--min-confidence",
+   "--output",
+   "--strategy"
+  ]
+ },
+ "hidden": {
+  "mcp-proxy": [
+   "--gate"
+  ]
+ },
+ "cloakpipe-verify": [
+  "chain",
+  "sigs",
+  "anchors",
+  "proofs",
+  "manifest",
+  "all",
+  "decisions",
+  "pack"
+ ]
+}
