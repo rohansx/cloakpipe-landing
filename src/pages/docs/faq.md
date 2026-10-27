@@ -1,42 +1,59 @@
 ---
 layout: ../../layouts/Docs.astro
 title: FAQ & limitations
-description: Common questions about CloakPipe and an honest list of what it does not do yet.
+description: Common questions about the CloakPipe gate, and an honest list of what it does not do yet.
 ---
 
 # FAQ & limitations
 
 ## Is CloakPipe open source?
 
-The core is, under MIT, in [rohansx/cloakpipe](https://github.com/rohansx/cloakpipe): the privacy proxy, vault, MCP server and interceptor, evidence ledger and the offline verifier (the verifier crate is Apache-2.0). Release manifests, evaluation import, certification, the MCP tool gate, external anchoring and release audit packs are on `main` of the same repository. CloakPipe Cloud (the hosted registry, runtime enforcement, evaluation upload, audit pack downloads, hosted anchoring, date-range auditor packs, the DPDP pack and the dashboard) is not open source.
+Yes. Everything on these pages is in [rohansx/cloakpipe](https://github.com/rohansx/cloakpipe) under the MIT licence <span class="badge next">v0.12</span> (v0.11.0 had two crates under Apache-2.0). There is no paid edition of the gate, and no feature on these pages needs an account.
 
-## Do I need CloakPipe Cloud to certify a release?
+## Do I need an account or a service?
 
-No. `cloakpipe eval import`, `release certify` and `release verify-cert` run offline on your machine or in CI, and the [MCP tool gate](/docs/mcp-gate) enforces certifications without any service. The cloud adds the release registry, promotion gating, release-aware LLM proxy enforcement and sentinels. It is in early access: [join the waitlist](/waitlist).
+No. Hosted alerts and approvals (Slack and Discord cards, escalation, digests) are an idea we are testing and are not built. If you would use them, [tell us on the waitlist](/waitlist). The gate is self-hosted by design: it never needs to send arguments, credentials or results anywhere.
 
-## Does a certification prove my agent is safe?
+## Why not just tell the model the rules in the prompt?
 
-No. A valid certification proves that a named issuer applied a named policy to named evaluation runs of an exact release and reached the stated decision. It does not prove the evaluators measured the right property, that the suites are representative, or that the release is safe outside the certified scope and validity window.
+Because a prompt is input to the same model an attacker is trying to steer. The manifest and policy are checked by code outside the model, on the call it actually proposed, against values (the task context) the model cannot write. A prompt injection can change what the model asks for; it cannot change what the gate allows.
 
-## What happens if I change one prompt?
+## Does it slow tool calls down?
 
-The manifest hash changes, so the old certification no longer applies to the new release. `cloakpipe release diff` shows which assurance suites the change requires (for a prompt: `prompt_contract`, `functional`, `safety`, `privacy`, `regression`). See [Agent releases](/docs/releases#diff).
+The contract and Cedar checks are fast: the test suite asserts p99 under 5ms on the example manifest, with 2ms as the target. Each decision also writes and signs a ledger entry in SQLite before the call is forwarded. Anchoring runs on a background thread, off the request path. Tool calls usually take far longer than either.
 
-## Can a caller lie about which release it is?
+## What happens when the gate refuses a call?
 
-With an unscoped API key, yes: the `X-CloakPipe-Release` header is self-asserted. Use a [scoped API key](/docs/runtime#scoped-api-keys) so the server picks the release, and require `context.release.bound` in Cedar.
+The agent gets a JSON-RPC error (`-32001`) with a reason such as `scope_mismatch` or `undeclared_tool`, the tool never sees the call, and the refusal is a signed ledger entry. Most hosts pass the error back to the model as a failed tool call. See [MCP tool gate](/docs/mcp-gate#refusals).
+
+## Can I try it without blocking anything?
+
+Yes: `--mode shadow` forwards every call and records what enforce mode would have decided. See [shadow mode](/docs/mcp-gate#shadow-mode).
+
+## Do I have to write Cedar?
+
+No. A manifest without `policy:` is enforced on its own: closed tool and argument lists, value rules, `one_of_context`, side-effect tracking and conditional approval. Add a [Cedar policy](/docs/policy) when you need rate limits, time windows or rules over the task.
+
+## Where did evaluation import and release sign-off go?
+
+CloakPipe used to sign off agent releases from evaluation results. That is out of scope now: the product is the gate on tool calls. The old commands are behind a source-only cargo feature that published binaries do not include, and they will be removed. The old manifest format still works for one more release; see [the legacy format](/docs/manifest#the-legacy-format).
+
+## What about PII?
+
+The binary can pseudonymize personal data in allowed calls (`mcp-proxy --transform pii`) and in LLM traffic (`cloakpipe start`). It is optional and off by default; the gate never rewrites an allowed call unless you ask it to.
 
 ## Known limitations
 
-- **Langfuse dataset runs.** The importer reads `/api/public/datasets/{dataset}/runs/{run}`, which Langfuse is deprecating; reading the experiments API is <span class="badge building">Building</span>.
-- **Braintrust trials.** Experiments must run with one trial per case.
-- **MCP server identity.** The tool gate does not check `spec.mcpServers`; it fronts the one upstream it was started with.
-- **Self-asserted headers.** Unscoped keys let callers omit or misstate their release unless policy requires `bound` or `declared`.
-- **Sentinel coverage.** Only calls whose release the server chose are measured; streamed calls are timed to first byte, and calls whose client disconnects are not recorded.
-- **One Cedar policy set.** Policies are global per deployment; per-tenant policies are <span class="badge building">Building</span>.
-- **Anchoring.** `cloakpipe anchor` seals one exported bundle as a single batch; sealing new records incrementally in further batches, and Rekor v2, are <span class="badge building">Building</span>. The verifier does not check certificate revocation (CRL/OCSP) or Rekor log consistency. Hosted anchoring in CloakPipe Cloud (opt-in) seals new ledger records in batches at RFC 3161 and Rekor. See [External anchoring](/docs/evidence#external-anchoring).
-- **Audit packs.** Governance events are attested only by the exporter, and a verifier cannot tell whether anything was left out. See [Audit packs](/docs/audit-pack#what-a-pack-does-not-prove).
-- **DPDP pack.** Not legal advice; purpose, consent and age band are asserted by the caller. An RBI pack is <span class="badge building">Planned</span>. See [Runtime enforcement](/docs/runtime#dpdp-compliance-pack).
+- **One server per gate, stdio only.** HTTP/SSE MCP and several upstreams behind one gate are <span class="badge building">Roadmap</span>.
+- **`tools/list` is not pinned.** A server that changes its tool descriptions is not detected. <span class="badge building">Roadmap</span>
+- **Static task context.** `--task-context` is read once at start-up; run one gate per task when tasks change. A per-task channel from the orchestrator is <span class="badge building">Roadmap</span>.
+- **No approval broker.** `approval_required` carries the approver routes and the call fingerprint, but nothing sends the request or delivers the receipt. <span class="badge building">Roadmap</span>
+- **No alerts.** Webhooks, OpenTelemetry and hosted alerts are <span class="badge building">Roadmap</span>; the ledger and stderr are the record today.
+- **The LLM proxy does not gate tool calls.** `cloakpipe start` transforms PII only. <span class="badge building">Roadmap</span>
+- **Counters count calls, not amounts.** Money budgets are <span class="badge building">Roadmap</span>.
+- **Keys are files.** KMS and HSM support and in-ledger key rotation are <span class="badge building">Roadmap</span>. See [Keys](/docs/keys).
+- **Not on crates.io yet.** Install from source; see the [quick start](/docs/quickstart#1-install).
+- **Verifier gaps.** TSA revocation (CRL/OCSP) and Rekor log consistency are not checked. See [Evidence & verification](/docs/evidence#what-the-evidence-does-and-does-not-prove).
 
 ## Still stuck?
 

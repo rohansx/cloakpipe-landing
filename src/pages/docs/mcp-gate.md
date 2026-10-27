@@ -1,211 +1,161 @@
 ---
 layout: ../../layouts/Docs.astro
 title: MCP tool gate
-description: cloakpipe mcp-proxy flags, how the release gate decides each tools/call, tool contracts, signed approvals, operation outcomes, JSON-RPC refusals and fail-closed behaviour.
+description: Every cloakpipe mcp-proxy flag, the order in which a tools/call is decided, the refusal codes, approval receipts, side-effect tracking, shadow mode and fail-closed behaviour.
 ---
 
 # MCP tool gate
 
-`cloakpipe mcp-proxy` sits between an agent and one upstream MCP server. It always masks PII in tool-call arguments and rehydrates pseudonym tokens in results. With `--manifest`, it also **enforces certification where the agent acts: its tool calls**.
+`cloakpipe mcp-proxy` sits between an agent and an MCP server that speaks stdio. With `--manifest`, it decides every `tools/call` before the server sees it: a call the manifest and policy allow is forwarded exactly as the agent sent it, and any other call is answered with a JSON-RPC error and never reaches the tool. Every decision is written to a signed ledger.
 
 | Capability | Status |
 |---|---|
-| `mcp-proxy --upstream` (masking interceptor) | <span class="badge oss">Main</span> |
-| `cloakpipe mcp` (MCP server with `pseudonymize`, `rehydrate`, `detect`, `vault_stats`, `configure`, `session_context` tools) | <span class="badge oss">Main</span> |
-| Release gate (`--manifest`, `--certification`, …) and release-bound evidence | <span class="badge oss">Main</span> |
-| [Action boundary](#action-boundary): tool contracts, signed approval receipts, operation outcomes and reconciliation | <span class="badge oss">Main</span> |
+| stdio proxy for one upstream server, tool gate, approval receipts, operations store | <span class="badge oss">v0.11</span> |
+| v1 manifest (`cloakpipe.manifest.yaml`), Cedar policy, conditional approval, `idempotency_key` | <span class="badge next">v0.12</span> |
+| Decision ledger by default, `--signing-key`, `--mode shadow`, anchoring flags | <span class="badge next">v0.12</span> |
+| HTTP/SSE transport, several upstreams per gate, `tools/list` pinning and drift alerts | <span class="badge building">Roadmap</span> |
 
 ## Usage
 
 ```bash
-cloakpipe mcp-proxy --upstream "npx -y @acme/crm-mcp" \
-  --manifest release.yaml --certification release.cert.dsse.json \
-  --trust-key "$KEYID=$PUBHEX" --environment production
+cloakpipe mcp-proxy \
+  --upstream "npx -y @acme/support-mcp" \
+  --manifest cloakpipe.manifest.yaml \
+  --task-context task-context.json \
+  --operations-db ops.db \
+  --approvals approvals/ --approver-key approver.json
 ```
+
+`--upstream` is the server command line the host would otherwise run. The gate starts it as a child process, speaks to the agent on its own stdin and stdout, and logs to stderr. Without `--manifest` the proxy forwards everything, so always pass one.
+
+## Flags
 
 | Flag | Meaning |
 |---|---|
-| `--upstream CMD` | required. Upstream MCP server command and args, e.g. `--upstream "npx -y @modelcontextprotocol/server-filesystem /data"` |
-| `--manifest FILE` | the Agent Release manifest the agent runs as. Enables the tool gate: `tools/call` must name a tool the manifest declares |
-| `--certification FILE` | DSSE certification envelope of the release. Without one, every `tools/call` is refused (enforce) or reported (warn) |
-| `--trust FILE` | trusted signer key file (from `release keygen`; public part only); repeatable |
-| `--trust-key KEYID=PUBHEX` | trusted signer inline; repeatable |
-| `--revoked-statement HEX` | SHA-256 hex of a revoked certification statement; repeatable |
-| `--revoked-key KEYID` | key id of a revoked signer; repeatable |
-| `--environment ENV` | the environment the agent runs in; the certification must cover it (default `production`) |
-| `--gate enforce\|warn` | `enforce` (default) refuses calls that fail the gate; `warn` forwards them and reports |
+| `--upstream CMD` | required. The upstream MCP server command and its arguments, as one string. |
+| `--manifest FILE` | the manifest the agent runs under. Enables the gate. A v1 `cloakpipe.manifest.yaml` is detected by its top-level `release` key; a legacy `AgentRelease` (top-level `apiVersion`) still works for this release, with a deprecation warning. See [Manifest reference](/docs/manifest). |
+| `--mode enforce\|shadow` | `enforce` (default) refuses calls that fail the gate. `shadow` forwards every call the gate can read and records what enforce mode would have decided, with `mode: shadow` in each ledger entry. |
+| `--task-context FILE` | the trusted task context: a JSON object the orchestrator writes, such as `{"taskId":"t-981","ticket":{"id":"T-1042"}}`. `one_of_context` arguments are checked against it. Default: `CLOAKPIPE_TASK_CONTEXT`. |
+| `--approvals DIR` | directory of approval receipts, `<fingerprint hex>.approval.json`, from `cloakpipe approve`. Needs `--approver-key`. |
+| `--approver-key FILE` | an approver key file from `cloakpipe release keygen` (only the public part is read); repeatable. A receipt must be signed by one of these keys. |
+| `--operations-db PATH` | SQLite store of side-effecting calls. Required when the manifest has a tool with `side_effect: true`. Default: `CLOAKPIPE_OPERATIONS_DB`. One gate per database. |
+| `--state-db PATH` | SQLite store of the Cedar policy's call counters, used when the manifest has `policy:`. Default: `CLOAKPIPE_STATE_DB`, else `$CLOAKPIPE_HOME/state.db`. The counters survive a restart. |
+| `--ledger-db PATH` | the decision ledger. Default: `CLOAKPIPE_LEDGER_DB`, else `$CLOAKPIPE_HOME/ledger.db`. `CLOAKPIPE_HOME` defaults to `~/.cloakpipe`. |
+| `--no-ledger` | record nothing, with a warning on stderr. Not recommended: nothing will show what the gate allowed or refused. |
+| `--signing-key FILE` | the gate signing key that signs each ledger entry (a `cloakpipe release keygen` file). Default: `CLOAKPIPE_SIGNING_KEY`, else `$CLOAKPIPE_HOME/gate.key`, created owner-only on first use with its public key printed once on stderr. See [Keys](/docs/keys). |
+| `--anchor-every N` | seal the ledger into an anchored epoch every N entries. |
+| `--anchor-interval DURATION` | seal and anchor whatever is new this often (`30s`, `10m`, `1h`). Either or both anchoring flags turn anchoring on. |
+| `--tsa URL` / `--tsa-root PEM` / `--no-tsa` | the RFC 3161 timestamp authority (default `https://freetsa.org/tsr`), the root(s) its answers must chain to (default: freetsa.org and DigiCert roots built in), or no timestamping. |
+| `--rekor URL` / `--rekor-key PEM` / `--no-rekor` | the Sigstore Rekor log (default `https://rekor.sigstore.dev`), its public key (default: built in), or no Rekor entry. |
+| `--tool-contract FILE` | legacy `AgentRelease` only, deprecated: a `ToolContract` file. A v1 manifest declares its rules inline, and passing this flag with one is a usage error. |
+| `--transform pii` | optional. After a call is allowed, pseudonymize personal data in its arguments before the tool sees it and put the real values back in results, through the encrypted vault (`CLOAKPIPE_VAULT_KEY`). Off by default: the gate never rewrites an allowed call. The manifest is always checked on the raw arguments. |
+
+`--gate warn` from v0.11 still works as a hidden alias of `--mode shadow`.
 
 ## How a call is decided
 
-With `--manifest`, each `tools/call` passes only if:
+Each `tools/call` goes through these stages in order. The first refusal wins, and every stage fails closed: if a stage cannot decide, the call is refused.
 
-1. the tool is declared in the manifest's `spec.tools` (`tool:refund@4` declares `refund`), and
-2. `--certification` verifies offline **at the moment of the call**: trusted signer (`--trust` / `--trust-key`), not revoked (`--revoked-statement`, `--revoked-key`), inside its validity window, about this manifest's release, a `certified` decision, for `--environment`.
+1. **Read.** Only a message the gate can parse in full is forwarded, and it is re-serialized rather than passed through raw. Unparseable lines, batches, non-objects and case variants of JSON-RPC member names are refused.
+2. **Contract.** The manifest must declare the tool (`undeclared_tool`). The call may carry only the arguments the tool lists (`undeclared_argument`), must carry the `required` ones (`argument_missing`), and each value must pass its rules (`argument_invalid`, or `scope_mismatch` / `task_context_missing` for `one_of_context`).
+3. **Cedar.** If the manifest has `policy:`, the policy must permit the call (`policy_denied`, naming the deciding policies). See [Policy](/docs/policy).
+4. **Approval.** If the manifest's `approval.when` holds, or every Cedar permit that allowed the call carries `@approval`, the call needs a valid receipt for exactly this call (`approval_required`, `approval_invalid`, `approval_expired`).
+5. **Side effects.** For a tool with `side_effect: true`, the operations store must have no conflicting or unsettled attempt (`operation_conflict`, `reconcile_before_retry`).
+6. **Record, then forward.** The decision is written to the ledger first. If it cannot be written, the call is refused as `fail_closed` and not forwarded.
 
-Because verification happens per call, a certification that expires while the proxy runs stops the next call.
+The test suite asserts that the contract and Cedar stages together take under 5ms at p99 on the example manifest (the target is 2ms). That figure does not include the ledger write or the upstream round trip.
 
 ## Refusals
 
-With `--gate enforce`, a refused call never reaches the upstream tool. The agent receives JSON-RPC error **`-32001`** with `data: {reason, tool, release}` (notifications get no reply). Reasons:
+A refused call gets JSON-RPC error **`-32001`** with `data: {reason, tool, release}` and, where it applies, `path` (the argument path, never its value), `policies`, `approvers` and `fingerprint`. `release` is the manifest digest. Notifications get no reply.
+
+```json
+{"jsonrpc":"2.0","id":2,"error":{"code":-32001,"message":"tool call refused by CloakPipe: scope_mismatch","data":{"reason":"scope_mismatch","tool":"send_email","release":"sha256:c558…","path":"/to"}}}
+```
 
 | `reason` | Why |
 |---|---|
 | `undeclared_tool` | the manifest does not declare the tool |
-| `uncertified` | no `--certification` was given |
-| `wrong_environment` | certified, but for another environment |
-| `blocked` | the certification is a verified `BLOCKED` decision |
-| `expired`, `revoked`, `invalid`, … | the certification's verification status |
+| `undeclared_argument` | the call carries an argument the tool does not list (its name is not echoed) |
+| `argument_missing` | a `required: true` argument is absent |
+| `argument_invalid` | a value breaks a rule (type, pattern, length, range, enum, …) |
+| `scope_mismatch` | a `one_of_context` value matches no task context value and no `or_pattern` |
+| `task_context_missing` | no task context, or it lacks a key a rule needs |
+| `policy_denied` | no Cedar permit holds, or a forbid does; `data.policies` lists the deciding forbids by `@id` |
+| `approval_required` | the call needs a receipt and there is none for this exact call; `data.approvers` and `data.fingerprint` are for an approval broker |
+| `approval_invalid` | bad signature, untrusted approver, another release, tool, task or call, or a validity window longer than the tool's `ttl` |
+| `approval_expired` | the receipt's `notAfter` has passed |
+| `operation_conflict` | the operation id is already used by a different call |
+| `reconcile_before_retry` | the previous attempt is `in_flight` or `unknown`: error **`-32002`**, with `data.operationId` |
+| `request_id_missing`, `request_id_in_use` | a side-effecting call sent as a notification, or reusing a request id still in flight |
+| `operations_unavailable` | the operations store cannot be read or written |
+| `fail_closed` | a stage could not decide: a Cedar evaluation error, the counter store failing, or a ledger entry that could not be written |
 
-The refusal is recorded as a release-bound `mcp_tool_call` hop with action `block` and `gate_denial=<reason>`. With `--gate warn`, the call is forwarded, the violation is logged, and the hop is marked `gate_violation=<reason>`.
+Messages the gate cannot read get an error with `id: null`: `unreadable` (**`-32700`**), `batch`, `not_an_object` or `noncanonical`.
 
-## Action boundary
+## Shadow mode
 
-<span class="badge oss">Main</span> The release gate answers "may this release call this tool at all". The action boundary answers a narrower question: **may this exact call run**, decided only from trusted inputs. The model proposes a tool call; the gate checks its arguments against a signed-in contract and the orchestrator's task context, requires a signed approval for this exact payload when the contract says so, and tracks the outcome of every side-effecting call so an uncertain one is reconciled instead of retried blindly.
+`--mode shadow` is for rolling the gate out on an agent that already runs. Every call the gate can read is forwarded, and each ledger entry records the decision enforce mode would have made (`decision`, `reason`) with `mode: shadow` and `forwarded: true`. Read the ledger to see what enforce mode would have refused before you switch.
 
-Fail closed everywhere: anything unparseable, unknown, expired or ambiguous is a denial. A release with no tool contract, and a gate started without the new flags, behaves exactly as described above.
+Shadow mode still refuses what it cannot read, and still refuses a call whose ledger entry cannot be written. Side-effect tracking stays on.
 
-### Tool contracts
+## Approval receipts
 
-A `ToolContract` declares, per tool, which arguments are allowed and what values they may take:
-
-```yaml
-apiVersion: cloakpipe.co/v1alpha1
-kind: ToolContract
-metadata:
-  name: crm-tools
-spec:
-  tools:
-    crm.patch:
-      sideEffect: true          # track operation outcomes
-      requiresApproval: true    # needs a signed approval receipt
-      arguments:                # closed by default: unknown argument -> denial
-        tenant: { bindTo: task.tenant }
-        record: { bindTo: task.record }
-        patch:
-          type: object
-          minProperties: 1
-          additionalProperties: false
-          properties:
-            stage: { enum: [qualified, review] }
-            note:  { type: string, maxLength: 280 }
-      required: [tenant, record, patch]
-```
-
-The release binds the contract through its existing `spec.policies` list as `policy:<name>@sha256:<hex>`, where the hex is SHA-256 over the domain string `cloakpipe.co/tool-contract/v1`, a newline, and the RFC 8785 (JCS) bytes of the contract. The contract is therefore part of the certified [release hash](/docs/releases#hash), with no manifest schema change.
-
-The constraint language is a small, deterministic subset of JSON Schema: `type` (`string`, `integer`, `number`, `boolean`, `object`, `array`, `null`), `enum`, `const`, `minLength` / `maxLength` (counted in Unicode scalar values), `pattern` (anchored full match), `minimum` / `maximum`, `properties`, `required`, `additionalProperties` (default `false`), `minProperties` / `maxProperties`, `items`, `minItems` / `maxItems`, plus one extension:
-
-- `bindTo: task.<key>`: the value must equal (JSON equality) the trusted task context's value for that key. A missing task key is a denial.
-
-Unknown keywords in a contract are a parse error, never ignored. Tools declared in the manifest's `spec.tools` but absent from every contract keep the release-gate behaviour.
-
-### Trusted task context
-
-The orchestrator writes a JSON object (flat or nested) describing the task the agent is working on, for example:
-
-```json
-{"taskId": "t-981", "tenant": "demo-co", "record": "lead-42"}
-```
-
-Pass it with `--task-context <file.json>` or `CLOAKPIPE_TASK_CONTEXT=<path>`. It never comes from MCP messages: `_meta`, tool arguments and anything else the agent sends cannot change it.
-
-### Signed approval receipts
-
-For a tool with `requiresApproval: true`, the gate needs a valid approval receipt for this exact call. The call is identified by its **argument fingerprint**: SHA-256 over `cloakpipe.co/tool-call/v1`, a newline, and the JCS bytes of `{"release": "<sha256:…>", "tool": "<name>", "arguments": <raw args>}`.
+An approver signs a receipt for one exact call:
 
 ```bash
-cloakpipe action fingerprint --manifest release.yaml --tool crm.patch --args call.json
-
-cloakpipe release keygen --out approver.key
-cloakpipe approve --manifest release.yaml --tool crm.patch --args call.json \
-  --task-context task.json --key approver.key \
-  [--expires 15m] [--operation-id <id>] --out approvals/
+cloakpipe action fingerprint --manifest cloakpipe.manifest.yaml --tool issue_refund --args refund.json
+cloakpipe approve --manifest cloakpipe.manifest.yaml --tool issue_refund --args refund.json \
+  --task-context task-context.json --key approver.json --expires 15m --out approvals/
 ```
 
-`approve` writes `approvals/<fingerprint-hex>.approval.json`: a DSSE envelope (Ed25519, payload type `application/vnd.in-toto+json`) holding an in-toto statement with predicate type `https://cloakpipe.co/attestations/approval/v1alpha1`, the fingerprint as subject, and the predicate `{ release, tool, taskId, operationId, approver, approvedAt, notAfter }`. `--operation-id` defaults to a fresh UUID v4.
+The **call fingerprint** is SHA-256 over the canonical JSON (RFC 8785) of the release, the tool and the arguments. `approve` writes `approvals/<fingerprint hex>.approval.json`: a DSSE envelope signed with Ed25519, holding an in-toto statement with predicate type `https://cloakpipe.co/attestations/approval/v1alpha1`, the fingerprint as its subject and `{release, tool, taskId, operationId, approver, approvedAt, notAfter}` as its predicate.
 
-The gate looks up `<fingerprint-hex>.approval.json` in `--approvals` and checks: a signature by a trusted `--approver-key`, `notAfter` not passed (and `approvedAt` not in the future beyond the usual clock-skew allowance), the release and tool equal the gate's, the subject equals the recomputed fingerprint, and `taskId` equals the task context's `taskId`. Any change to the arguments gives a different fingerprint, so no receipt is found. A receipt is not single-use on its own; replaying an approved call is handled by its operation ID (below).
+The gate looks the receipt up by the fingerprint it computes from the call it received, then checks the signature against `--approver-key`, the validity window (and that it is no longer than the tool's `ttl`), the release, the tool and the task's `taskId`. A receipt for a 350 refund cannot be replayed for 3,500: that is a different fingerprint, so no receipt is found.
 
-### Operation identity and outcomes
+There is no approval broker yet <span class="badge building">Roadmap</span>: the `approval_required` refusal carries `approvers` and `fingerprint` so that your own tooling can route the request, and the receipt has to be put in `--approvals` by hand or by that tooling.
 
-For a tool with `sideEffect: true`, the gate keeps a durable record of each operation in a SQLite store (`--operations-db <path>` or `CLOAKPIPE_OPERATIONS_DB`). The store is required when any contract tool has `sideEffect: true`.
+## Side effects and reconciliation
 
-The **operation ID** comes from the approval receipt's `operationId` when there is one; otherwise it is `op-` followed by the first 32 hex characters of SHA-256 over `cloakpipe.co/operation/v1`, a newline, the `taskId`, a newline, and the fingerprint hex. The model never supplies it.
+A tool with `side_effect: true` (or `effect: write` / `irreversible`) runs as an **operation** tracked in `--operations-db`. Its id comes from the approval receipt's `operationId`, else from the tool's `idempotency_key` template, else from the task's `taskId` and the call fingerprint. All of these are keyed with a random key held in the operations database, and the model never supplies the id.
 
-Before forwarding a call, the gate checks the stored operation in one transaction:
-
-| Stored state | What the gate does |
+| Stored state | A retry of the same operation |
 |---|---|
-| none | records `in_flight` and forwards the call |
-| any, with a different call fingerprint | denies `operation_conflict` |
-| `done` | does not forward; answers with the stored result, marked `_meta.cloakpipe.replayed = true` |
-| `in_flight` or `unknown` | denies `reconcile_before_retry` |
-| `failed` or `not_applied` | allows a retry and sets it back to `in_flight` |
+| none | recorded `in_flight` and forwarded |
+| `done` | not forwarded: the stored result is replayed, marked `_meta.cloakpipe.replayed = true` |
+| `in_flight` or `unknown` | refused: `reconcile_before_retry` (`-32002`) |
+| `failed` or `not_applied` | forwarded again |
+| any, with a different call | refused: `operation_conflict` |
 
-A result without `isError: true` settles the operation as `done`; `isError: true` or a JSON-RPC error settles it as `failed`. If the upstream exits or the pipe breaks while operations are `in_flight`, they become `unknown`, and so does any `in_flight` row left by a previous process at startup.
-
-MCP has no standard way to ask a server whether a call took effect, so reconciliation is an explicit operator step:
+A reply without `isError: true` settles the operation `done`; an error settles it `failed`. If the upstream exits with calls in flight, they become `unknown`, and waiting requests get `-32002` with reason `operation_unknown`. MCP has no standard way to ask a server whether a call took effect, so an operator settles it after checking the system of record:
 
 ```bash
 cloakpipe operations list --state unknown --operations-db ops.db
-cloakpipe operations reconcile <operation-id> --outcome done --operations-db ops.db --ledger-db ledger.db
+cloakpipe operations reconcile op-3c6d… --outcome done --operations-db ops.db
 ```
 
-`--outcome` is `done` or `not-applied`. `reconcile` refuses unless the operation is `unknown`, or `in_flight` with `--force` (an `in_flight` call may still be running, so check the real system first).
+`--outcome` is `done` or `not-applied`. Reconciling an `in_flight` operation needs `--force`, since a running gate may still receive its reply. Each reconciliation is a signed ledger entry in the default ledger (or `--ledger-db`). `operations reconcile --manifest` takes either format, a v1 manifest or a legacy `AgentRelease`, and binds the reconciliation entry to the manifest digest.
 
-Only one gate can use an operations database at a time: a second gate on the same file refuses to start (exit 2). `list` and `reconcile` work while a gate runs. Every request gets an answer: if the upstream exits before replying, the agent receives error `-32002` with reason `operation_unknown`, or `operation_reconciled` with the recorded state when an operator already settled it. The database keeps the masked upstream result for replay, so it is created owner-only (0600); set a retention policy for it.
+The operations database keeps each completed call's result for replay, so it is created owner-only (`0600`). Treat it like any store of tool output and set a retention policy for it.
 
-### Flags
+## Fail-closed start-up
 
-| Flag | Meaning |
-|---|---|
-| `--tool-contract FILE` | a `ToolContract`; repeatable. Each one's digest must appear in the release's `spec.policies`, and every tool-contract policy the release references must be supplied, or the gate refuses to start (exit 2) |
-| `--task-context FILE` | the trusted task context (or `CLOAKPIPE_TASK_CONTEXT`) |
-| `--approvals DIR` | directory of approval receipts named `<fingerprint-hex>.approval.json` |
-| `--approver-key KEY` | a trusted approver public key; repeatable |
-| `--operations-db PATH` | the operations store (or `CLOAKPIPE_OPERATIONS_DB`); required when a contract tool has `sideEffect: true` |
+The gate refuses to start (non-zero exit) when:
 
-### Denials
-
-Action boundary denials use the same JSON-RPC error `-32001` and `block` hop as the release gate, except `reconcile_before_retry`, which is error **`-32002`** with `data.operationId`. Codes are stable:
-
-| Code | Why |
-|---|---|
-| `argument_missing` | a required argument is absent |
-| `argument_not_allowed` | an argument the contract does not declare (its name is not echoed) |
-| `argument_invalid` | a value breaks a rule; carries the contract path, such as `/patch/stage`, never the value |
-| `scope_mismatch` | a `bindTo` value differs from the task context |
-| `task_context_missing` | no task context, or it lacks a bound key |
-| `approval_required` | no receipt for this exact call |
-| `approval_invalid` | bad signature, or wrong release, tool, task or subject |
-| `approval_expired` | `notAfter` has passed |
-| `operation_conflict` | the operation ID is already used by a different call |
-| `reconcile_before_retry` | the previous attempt is `in_flight` or `unknown` |
-
-### Evidence
-
-The ledger stays free of PII: it never holds raw argument values, or a plain hash of them. A denial hop carries `gate_denial=<code>` and, where it applies, `gate_path=<contract path>`. An approved call's `mcp_tool_call` hop carries `approval=<sha256 of the receipt envelope>` and `operation_id`; the receipt stays with the operator, and an auditor matches it to the ledger by digest. The `mcp_tool_result` hop carries `operation_id` and `operation_state` (`done` or `failed`; `unknown` when written by the process-exit sweep). Reconciliation appends an `operation_reconciled` hop with `operation_id` and `operation_state` (`done` or `not_applied`).
-
-To check that a release neither under-blocks nor over-refuses at this boundary, certify it with a [boundary rule](/docs/certification#boundary-rule).
-
-## Fail-closed behaviour
-
-- With a gate, only a message it can read in full is forwarded, re-serialized (never the raw line). In both modes it refuses, with a JSON-RPC error (`id: null`) and a `block` hop:
-  - lines that do not parse: `unreadable`, **`-32700`** (out-of-range numbers, lone surrogates, deep nesting that laxer upstream parsers accept),
-  - batches: `batch`,
-  - non-objects: `not_an_object`,
-  - case variants of JSON-RPC member names such as `"Method"` or `"Name"`: `noncanonical` (some decoders match keys case-insensitively).
-- `--manifest` without a certification refuses every call.
-- These refuse to start: any gate flag without `--manifest`, a malformed `--revoked-statement`, an uncertifiable manifest, an unreadable envelope, or a `CLOAKPIPE_RELEASE` naming another release.
-
-## Evidence
-
-The manifest also binds every evidence hop to its release: each ledger hop carries `release_hash` inside its signed, hash-chained bytes. Without `--manifest`, set `CLOAKPIPE_RELEASE=sha256:…` for the same binding; a malformed value stops the interceptor from starting. See [Evidence & verification](/docs/evidence).
+- the manifest or its Cedar policy does not load (a bad pattern, template, condition or Cedar syntax error);
+- a side-effecting tool has no `--operations-db`, or another gate holds that database;
+- the ledger database or signing key cannot be opened;
+- anchoring flags are given with `--no-ledger` or without `--manifest`;
+- `--tool-contract` is given with a v1 manifest.
 
 ## Limits
 
-MCP server identity (`spec.mcpServers`) is not checked: the gate fronts the one upstream it was started with. Run one `mcp-proxy` per upstream server.
+- One upstream server per gate, over stdio. Run one `mcp-proxy` per server.
+- `tools/list` is passed through unchanged: tool descriptions are not pinned or diffed.
+- The task context is a file read at start-up, so one gate process serves one task context. Restart the gate, or run one per task, when the task changes.
+
+See the [threat model](/docs/threat-model) for what the gate cannot see.
 
 ## Source
 
-The interceptor and MCP server are in [`crates/cloakpipe-mcp`](https://github.com/rohansx/cloakpipe/tree/main/crates/cloakpipe-mcp) on `main`, including the gate (`gate.rs`).
+The gate is in [`crates/cloakpipe-mcp`](https://github.com/rohansx/cloakpipe/tree/main/crates/cloakpipe-mcp) (`gate.rs`, `proxy.rs`, `operations.rs`), the manifest in `crates/cloakpipe-release` and the Cedar evaluation in `crates/cloakpipe-policy`.

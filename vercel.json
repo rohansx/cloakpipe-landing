@@ -12,6 +12,11 @@
     { "source": "/integrations(\\.html)?", "destination": "/docs/integrations", "permanent": true },
     { "source": "/playground(\\.html)?", "destination": "/", "permanent": true },
     { "source": "/dashboard(\\.html)?", "destination": "/", "permanent": true },
+    { "source": "/docs/certification(\\.html)?", "destination": "/docs", "permanent": true },
+    { "source": "/docs/evaluation(\\.html)?", "destination": "/docs", "permanent": true },
+    { "source": "/docs/releases(\\.html)?", "destination": "/docs/manifest", "permanent": true },
+    { "source": "/docs/runtime(\\.html)?", "destination": "/docs/mcp-gate", "permanent": true },
+    { "source": "/docs/audit-pack(\\.html)?", "destination": "/docs/evidence#audit-pack", "permanent": true },
     { "source": "/demo", "destination": "/waitlist", "permanent": false }
   ],
   "headers": [

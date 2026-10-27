@@ -9,8 +9,324 @@ may contain breaking changes; these are marked **Breaking**.
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-10-27
+
+CloakPipe is now a self-hosted policy-enforcement gate for AI agent tool
+calls: declare a single-file manifest (and optional Cedar policy), enforce it
+in `cloakpipe mcp-proxy`, and prove every decision with a signed, hash-chained
+ledger you can export and verify offline. Eval certification, RAG tooling and
+the ONNX NER detectors are now opt-in cargo features; the default binary is
+the lean gate. Licence: MIT only.
+
 ### Added
 
+- `cloakpipe-cli` cargo features `ner`, `rag` and `full` (= `ner`, `rag`,
+  `certification`). CI tests the default build and `--features full`, and
+  `tools/check_dep_boundary.sh` fails if the default `cloakpipe-cli` or
+  `cloakpipe-proxy` dependency tree contains `ort`, `tokenizers`, `ureq`,
+  `cloakpipe-cert`, `cloakpipe-tree` or `cloakpipe-vector`.
+- crates.io metadata on every crate (`homepage`, `readme`, `keywords`,
+  `categories`) and versions on all path dependencies; `cloakpipe-local`,
+  `cloakleak` and `cloakleak-cli` are `publish = false`.
+- **Single-file manifest, `cloakpipe.manifest.yaml`** (`cloakpipe_release::v1`,
+  `schemas/cloakpipe.manifest.schema.json`): top-level `release`, `version`,
+  optional `policy` (a file path; its bytes are digested as `policy_digest`)
+  and `tools`. Closed by default: a declared tool takes only the `args` it
+  lists (none without `args`), each optional unless `required: true`.
+  Constraint keys `type`, `pattern`, `enum`, `const`, `min_len`, `max_len`,
+  `min`, `max`, `items`, `properties`, plus `one_of_context` (task context
+  paths; string or array values) with an `or_pattern` fallback. Per tool:
+  `side_effect` / `effect: read|write|irreversible`, an `idempotency_key`
+  template (`"{ticket_id}:{sha256(body)}"`) that names the operation, and
+  `approval: {when, approvers, ttl}` with a small condition language
+  (`amount > 100 && currency == 'EUR'`). Everything is checked at load, so
+  a bad rule stops the gate at start-up. The manifest digest is sha256 over
+  the JCS form of the parsed document.
+- `cloakpipe mcp-proxy --manifest` auto-detects the format (top-level
+  `release`: v1; `apiVersion`: legacy). An `approval_required` refusal now
+  carries the tool's `approvers` routes and the call `fingerprint`, and a
+  receipt valid for longer than the tool's `ttl` is `approval_invalid`.
+  `approve` and `action fingerprint` take a v1 manifest too.
+- `cloakpipe manifest validate <file>` and `cloakpipe manifest hash <file>
+  [--json]` (release, version, manifest_digest, policy_digest).
+- Decision ledger: `cloakpipe mcp-proxy` appends one entry per gate decision
+  (`cloakpipe.decision/v1`: allow, deny or require_approval for each
+  `tools/call`, messages refused unread, side-effect outcomes
+  committed/failed/unknown, replays and `operations reconcile`). Entries
+  carry seq, ts, release, tool, a keyed `args_fingerprint` (never raw
+  values), decision, reason, policy_version (the manifest digest),
+  policy_digest (the Cedar policy file's sha256, when the manifest has
+  one), mode, task_id and outcome,
+  are hash-chained, and each is signed with Ed25519 by the gate signing key
+  (`--signing-key` / `CLOAKPIPE_SIGNING_KEY`, else
+  `$CLOAKPIPE_HOME/gate.key`, created owner-only on first use with its
+  public key printed once). `cloakpipe ledger entries | public-key` and
+  `cloakpipe-verify decisions <entries.jsonl> --key …` verify them offline.
+- `mcp-proxy --mode enforce|shadow`: shadow forwards every call the gate can
+  read and records what enforce mode would have decided (`mode: shadow`).
+- Scheduled anchoring: `mcp-proxy --anchor-every N` / `--anchor-interval
+  DURATION` seals the decision ledger into numbered, signed epochs
+  (`cloakpipe.epoch/v1`, each linked to the previous one) and anchors each
+  with an RFC 3161 TSA and Sigstore Rekor on a background thread, off the
+  request path (`--tsa`, `--tsa-root`, `--rekor`, `--rekor-key`, `--no-tsa`,
+  `--no-rekor`; freetsa.org and rekor.sigstore.dev with built-in trust by
+  default). Receipts are kept in the ledger database; a failure prints
+  `anchor.failed` and is retried, by later runs too.
+- `cloakpipe ledger export --out audit-pack.tar [--since/--until]`: a plain
+  tar with entries.jsonl, the gate public key, every epoch with its RFC 3161
+  token and Rekor entry, the manifest digests and a pack manifest signed by
+  the gate key.
+- `cloakpipe verify audit-pack.tar [--key …]`: offline verification of the
+  pack with the `cloakpipe-verify` library (also `cloakpipe-verify pack
+  audit-pack.tar`). It reports entries, chain and signatures, anchored
+  epochs (RFC 3161 and Rekor inclusion proofs), gaps (missing epochs,
+  uncovered seq ranges, unanchored epochs), denials, approvals and unknown
+  side effects reconciled, and exits non-zero on any failure or gap.
+- `cloakpipe-anchor`: `TsaClient::anchor_artifact` and
+  `RekorClient::anchor_artifact` anchor any bytes; the `testkit` feature
+  (tests only) adds local `MockTsa` and `MockRekor` authorities.
+
+- `examples/support-agent/`: a support agent whose prompt-injected
+  `send_email` to an attacker is refused (`scope_mismatch` on `/to`, bound to
+  the ticket's customer), on one `cloakpipe.manifest.yaml` with an
+  idempotent `send_email` and a refund that needs approval over 100, a
+  stdlib-only mock MCP server and the exact commands and output. The test
+  suite runs it.
+- **Cedar policies in the tool gate** (new crate `cloakpipe-policy`, on
+  `cedar-policy` 4.x). The policy a v1 manifest references (`policy:`) is
+  parsed at start-up (an invalid one refuses to start) and evaluated for
+  every call that passed its contract: principal `Release::"<release>"`,
+  action `Action::"<tool>"` (`Tool::"<tool>"` is accepted too), resource
+  `Call::"<fingerprint>"` with the arguments as `resource.args`, and a
+  context of the task context, persistent per-tool counters
+  (`context.counters.<tool>_1h` / `_24h`) and the time. Decision order is
+  contract, Cedar, approval: no permit or a forbid is `policy_denied` (the
+  refusal and the ledger hop name the deciding policies by `@id`); a call
+  whose satisfied permits all carry `@approval("<route>")` needs a receipt,
+  with the routes merged into `approval_required`; any evaluation error is
+  `fail_closed`. Without `policy:` the gate is contract-only, as before.
+- `mcp-proxy --state-db` (default `$CLOAKPIPE_STATE_DB`, else
+  `$CLOAKPIPE_HOME/state.db`, `~/.cloakpipe` by default): the SQLite store
+  of the policy counters. Only forwarded calls are counted, and the counts
+  survive a restart. `cloakpipe manifest validate` parses the policy too.
+- `examples/support-agent/policies/support.cedar`: the spec's email rate
+  limit (50 an hour) and refund tiers (up to 100; 100 to 500 with
+  `@approval`).
+- `AgentRelease::gate_issues()` (`cloakpipe-release`): what the tool gate
+  needs from a release (known `apiVersion`/`kind`, agent name, well-formed
+  and distinct `tool:` and `policy:` references), without the certification
+  pins `validate()` requires.
+
+- Docs for the gate: `docs/MANIFEST.md` (format reference),
+  `docs/POLICY.md` (Cedar entities, context, counters, decisions),
+  `docs/THREAT_MODEL.md` and `docs/KEYS.md` (gate key, approver keys,
+  anchoring roots, rotation; KMS/HSM on the roadmap), and
+  `examples/filesystem`, a read-only manifest and Cedar policy for the
+  reference filesystem MCP server, used by the README's Claude Code, Cursor
+  and Codex snippets.
+- `tools/check_docs.py`, run in CI: every `cloakpipe` / `cloakpipe-verify`
+  command in the README, `docs/` and `examples/*/README.md` (code blocks,
+  inline code, MCP host configs) must exist in the default binary with the
+  flags shown, and walkthroughs marked `<!-- check-docs: run -->` (the
+  README quickstart, the support-agent example, the manifest, policy and key
+  docs) are executed and their output compared with the docs. The
+  filesystem walkthrough, which downloads the server with `npx`, runs in a
+  push-only `docs-network` job.
+
+### Changed
+
+- README rewritten around the action boundary ("Model proposes. Code
+  disposes."): a 60-second quickstart with the support-agent example (v1
+  manifest + Cedar, the prompt-injected email refused, the ledger exported
+  and verified), Declare / Enforce / Prove, host snippets, what it is not
+  and an honest roadmap. The support-agent example README now runs as
+  written with `cloakpipe` on `PATH`, and ends with a pinned-key `verify`.
+- The certification-era docs moved to `docs/legacy/` and are marked legacy:
+  `CERTIFICATION.md`, the release `AUDIT_PACK.md`, `AGENT_RELEASE.md`, and
+  the 2025 proxy `ARCHITECTURE.md`, `TECH.md` and `PLAN.md` (which showed
+  commands that never existed).
+- `cloakpipe verify` / `cloakpipe-verify pack` with several `--key`s (a
+  rotated gate key) named the first pinned key as the pack's signer; it now
+  names the key that signed `pack.json`.
+- `cloakpipe operations reconcile --manifest` read only the legacy Agent
+  Release and failed on a v1 `cloakpipe.manifest.yaml` with "unknown field
+  `release`"; it now takes either format and binds the reconciliation entry
+  to the manifest digest.
+- **Breaking (build): the default `cloakpipe` binary is the lean gate**:
+  `mcp-proxy` and its evidence tooling, plus regex PII detection for `start`,
+  `scan`, `mcp` and `mcp-proxy --transform pii`. It no longer links ONNX
+  Runtime, tokenizers, the RAG crates or `cloakpipe-cert`. Build with
+  `--features ner` for the NER detectors (a config with `[detection.ner]
+  enabled = true` now warns and runs on regex in a build without them),
+  `--features rag` for `tree`, `vector` and the proxy's `/v1/embeddings` and
+  `/tree/*` routes, `--features certification` for `eval`, `release certify`,
+  `release verify-cert` and `release audit-pack`, or `--features full` for all
+  of it. The Docker image takes `--build-arg CLOAKPIPE_FEATURES=...`.
+- **Licence: MIT only.** `cloakpipe-anchor`, `cloakpipe-verify`, `cloakleak`
+  and `cloakleak-cli` (and the CloakLeak sample corpus) move from Apache-2.0
+  and CC-BY-4.0 to MIT, under the one root `LICENSE`.
+- The workspace and crate descriptions describe the tool-call gate
+  ("Self-hosted policy-enforcement gate for AI agent tool calls") instead of
+  a privacy proxy.
+- `cedar-policy-core` turns on serde_json's `preserve_order` feature, so
+  `mcp-proxy` now forwards an agent's JSON-RPC message with its keys in the
+  order the agent sent them (they used to be sorted). Digests and
+  fingerprints are unaffected: they hash the JCS (RFC 8785) form.
+- The support-agent example declares the refund `amount` as an integer.
+- **Breaking:** the denial for an argument the contract does not declare is
+  `undeclared_argument` (was `argument_not_allowed`), for legacy tool
+  contracts too.
+- **Deprecated:** the AgentRelease + ToolContract pair (`--tool-contract`).
+  It still works for this release, with a warning on stderr; `--tool-contract`
+  with a v1 manifest is a usage error, since its contracts are inline.
+- **Breaking (`cloakpipe mcp-proxy`): gate decisions are recorded by
+  default** in `$CLOAKPIPE_HOME/ledger.db` (`~/.cloakpipe/ledger.db`), or
+  `--ledger-db` / `CLOAKPIPE_LEDGER_DB`; `--no-ledger` opts out with a
+  warning. A ledger or key that cannot be opened stops the gate, and an
+  entry that cannot be written refuses its call as `fail_closed` (never
+  forwarded). Gate refusals, approvals and operation states are recorded as
+  decision entries instead of `gate_denial` / `gate_violation` /
+  `operation_state` metadata on PII hop records; those hop records are now
+  written only by `--transform pii`, and old ones are still read.
+  `operations reconcile` records a signed `reconcile` entry by default
+  instead of an `operation_reconciled` hop.
+- `mcp-proxy --gate warn` is now a hidden alias of `--mode shadow`.
+- **Breaking (`cloakpipe-mcp`):** `GateMode::Warn` is `GateMode::Shadow`;
+  `ProxyContext` has a `decisions` field; `reconcile_operation` takes a
+  `DecisionLog` and the release as `sha256:` text.
+- **Breaking (`cloakpipe mcp-proxy`): PII masking is opt-in.** By default
+  the proxy forwards tool-call arguments and results unchanged: the gate
+  allows or refuses a call and never rewrites an allowed one, so a tool now
+  receives `dana@customer.example` where 0.11 sent `EMAIL_1`. No vault is
+  opened or keyed, and `CLOAKPIPE_VAULT_KEY` and the config file are not
+  read. `--transform pii` restores the 0.11 behaviour (pseudonymize PII in
+  arguments, rehydrate tokens in results, through the vault); users who
+  relied on masking must add it.
+- **Breaking (`cloakpipe mcp-proxy --operations-db`):** without
+  `--transform pii`, the proxy refuses to start (exit 1, naming
+  `--transform pii`) when the operations database holds `done` operations
+  whose stored results are masked, since a retry would replay pseudonym
+  tokens the agent cannot read. Every result 0.11 stored counts as masked.
+  Start with `--transform pii` and the vault the results were masked with
+  (the retry is replayed rehydrated, never re-executed), or use a new
+  `--operations-db`. The `operations` table gains a nullable
+  `result_masked INTEGER` column, added in place when an existing database
+  is opened.
+- **Breaking (`cloakpipe-mcp` API):** `ProxyContext { detector, vault, .. }`
+  is now `ProxyContext { pii: Option<PiiTransform>, .. }`, with
+  `PiiTransform { detector, vault }`. `Begin::Replay` carries `masked`,
+  `OperationRow` carries `result_masked`, and `OperationStore` gains
+  `settle_masked` and `masked_results`. Ledger hops of a proxy without the
+  transform record `ActionKind::Passthrough` instead of `Pseudonymize`.
+- **Breaking (`cloakpipe mcp-proxy`): the tool gate no longer requires a
+  certification.** With `--manifest`, a call is allowed when the release
+  declares the tool and the call passes the tool contracts the release binds
+  (and approvals / operations, as before). Calls that 0.11 refused as
+  `uncertified`, `expired`, `revoked`, `invalid`, `blocked` or
+  `wrong_environment` are now forwarded. Default builds no longer accept
+  `--certification`, `--trust`, `--trust-key`, `--revoked-statement`,
+  `--revoked-key` or `--environment` (clap rejects them, exit 2). The old
+  behaviour is a legacy, source-only cargo feature, `certification`, off by
+  default (`cargo build -p cloakpipe-cli --features certification`), kept
+  until certification is removed; published binaries are built without it.
+- **Breaking (`cloakpipe mcp-proxy`):** the gate loads `--manifest` with
+  `AgentRelease::gate_issues()` instead of the certifiability checks, so a
+  release needs no code commit, prompts, model or pinned runtime image to
+  run the gate. A release whose tool or policy references the gate cannot
+  read still refuses to start (exit 1).
+- `cloakpipe-release`: `spec.code`, `spec.prompts`, `spec.model` and
+  `spec.runtime` may be omitted (they read as empty, which `validate()` and
+  `release validate` still report). Hashes of manifests that set them are
+  unchanged.
+- **Breaking (`cloakpipe-mcp` API):** `ToolGate::new(mode, &manifest)` takes
+  no certification arguments. With the `certification` feature,
+  `ToolGate::with_certification(environment, envelope, verify)` restores the
+  requirement, and `Denial::{Uncertified, NotCertified, WrongEnvironment}`
+  exist only in that build. `cloakpipe-mcp` no longer depends on
+  `cloakpipe-cert` by default; `tools/check_dep_boundary.sh` now checks it.
+- CI: a new `test-legacy-features` job runs
+  `cargo test --workspace --features certification`.
+- **New crate `cloakpipe-receipt`.** The DSSE layer (`Envelope`,
+  `Signature`, `TrustedKey`, `pae`, `sign`, `verified_keyids`,
+  `NoDuplicateKeys`, `parse_rfc3339`) and approval receipts
+  (`cloakpipe_receipt::approval`) moved out of `cloakpipe-cert`, so the MCP
+  gate can verify approvals without the certification pipeline.
+  `cloakpipe_cert::statement` and `cloakpipe_cert::approval` re-export them
+  for one release; the types are the same, not copies.
+- **Breaking (`cloakpipe-verify`):** release audit packs (the `pack` module
+  and the `cloakpipe-verify release-pack` command) are behind the new
+  `release-pack` cargo feature, off by default, so the default verifier, and
+  the ledger and anchor crates that depend on it, no longer pull in
+  `cloakpipe-cert`. A verifier built without the feature answers
+  `release-pack` with a usage error (exit 2) naming the feature. The
+  `cloakpipe` CLI enables it for `release audit-pack`. CI checks the
+  dependency boundary with `tools/check_dep_boundary.sh`.
+
+### Fixed
+
+- `mcp-proxy` in a `certification` (or `full`) build no longer refuses every
+  call as `uncertified` when no certification flag is given: the legacy
+  certification gate applies only with `--certification`, `--trust`,
+  `--trust-key`, `--revoked-*` or `--environment`.
+
+
+## [0.11.0] - 2026-10-12
+
+### Added
+
+- **Tool contracts (action boundary).** A new `kind: ToolContract` artifact
+  (`cloakpipe_release::contract`, `schemas/tool-contract.schema.json`) gives
+  argument-level rules for the tools a release calls: closed argument lists,
+  a small deterministic subset of JSON Schema, and `bindTo: task.<key>` to pin
+  an argument to a trusted task context. A release binds a contract in
+  `spec.policies` as `policy:tool-contract/<name>@sha256:<digest>`, so it is
+  covered by the certified release hash. `cloakpipe mcp-proxy` takes
+  `--tool-contract` (repeatable) and `--task-context` (or
+  `CLOAKPIPE_TASK_CONTEXT`), refuses to start unless the contracts are exactly
+  the ones the release binds, and checks each covered call's raw arguments
+  before masking. New denial reasons `argument_missing`,
+  `argument_not_allowed`, `argument_invalid`, `scope_mismatch`,
+  `task_context_missing` and `approval_required`; denial hops carry the
+  contract path as `gate_path`. See `docs/ACTION_BOUNDARY.md` and
+  `examples/action-boundary/`.
+- **Signed approval receipts (action boundary).** A contract tool with
+  `requiresApproval: true` now runs only with a signed receipt for the exact
+  call: an in-toto Statement (predicate type
+  `https://cloakpipe.co/attestations/approval/v1alpha1`) in a DSSE envelope
+  whose subject is the call fingerprint, SHA-256 over
+  `cloakpipe.co/tool-call/v1` and the JCS of `{release, tool, arguments}`
+  (`cloakpipe_release::action`, `cloakpipe_cert::approval`). New commands
+  `cloakpipe action fingerprint` and `cloakpipe approve`; `cloakpipe
+  mcp-proxy` takes `--approvals <dir>` and `--approver-key` (repeatable). New
+  denial reasons `approval_invalid` and `approval_expired`; an approved call's
+  `mcp_tool_call` hop records the receipt digest (`approval`) and
+  `operation_id`, never the arguments or their fingerprint. New library API
+  `ToolGate::with_approvals` and `ToolGate::authorize`.
+- **Operation identity and outcome states (action boundary).** A contract
+  tool with `sideEffect: true` now runs as a tracked operation in a SQLite
+  operations store (`cloakpipe mcp-proxy --operations-db`, or
+  `CLOAKPIPE_OPERATIONS_DB`; required for such tools, so the proxy refuses to
+  start without it). The operation id is the approval receipt's
+  `operationId`, else derived from the task and the call
+  (`cloakpipe.co/operation/v1`, an HMAC keyed by the operations database's
+  own random key, so the ledger's ids cannot be used to guess arguments);
+  the model never supplies it. States
+  `in_flight`, `done`, `failed`, `unknown` and `not_applied`: a retry of a
+  `done` call replays the stored result (`_meta.cloakpipe.replayed`), a call
+  whose reply was lost (upstream exit, broken pipe, crash) becomes `unknown`
+  and retries are refused with `reconcile_before_retry` (JSON-RPC `-32002`)
+  until an operator runs the new `cloakpipe operations reconcile <id>
+  --outcome done|not-applied` (`cloakpipe operations list` shows them;
+  an `in_flight` operation needs `--force`). One proxy per operations
+  database: a running proxy holds `<db>.lock`, and a second one refuses to
+  start. A new operations database is created `0600` on unix.
+  New denial reasons `operation_conflict`, `reconcile_before_retry`,
+  `request_id_missing`, `request_id_in_use` and `operations_unavailable`.
+  Ledger hops carry `operation_id` and `operation_state`, and a new hop
+  category `operation_reconciled` (`Hop::OperationReconciled`) records each
+  reconciliation; the verifier and audit pack count it by type. New library
+  API `cloakpipe_mcp::operations`, `ToolGate::with_operations`,
+  `ToolGate::ready` and `cloakpipe_mcp::reconcile_operation`.
 - **Agent Release manifests.** A new `cloakpipe-release` crate gives an AI agent
   release an exact, verifiable identity: an `AgentRelease` manifest that only
   accepts immutable references, a canonical hash (RFC 8785), a material-change
@@ -36,6 +352,21 @@ may contain breaking changes; these are marked **Breaking**.
   and Langfuse dataset runs with a configurable `--pass-threshold`
   ([#15](https://github.com/rohansx/cloakpipe/pull/15)). Malformed, duplicate or
   conflicting input is rejected rather than guessed.
+- **Langfuse experiments import.** `cloakpipe eval import --langfuse-experiment
+  FILE --langfuse-experiment-items FILE` reads the Langfuse experiments API,
+  which replaces dataset runs, with cursor pagination, item-count and duplicate
+  checks, and `tools/fetch_langfuse_experiment.sh` to download every page.
+  ([#20](https://github.com/rohansx/cloakpipe/pull/20))
+- **Two-way boundary certification.** A certification policy's optional
+  `rules.boundary` stops a release passing authorization by refusing
+  everything: cases labelled `expect: allow|deny` (JUnit property
+  `cloakpipe.expect`, native JSON `expect`, Braintrust/Langfuse metadata
+  `cloakpipe.expect`) are scored both ways in every run that covers a listed
+  suite (each run on its own, never pooled), and the release is blocked
+  with `under_blocking`, `over_refusal` or `boundary_incomplete`. Enabling
+  the rule requires labelled runs. Policies and runs without these fields
+  keep their hashes. See
+  `docs/CERTIFICATION.md#two-way-boundary`.
 - **MCP tool gate.** `cloakpipe mcp-proxy --manifest ... --certification ...`
   only forwards a `tools/call` when the tool is declared in the release manifest
   and the release's certification verifies at the moment of the call (trusted
@@ -83,6 +414,10 @@ may contain breaking changes; these are marked **Breaking**.
 
 ### Changed
 
+- **Breaking (library):** `cloakpipe_mcp::ToolGate::check` takes the call's
+  raw arguments (`check(tool, arguments, now)`), and `Denial` has new variants.
+  `cloakpipe mcp-proxy` gate configuration errors now exit with the documented
+  codes (2 usage, 1 invalid input) instead of 1.
 - **Breaking:** format identifiers moved from the legacy `cloakpipe.dev`
   namespace to `cloakpipe.co` (for example `apiVersion: cloakpipe.co/v1alpha1`,
   hash and signing domains, in-toto predicate types and the schema `$id`).
@@ -99,6 +434,12 @@ may contain breaking changes; these are marked **Breaking**.
 - README rewritten around Evaluate, Certify, Enforce, Prove, with every quick-start
   command verified against `main`; `CONTRIBUTING.md` refreshed.
   ([#18](https://github.com/rohansx/cloakpipe/pull/18))
+
+### Deprecated
+
+- Langfuse dataset-run import (`--langfuse-run` / `--langfuse-scores`). Langfuse
+  removes those endpoints on Langfuse Cloud on 2026-11-16 (self-hosted: v4); use
+  `--langfuse-experiment` instead. ([#20](https://github.com/rohansx/cloakpipe/pull/20))
 
 ### Removed
 
@@ -225,7 +566,9 @@ may contain breaking changes; these are marked **Breaking**.
 
 - First release: privacy middleware for LLM and RAG pipelines.
 
-[Unreleased]: https://github.com/rohansx/cloakpipe/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/rohansx/cloakpipe/compare/v0.12.0...HEAD
+[0.12.0]: https://github.com/rohansx/cloakpipe/compare/v0.11.0...v0.12.0
+[0.11.0]: https://github.com/rohansx/cloakpipe/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/rohansx/cloakpipe/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/rohansx/cloakpipe/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/rohansx/cloakpipe/compare/v0.7.0...v0.8.0

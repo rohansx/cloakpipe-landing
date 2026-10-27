@@ -162,6 +162,33 @@ test('Declare, Enforce, Prove', () => {
   assert.match(t, /offline/i);
 });
 
+test('Declare, Enforce, Prove describe v0.12.0 as it ships', () => {
+  const html = section(home(), 'how');
+  const t = text(html);
+  // v0.12.0 ships Cedar, conditional approvals, shadow mode, a signed entry per decision and `cloakpipe verify`.
+  assert.match(t, /Cedar policy/, 'Declare mentions the optional Cedar policy');
+  assert.match(t, /rate limits/i);
+  assert.match(t, /over \$100/, 'approval is conditional on the amount');
+  assert.match(t, /--mode shadow/);
+  assert.doesNotMatch(t, /--gate warn/, 'the v0.11 flag is gone');
+  assert.match(t, /every decision/i, 'every decision, allowed or refused, is logged');
+  assert.match(t, /signed/i);
+  assert.match(t, /cloakpipe verify/);
+  assert.doesNotMatch(t, /roadmap/i, 'nothing in Declare, Enforce, Prove is roadmap');
+  for (const s of ['issue_refund', 'over $100']) assert.ok(text(html).includes(s), `contract panel: ${s}`);
+});
+
+test('nothing v0.12.0 ships is called roadmap on the home page', () => {
+  const t = text(home());
+  const roadmap = [...t.matchAll(/[^.]*\broadmap\b[^.]*\./gi)].map((m) => m[0]);
+  for (const s of roadmap) {
+    for (const re of [/per-entry signatures/i, /every allowed call/i, /amount thresholds/i, /Cedar/, /shadow/i, /verify/i, /per tool/i]) {
+      assert.doesNotMatch(s, re, `"${s.trim()}" calls a v0.12.0 feature roadmap`);
+    }
+  }
+  assert.doesNotMatch(t, /gate_denial=/, 'no v0.11 ledger field in the transcript');
+});
+
 test('four examples, each with an honest status badge', () => {
   const html = section(home(), 'examples');
   const cards = [...html.matchAll(/<article class="ex[^"]*"[\s\S]*?<\/article>/g)].map((m) => m[0]);
@@ -178,6 +205,11 @@ test('four examples, each with an honest status badge', () => {
   assert.equal(three.label, 'CLI approval today; Slack approvals on roadmap');
   assert.equal(four.kind, 'shipping');
   assert.equal(four.label, 'Shipping · manual reconcile');
+  assert.match(text(cards[0]), /every decision/i, 'example 1: allowed calls are logged too');
+  assert.match(text(cards[1]), /Slack[^.]*roadmap/, 'example 2: alerts stay roadmap');
+  assert.match(text(cards[2]), /over \$100/, 'example 3: approval is conditional on the amount');
+  assert.match(text(cards[2]), /exact (?:call|arguments)/, 'example 3: approval is bound to the exact arguments');
+  assert.match(text(cards[2]), /approval broker[^.]*roadmap|roadmap[^.]*approval broker/, 'example 3: no approval broker yet');
   assert.match(text(cards[1]), /attacker@evil\.com/);
   assert.match(text(cards[1]), /undeclared_tool/);
   assert.match(text(cards[2]), /approval_required/);
@@ -210,7 +242,6 @@ test('retired and unshipped claims are gone from the home page', () => {
   const html = home();
   const t = text(html);
   for (const re of [
-    /Cedar/i,
     /Building next/i,
     /Langfuse/i,
     /Braintrust/i,
@@ -235,4 +266,14 @@ test('home page title and description', () => {
   const page = read('src/pages/index.astro');
   assert.match(page, /const description = "[^"]*Model proposes\. Code disposes\.[^"]*"/);
   assert.doesNotMatch(page, /signed receipt/i);
+});
+
+test('Example 3: reusing an approval for another amount is approval_required (no receipt matches the new call)', () => {
+  const cards = [...section(home(), 'examples').matchAll(/<article class="ex[^"]*"[\s\S]*?<\/article>/g)].map((m) => text(m[0]));
+  assert.match(cards[2], /different amount[^.]*approval_required/);
+  assert.doesNotMatch(cards[2], /approval_invalid/);
+});
+
+test('the deny transcript does not claim to be verbatim output', () => {
+  assert.doesNotMatch(text(section(home(), 'deny')), /real output/);
 });

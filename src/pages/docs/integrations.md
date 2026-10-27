@@ -1,39 +1,129 @@
 ---
 layout: ../../layouts/Docs.astro
 title: Integrations
-description: Providers, frameworks, gateways, MCP, evaluation tools and CI that CloakPipe works with, and where their source lives.
+description: Put the gate in front of an MCP server in Claude Code, Cursor or Codex, use it with any stdio MCP host, and what the Python, LangChain and LlamaIndex packages and the LLM proxy do today.
 ---
 
 # Integrations
 
-What CloakPipe works with today, and where the source lives. Anything not listed here is not integrated yet.
+The gate works with any MCP host that starts servers as a command over stdio: you replace the server's command with `cloakpipe mcp-proxy`, and give the original command to `--upstream`. Nothing about the host or the server changes. This page shows the config for Claude Code, Cursor and Codex, then lists what else exists and what does not yet.
 
-## LLM providers
+| Integration | Status |
+|---|---|
+| Claude Code, Cursor, Codex and any stdio MCP host, by config | <span class="badge oss">v0.11</span>, with the v1 manifest in <span class="badge next">v0.12</span> |
+| One-command install for Claude Code, Cursor and Codex | <span class="badge building">Roadmap</span> |
+| HTTP/SSE MCP servers | <span class="badge building">Roadmap</span> |
 
-The privacy proxy speaks the OpenAI API dialect, so most clients only change their base URL:
+In every snippet below, `npx -y @acme/support-mcp` stands for your server's original command. Use **absolute paths**: hosts start servers from a directory you do not control. The gate logs to stderr, which hosts show in their MCP logs.
 
-- **Self-hosted** <span class="badge oss">Main</span>: `cloakpipe start` listens on `127.0.0.1:8900`; set `OPENAI_BASE_URL=http://127.0.0.1:8900/v1`. See the [quick start](/docs/quickstart#just-want-the-privacy-proxy).
-- **CloakPipe Cloud** <span class="badge cloud">Cloud</span>: base URL `https://api.cloakpipe.co/v1` with `X-CloakPipe-Key`. See [Runtime enforcement](/docs/runtime#the-proxy).
+## Claude Code
 
-The open-source proxy also supports the Anthropic Messages API.
+Add the gated server from the command line (`--scope project` writes `.mcp.json` in the project, to share with your team):
+
+```bash
+claude mcp add --scope project support -- \
+  cloakpipe mcp-proxy --upstream "npx -y @acme/support-mcp" \
+  --manifest /srv/agent/cloakpipe.manifest.yaml \
+  --task-context /srv/agent/task-context.json \
+  --operations-db /srv/agent/ops.db
+```
+
+Or write `.mcp.json` yourself:
+
+```json
+{
+  "mcpServers": {
+    "support": {
+      "command": "cloakpipe",
+      "args": [
+        "mcp-proxy",
+        "--upstream", "npx -y @acme/support-mcp",
+        "--manifest", "/srv/agent/cloakpipe.manifest.yaml",
+        "--task-context", "/srv/agent/task-context.json",
+        "--operations-db", "/srv/agent/ops.db"
+      ],
+      "env": { "CLOAKPIPE_HOME": "/srv/agent/.cloakpipe" }
+    }
+  }
+}
+```
+
+## Cursor
+
+Cursor reads the same shape from `.cursor/mcp.json` in the project (or `~/.cursor/mcp.json` for every project):
+
+```json
+{
+  "mcpServers": {
+    "support": {
+      "command": "cloakpipe",
+      "args": [
+        "mcp-proxy",
+        "--upstream", "npx -y @acme/support-mcp",
+        "--manifest", "/srv/agent/cloakpipe.manifest.yaml",
+        "--task-context", "/srv/agent/task-context.json",
+        "--operations-db", "/srv/agent/ops.db"
+      ]
+    }
+  }
+}
+```
+
+## Codex
+
+Codex reads MCP servers from `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.support]
+command = "cloakpipe"
+args = [
+  "mcp-proxy",
+  "--upstream", "npx -y @acme/support-mcp",
+  "--manifest", "/srv/agent/cloakpipe.manifest.yaml",
+  "--task-context", "/srv/agent/task-context.json",
+  "--operations-db", "/srv/agent/ops.db",
+]
+
+[mcp_servers.support.env]
+CLOAKPIPE_HOME = "/srv/agent/.cloakpipe"
+```
+
+Or from the command line: `codex mcp add support -- cloakpipe mcp-proxy --upstream "npx -y @acme/support-mcp" --manifest /srv/agent/cloakpipe.manifest.yaml`, plus the other flags as above.
+
+## Any other stdio MCP host
+
+Wherever a host takes a server command, use `cloakpipe` as the command and `mcp-proxy --upstream "<original command>" --manifest …` as the arguments. Wrap **every** server the agent can reach: a server configured without the gate is not gated. Run one `mcp-proxy` per server.
+
+## Things to know
+
+- **Task context.** `--task-context` is read when the gate starts. In an IDE session that is fine for a fixed project context. For an orchestrator that runs many tasks, start one gate per task with that task's context file (or set `CLOAKPIPE_TASK_CONTEXT`).
+- **Start in shadow mode.** Add `--mode shadow` to see what the manifest would refuse without blocking anyone, then remove it. See [MCP tool gate](/docs/mcp-gate#shadow-mode).
+- **Ledger location.** By default every gate writes to `~/.cloakpipe/ledger.db` and signs with `~/.cloakpipe/gate.key`. Set `CLOAKPIPE_HOME` (as above) or `--ledger-db` to keep each agent's evidence apart.
+- **Refusals are visible to the model.** A refused call comes back as a JSON-RPC error with the reason (`scope_mismatch`, `undeclared_tool`, …). The host passes it back to the model like any other tool error.
 
 ## Python, LangChain and LlamaIndex
 
-<span class="badge oss">Main</span> Source packages in the open-source repository (install from source; they are not published to PyPI yet):
+<span class="badge oss">v0.11</span> The repository has Python packages under [`integrations/`](https://github.com/rohansx/cloakpipe/tree/main/integrations): `cloakpipe` (Python), `langchain-cloakpipe` (`ChatCloakPipe`, a drop-in for `ChatOpenAI`) and `llamaindex-cloakpipe` (a drop-in for LlamaIndex's `OpenAI` LLM). They are **clients of the PII proxy** below: they route model traffic through `cloakpipe start` so personal data is pseudonymized on the way out and restored on the way back. They do **not** gate tool calls. To gate a LangChain or LlamaIndex agent's tools today, expose the tools through an MCP server and put `cloakpipe mcp-proxy` in front of it. Install them from source; they are not published to PyPI yet.
 
-- [`integrations/python`](https://github.com/rohansx/cloakpipe/tree/main/integrations/python): the `cloakpipe` Python package, with LangChain and LlamaIndex integrations.
-- [`integrations/langchain-cloakpipe`](https://github.com/rohansx/cloakpipe/tree/main/integrations/langchain-cloakpipe): `ChatCloakPipe`, a drop-in replacement for `ChatOpenAI`.
-- [`integrations/llamaindex-cloakpipe`](https://github.com/rohansx/cloakpipe/tree/main/integrations/llamaindex-cloakpipe): a drop-in replacement for LlamaIndex's `OpenAI` LLM.
+Gating wrappers for LangGraph, CrewAI and the OpenAI Agents SDK are <span class="badge building">Roadmap</span>.
 
-## MCP
+## OpenAI- and Anthropic-compatible LLM proxy
 
-- `cloakpipe mcp` runs CloakPipe as an MCP server with the tools `pseudonymize`, `rehydrate`, `detect`, `vault_stats`, `configure` and `session_context`.
-- `cloakpipe mcp-proxy` fronts any upstream MCP server, masking tool-call arguments, and with a release manifest gates tool calls on certification. See [MCP tool gate](/docs/mcp-gate).
+<span class="badge oss">v0.11</span> `cloakpipe start` runs a local proxy for the OpenAI and Anthropic APIs: set your client's base URL to it and personal data in prompts is pseudonymized before it reaches the provider, then restored in responses. It is a PII transform only: it does **not** inspect or gate the tool calls in model responses. Checking `tool_calls` / `tool_use` blocks against the manifest in this proxy is <span class="badge building">Roadmap</span>.
 
-## Evaluation tools and CI
+## Events and telemetry
 
-<span class="badge oss">Main</span>
+- <span class="badge building">Roadmap</span> Webhooks (HMAC-signed) for denials, approval requests and unknown side effects.
+- <span class="badge building">Roadmap</span> OpenTelemetry spans, one per gate decision.
+- <span class="badge building">Roadmap</span> Hosted alerts and approvals in Slack, Discord or PagerDuty. This is not built; [tell us on the waitlist](/waitlist) if you want it.
 
-- JUnit XML (pytest, Jest, Go, JUnit, cargo-nextest), Braintrust and Langfuse: [Evaluation import](/docs/evaluation).
-- GitHub Actions: [the certify action](/docs/certification#github-action).
-- <span class="badge cloud">Cloud</span> Uploading the same reports to CloakPipe Cloud from CI or the dashboard: [Evaluation import](/docs/evaluation#upload-to-cloakpipe-cloud).
+Today the record of every decision is the [ledger](/docs/evidence), and the gate's log is on stderr.
+
+## CI
+
+Validate the manifest and its policy on every change, so a broken rule fails the build instead of stopping the gate at start-up:
+
+```bash
+cloakpipe manifest validate cloakpipe.manifest.yaml
+cloakpipe manifest hash cloakpipe.manifest.yaml --json
+```

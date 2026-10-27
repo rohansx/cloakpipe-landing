@@ -26,14 +26,29 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://cloakpipe.co/docs/audit-pack</loc>
+    <loc>https://cloakpipe.co/docs/manifest</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cloakpipe.co/docs/policy</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cloakpipe.co/docs/threat-model</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://cloakpipe.co/docs/keys</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://cloakpipe.co/docs/releases</loc>
+    <loc>https://cloakpipe.co/docs/comparison</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://cloakpipe.co/docs/integrations</loc>

@@ -17,59 +17,48 @@ const POST = 'src/pages/blog/agent-cannot-be-its-own-authority.astro';
 test('mcp-gate docs cover the action boundary flags and commands', () => {
   const md = read('src/pages/docs/mcp-gate.md');
   for (const s of [
-    'kind: ToolContract',
-    'apiVersion: cloakpipe.co/v1alpha1',
-    'bindTo: task.tenant',
-    'sideEffect: true',
-    'requiresApproval: true',
-    '--tool-contract',
+    '--manifest',
     '--task-context',
     'CLOAKPIPE_TASK_CONTEXT',
     '--approvals',
     '--approver-key',
     '--operations-db',
     'CLOAKPIPE_OPERATIONS_DB',
+    '--state-db',
     'cloakpipe approve',
     'cloakpipe action fingerprint',
     'cloakpipe operations list',
     'cloakpipe operations reconcile',
-    'cloakpipe.co/tool-call/v1',
-    'cloakpipe.co/tool-contract/v1',
-    'cloakpipe.co/operation/v1',
     'https://cloakpipe.co/attestations/approval/v1alpha1',
     '-32002',
-    'operation_reconciled',
   ]) {
     assert.ok(md.includes(s), `mcp-gate.md mentions ${s}`);
   }
   for (const code of [
+    'undeclared_tool',
+    'undeclared_argument',
     'argument_missing',
-    'argument_not_allowed',
     'argument_invalid',
     'scope_mismatch',
     'task_context_missing',
+    'policy_denied',
     'approval_required',
     'approval_invalid',
     'approval_expired',
     'operation_conflict',
     'reconcile_before_retry',
+    'fail_closed',
   ]) {
     assert.match(md, new RegExp('`' + code + '`'), `denial code ${code}`);
   }
+  assert.doesNotMatch(md, /argument_not_allowed/, 'renamed to undeclared_argument');
   for (const state of ['in_flight', 'done', 'failed', 'unknown', 'not_applied']) {
     assert.ok(md.includes('`' + state + '`'), `operation state ${state}`);
   }
 });
 
-test('certification docs describe the two-way boundary rule', () => {
-  const md = read('src/pages/docs/certification.md');
-  for (const s of ['boundary:', 'minDenyRate', 'minAllowRate', 'cloakpipe.expect', 'under_blocking', 'over_refusal', 'boundary_incomplete']) {
-    assert.ok(md.includes(s), `certification.md mentions ${s}`);
-  }
-});
-
 test('docs never reference the private cloud repository', () => {
-  for (const p of ['src/pages/docs/mcp-gate.md', 'src/pages/docs/certification.md', POST, 'src/pages/blog/index.astro']) {
+  for (const p of ['src/pages/docs/mcp-gate.md', POST, 'src/pages/blog/index.astro']) {
     if (existsSync(join(root, p))) assert.doesNotMatch(read(p), /github\.com\/[^/\s]+\/cloakpipe-cloud/, p);
   }
 });
@@ -215,25 +204,20 @@ test('sitemap lists only pages that exist', () => {
   }
 });
 
-// Retired positioning. Docs pages listed in PENDING_DOCS still use it and are
-// rewritten together with the new docs structure; remove each from the list
-// as it is rewritten. Nothing else may use these phrases.
+// Retired positioning. Nothing may use these phrases (PENDING_DOCS is the
+// escape hatch for a page being rewritten; keep it empty).
 const BANNED = [/reliability layer/i, /Evaluate · Certify/i, /privacy proxy/i, /control plane/i];
-const PENDING_DOCS = new Set([
-  'src/pages/docs/index.md',
-  'src/pages/docs/faq.md',
-  'src/pages/docs/integrations.md',
-  'src/pages/docs/quickstart.md',
-  'src/pages/docs/evaluation.md',
-  'src/pages/docs/certification.md',
-  'src/pages/docs/runtime.md',
-  'src/pages/docs/releases.md',
-]);
+const PENDING_DOCS = new Set([]);
+// The vendored changelog is a verbatim copy of the core repository's release
+// history, which may name the retired positioning to say what changed (v0.12.0:
+// "... instead of a privacy proxy."). Only that negated mention is allowed.
+const VERBATIM_HISTORY = 'src/content/CHANGELOG.md';
+const strip = (p, text) => (p === VERBATIM_HISTORY ? text.replace(/instead of\s+a privacy proxy/g, '') : text);
 
 test('banned phrases are absent from the site', () => {
   for (const p of sources()) {
     if (PENDING_DOCS.has(p)) continue;
-    const text = read(p);
+    const text = strip(p, read(p));
     for (const re of BANNED) assert.doesNotMatch(text, re, `${p} uses retired phrase ${re}`);
   }
 });
