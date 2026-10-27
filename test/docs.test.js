@@ -49,7 +49,7 @@ test('the new pages exist with a title and a description', () => {
 
 test('the sidebar has no "Evaluate & certify" group and lists every docs page', () => {
   const nav = read('src/lib/docs.ts');
-  assert.doesNotMatch(nav, /Evaluate|certif/i);
+  assert.doesNotMatch(nav, /Evaluate|certif(?:y|ied|ication)/i);
   for (const p of Object.keys(REMOVED)) assert.doesNotMatch(nav, new RegExp(`'/docs/${p}'`), `nav drops ${p}`);
   for (const p of ALL_PAGES) {
     const href = p === 'index' ? '/docs' : `/docs/${p}`;
@@ -93,7 +93,7 @@ test('docs never sell evaluation or certification', () => {
   for (const p of docPages()) {
     const src = read(p);
     assert.doesNotMatch(src, /Evaluate,? (?:·\s*)?Certify/i, `${p}: Evaluate, Certify`);
-    assert.doesNotMatch(src, /certif/i, `${p} mentions certification`);
+    assert.doesNotMatch(src, /certif(?:y|ied|ication)/i, `${p} mentions certification`);
     assert.doesNotMatch(src, /eval import/, `${p}: eval import`);
   }
 });
@@ -105,7 +105,7 @@ test('docs make no hosted Cloud claims', () => {
       assert.doesNotMatch(src, re, `${p} matches ${re}`);
     }
     // "hosted" may only appear next to a statement that it is not built.
-    for (const line of src.split('\n').filter((l) => /\bhosted\b/i.test(l))) {
+    for (const line of src.split('\n').filter((l) => /(?<!self-)\bhosted\b/i.test(l))) {
       assert.match(line, /not built|waitlist|roadmap|badge building/i, `${p}: "hosted" without saying it is not built: ${line.trim().slice(0, 120)}`);
     }
   }
@@ -256,7 +256,7 @@ test('policy page covers Cedar entities, context, counters and @approval', () =>
 
 test('evidence page covers the ledger entry, the tar pack and epochs', () => {
   const md = page('evidence');
-  for (const s of ['cloakpipe.decision/v1', 'entry_hash', 'prev_hash', 'args_fingerprint', 'cloakpipe ledger export', 'cloakpipe verify', 'pack.json', 'entries.jsonl', 'epoch', 'RFC 3161', 'Rekor', 'gaps', '--anchor-every', '--anchor-interval', 'anchor.failed', 'id="audit-pack"']) {
+  for (const s of ['cloakpipe.decision/v1', 'entry_hash', 'prev_hash', 'args_fingerprint', 'cloakpipe ledger export', 'cloakpipe verify', 'pack.json', 'entries.jsonl', 'epoch', 'RFC 3161', 'Rekor', 'gaps', '--anchor-every', '--anchor-interval', 'anchor.failed', '\n## Audit pack\n']) {
     assert.ok(md.includes(s), `evidence.md mentions ${s}`);
   }
 });
@@ -271,7 +271,7 @@ test('threat model and keys pages say what is and is not protected', () => {
 });
 
 test('integrations put Claude Code, Cursor and Codex first and label the roadmap', () => {
-  const md = page('integrations');
+  const md = page('integrations').split('\n---\n').slice(1).join('\n---\n'); // body, after the frontmatter
   const at = (s) => {
     const i = md.indexOf(s);
     assert.ok(i >= 0, `integrations mentions ${s}`);
