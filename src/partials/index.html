@@ -87,12 +87,12 @@
           <div class="pc-row"><span>to</span><span>must be the ticket's customer</span></div>
           <div class="pc-row"><span>body</span><span>up to 4,000 characters</span></div>
           <div class="pc-tool">issue_refund</div>
-          <div class="pc-row"><span>approval</span><span>a human signs this exact call</span></div>
+          <div class="pc-row"><span>approval</span><span>over $100, a human signs this exact call</span></div>
           <div class="pc-tool off">export_customers</div>
           <div class="pc-row off"><span></span><span>not declared, so refused</span></div>
         </div>
         <div class="step-n">01</div><h3>Declare</h3>
-        <p>A tool contract lists the tools the agent may call and the shape of every argument: types, lengths, ranges, patterns, and values that must match the current task. It is closed by default: an undeclared tool or argument is refused.</p>
+        <p>A tool contract lists the tools the agent may call and the shape of every argument: types, lengths, ranges, patterns, and values that must match the current task. It is closed by default: an undeclared tool or argument is refused. An optional Cedar policy adds what one call cannot show: rate limits over persistent counters, tiers and time windows.</p>
       </div>
       <div class="how">
         <div class="panel" aria-hidden="true">
@@ -104,7 +104,7 @@
           <div class="pd-row ok"><span class="pd-k">allow</span><span>read_ticket T-4472</span></div>
         </div>
         <div class="step-n">02</div><h3>Enforce</h3>
-        <p>Every <code class="mono">tools/call</code> is checked before it is forwarded. Refused calls get a structured JSON-RPC error the agent can read, and the tool never sees them. Risky tools wait for an approval bound to the exact arguments. Errors fail closed. <code class="mono">--gate warn</code> lets you watch before you enforce.</p>
+        <p>Every <code class="mono">tools/call</code> is checked before it is forwarded. Refused calls get a structured JSON-RPC error the agent can read, and the tool never sees them. Risky calls, such as a refund over $100, wait for an approval bound to the exact arguments. Errors fail closed. <code class="mono">--mode shadow</code> lets you watch before you enforce.</p>
       </div>
       <div class="how">
         <div class="panel" aria-hidden="true">
@@ -117,7 +117,7 @@
           <div class="pl-row"><span>chain, offline</span><span class="ok">OK</span></div>
         </div>
         <div class="step-n">03</div><h3>Prove</h3>
-        <p>Denials and side-effecting calls go into a hash-chained ledger that never stores raw argument values. <code class="mono">cloakpipe anchor</code> timestamps the chain head with an RFC 3161 authority and Sigstore Rekor, and <code class="mono">cloakpipe-verify</code> checks it offline. Per-entry signatures and an entry for every allowed call are on the roadmap.</p>
+        <p>Every decision, allowed or refused, is an entry in a hash-chained ledger that never stores raw argument values, and each entry is signed with the gate's Ed25519 key. The gate seals entries into epochs and timestamps each one with an RFC 3161 authority and Sigstore Rekor. <code class="mono">cloakpipe verify</code> checks an exported audit pack offline.</p>
       </div>
     </div>
   </div>
@@ -148,7 +148,7 @@
           "id":7,"jsonrpc":"2.0"}
 
 <span class="tw">tool</span>   send_email never called
-<span class="tw">ledger</span> <span class="tk">✓</span> receipt written · gate_denial=scope_mismatch</pre>
+<span class="tw">ledger</span> <span class="tk">✓</span> receipt written · signed · deny scope_mismatch</pre>
       <figcaption id="deny-cap" class="term-cap">Example 2 from the repository's <code class="mono">examples/support-agent</code>. The agent was tricked; the gate did not need to notice. The call was outside the contract, so it never ran.</figcaption>
     </figure>
   </div>
@@ -166,7 +166,7 @@
         <div class="ex-head"><span class="ex-n">01 · Normal day</span><span class="status shipping">Shipping</span></div>
         <h3>The call fits the contract</h3>
         <p>The agent calls <code class="mono">send_email</code> to the customer on the ticket. Every argument is inside the contract, so the gate forwards it unchanged.</p>
-        <p class="ex-note">Side-effecting calls are logged today; a log entry for every allowed call is on the roadmap.</p>
+        <p class="ex-note">Every decision is a signed ledger entry, allowed calls included, and the email's outcome is recorded too.</p>
       </article>
       <article class="ex">
         <div class="ex-head"><span class="ex-n">02 · Agent tricked</span><span class="status shipping">Shipping</span></div>
@@ -177,8 +177,8 @@
       <article class="ex">
         <div class="ex-head"><span class="ex-n">03 · Risky but legitimate</span><span class="status partial">CLI approval today; Slack approvals on roadmap</span></div>
         <h3>A refund needs a human</h3>
-        <p>A tool marked as needing approval is refused with <code class="mono">approval_required</code> until someone signs an approval for that exact call with <code class="mono">cloakpipe approve</code>. The agent retries and the gate forwards it. Reusing that approval for a different amount fails with <code class="mono">approval_invalid</code>.</p>
-        <p class="ex-note">Approval is per tool today; amount thresholds such as "over $100" are on the roadmap.</p>
+        <p>The contract says a refund over $100 needs approval. A $350 refund is refused with <code class="mono">approval_required</code> until someone signs an approval for that exact call with <code class="mono">cloakpipe approve</code>. The agent retries and the gate forwards it. Reusing that approval for a different amount fails with <code class="mono">approval_invalid</code>.</p>
+        <p class="ex-note">The refusal names the approvers and the call's fingerprint, but nothing delivers the request yet: an approval broker and Slack approvals are on the roadmap.</p>
       </article>
       <article class="ex">
         <div class="ex-head"><span class="ex-n">04 · Did it happen?</span><span class="status shipping">Shipping · manual reconcile</span></div>

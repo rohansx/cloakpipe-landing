@@ -26,10 +26,10 @@ The [quick start](/docs/quickstart) runs all three on a sample support agent in 
 
 ## Release status
 
-These docs describe the gate as it is in the **next release, v0.12**, which is not tagged yet. The latest tag is **v0.11.0** (12 October 2026). Every page labels what it describes:
+The latest release is **v0.12.0** (27 October 2026): a [GitHub release](https://github.com/rohansx/cloakpipe/releases/tag/v0.12.0) and the Docker image `ghcr.io/rohansx/cloakpipe:0.12.0`. It is not on crates.io yet; the [quick start](/docs/quickstart#1-install) installs it from the tag. Every page labels what it describes:
 
-- <span class="badge oss">v0.11</span> in the latest tagged release, v0.11.0.
-- <span class="badge next">v0.12</span> in the next release, v0.12. The code is in review in the open-source repository and is not in a tagged release yet.
+- <span class="badge oss">v0.11</span> since v0.11, and still in v0.12.0.
+- <span class="badge next">v0.12</span> new in v0.12.0.
 - <span class="badge building">Roadmap</span> planned, not built.
 
 | Capability | Status |
@@ -46,7 +46,7 @@ These docs describe the gate as it is in the **next release, v0.12**, which is n
 | Tool-call checks in the OpenAI/Anthropic-compatible LLM proxy | <span class="badge building">Roadmap</span> |
 | Webhooks and OpenTelemetry export, an approval broker, replay of a candidate manifest | <span class="badge building">Roadmap</span> |
 
-v0.11.0 configures the gate with the older pair of files, an `AgentRelease` plus a `ToolContract`. v0.12 still reads that pair, with a deprecation warning, for one more release.
+v0.11.0 configured the gate with the older pair of files, an `AgentRelease` plus a `ToolContract`. v0.12.0 still reads that pair, with a deprecation warning, for one more release.
 
 ## What it is not
 

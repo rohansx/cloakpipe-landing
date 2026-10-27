@@ -131,21 +131,52 @@ test('the overview leads with the action boundary', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Release status: v0.12 is not tagged, so its features are labelled as such.
+// Release status: v0.12.0 is tagged (27 October 2026). Features new in it
+// carry the v0.12 badge; nothing says it is unreleased.
 
 const V012 = [/cloakpipe\.manifest\.yaml/, /--mode shadow/, /ledger export/, /cloakpipe verify\b/, /--anchor-every/, /\.cedar\b/, /--signing-key/];
 const NEXT_BADGE = '<span class="badge next">v0.12</span>';
+const UNRELEASED = [/not tagged/i, /next release/i, /in review/i, /Unreleased<\/strong> is the next/i];
 
-test('features of the next release are labelled v0.12, never as shipped', () => {
+test('features new in v0.12 carry the v0.12 badge', () => {
   for (const p of docPages()) {
     const src = read(p);
     if (V012.some((re) => re.test(src))) assert.ok(src.includes(NEXT_BADGE), `${p} uses v0.12 features but has no v0.12 badge`);
     assert.doesNotMatch(src, /badge oss">Main</, `${p}: the old "Main" badge`);
   }
-  const overview = page('index');
-  assert.match(overview, /next release/i);
-  assert.match(overview, /v0\.11\.0/);
   assert.ok(read('src/layouts/Docs.astro').includes('.badge.next'), 'the layout styles the v0.12 badge');
+});
+
+test('no page says v0.12 is unreleased', () => {
+  for (const p of [...docPages(), 'src/pages/changelog.astro', 'src/partials/index.html']) {
+    const src = read(p);
+    for (const re of UNRELEASED) assert.doesNotMatch(src, re, `${p} matches ${re}`);
+  }
+});
+
+test('the overview says the latest release is v0.12.0 and explains the badges', () => {
+  const overview = page('index');
+  assert.match(overview, /latest release is \*\*v0\.12\.0\*\* \(27 October 2026\)/);
+  assert.match(overview, /<span class="badge oss">v0\.11<\/span> since v0\.11/);
+  assert.match(overview, /<span class="badge next">v0\.12<\/span> new in v0\.12\.0/);
+  assert.match(overview, /<span class="badge building">Roadmap<\/span> planned, not built/);
+});
+
+test('the comparison status row says v0.12.0 is released', () => {
+  const row = page('comparison').split('\n').find((l) => l.startsWith('| **Status'));
+  assert.ok(row, 'comparison has a status row');
+  assert.ok(row.includes('v0.12.0 released 27 Oct 2026'), row);
+});
+
+test('install lines pin the v0.12.0 tag and mention the Docker image', () => {
+  const qs = page('quickstart');
+  assert.match(qs, /cargo install --git https:\/\/github\.com\/rohansx\/cloakpipe --tag v0\.12\.0 --locked cloakpipe-cli/);
+  assert.match(qs, /git clone --branch v0\.12\.0 https:\/\/github\.com\/rohansx\/cloakpipe/);
+  assert.ok(qs.includes('ghcr.io/rohansx/cloakpipe:0.12.0'), 'quickstart mentions the Docker image');
+  assert.match(qs, /not on crates\.io yet/i);
+  for (const p of docPages()) {
+    for (const m of read(p).matchAll(/cargo install --git [^\n`]*/g)) assert.match(m[0], /--tag v0\.12\.0/, `${p}: ${m[0]}`);
+  }
 });
 
 // ---------------------------------------------------------------------------
@@ -291,11 +322,15 @@ test('comparison is dated, sourced and names the alternatives', () => {
   }
 });
 
-test('the changelog page source carries the new positioning', () => {
+test('the changelog page source has the dated v0.12.0 release', () => {
   const md = read('src/content/CHANGELOG.md');
-  const unreleased = md.slice(md.indexOf('## [Unreleased]'), md.indexOf('## [0.11.0]'));
-  assert.ok(unreleased.includes('cloakpipe.manifest.yaml'), 'vendored changelog has the v0.12 entries');
-  assert.ok(unreleased.includes('policy-enforcement gate'), 'vendored changelog has the gate positioning');
+  assert.ok(md.includes('\n## [0.12.0] - 2026-10-27\n'), 'vendored changelog has a dated 0.12.0 section');
+  const v012 = md.slice(md.indexOf('## [0.12.0]'), md.indexOf('## [0.11.0]'));
+  assert.ok(v012.includes('cloakpipe.manifest.yaml'), '0.12.0 has the manifest entries');
+  assert.ok(v012.includes('policy-enforcement gate'), '0.12.0 has the gate positioning');
+  const unreleased = md.slice(md.indexOf('## [Unreleased]'), md.indexOf('## [0.12.0]'));
+  assert.ok(!unreleased.includes('cloakpipe.manifest.yaml'), 'Unreleased no longer holds the v0.12 entries');
   const astro = read('src/pages/changelog.astro');
-  assert.match(astro, /v0\.12/, 'changelog page says Unreleased is v0.12');
+  assert.match(astro, /v0\.12\.0/, 'changelog page names v0.12.0');
+  assert.match(astro, /out of scope/, 'changelog page says older entries describe out-of-scope features');
 });

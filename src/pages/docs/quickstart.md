@@ -15,12 +15,14 @@ Everything here is in [`examples/support-agent`](https://github.com/rohansx/cloa
 The CLI is the Cargo package `cloakpipe-cli`; it installs a binary named `cloakpipe`. You need a Rust toolchain ([rustup](https://rustup.rs)) and, for the stand-in tool server, Python 3.
 
 ```bash
-cargo install --git https://github.com/rohansx/cloakpipe --locked cloakpipe-cli
-git clone https://github.com/rohansx/cloakpipe
+cargo install --git https://github.com/rohansx/cloakpipe --tag v0.12.0 --locked cloakpipe-cli
+git clone --branch v0.12.0 https://github.com/rohansx/cloakpipe
 cd cloakpipe/examples/support-agent
 ```
 
-This page needs v0.12, which is not tagged yet; `cargo install --git` builds the repository's `main` branch. Check that your build has it: `cloakpipe manifest --help` should list `validate` and `hash`. If it does not, your build predates v0.12. CloakPipe is not on crates.io yet.
+This page needs v0.12.0 ([release notes](https://github.com/rohansx/cloakpipe/releases/tag/v0.12.0)). Check your build: `cloakpipe manifest --help` should list `validate` and `hash`; if it does not, an older `cloakpipe` is first on your `PATH`. CloakPipe is not on crates.io yet, so install it from the tag as above.
+
+The release is also a Docker image, `ghcr.io/rohansx/cloakpipe:0.12.0`, with the same default binary. Its default command runs the PII proxy, not the gate, and the gate needs the MCP server it wraps inside the same container, so this page uses the local install.
 
 ## 2. Read the manifest
 

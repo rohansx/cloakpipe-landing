@@ -208,11 +208,16 @@ test('sitemap lists only pages that exist', () => {
 // escape hatch for a page being rewritten; keep it empty).
 const BANNED = [/reliability layer/i, /Evaluate · Certify/i, /privacy proxy/i, /control plane/i];
 const PENDING_DOCS = new Set([]);
+// The vendored changelog is a verbatim copy of the core repository's release
+// history, which may name the retired positioning to say what changed (v0.12.0:
+// "... instead of a privacy proxy."). Only that negated mention is allowed.
+const VERBATIM_HISTORY = 'src/content/CHANGELOG.md';
+const strip = (p, text) => (p === VERBATIM_HISTORY ? text.replace(/instead of\s+a privacy proxy/g, '') : text);
 
 test('banned phrases are absent from the site', () => {
   for (const p of sources()) {
     if (PENDING_DOCS.has(p)) continue;
-    const text = read(p);
+    const text = strip(p, read(p));
     for (const re of BANNED) assert.doesNotMatch(text, re, `${p} uses retired phrase ${re}`);
   }
 });

@@ -27,9 +27,9 @@ People ask how CloakPipe relates to two other open-source projects, Microsoft's 
 | **What decides a call** | per-tool argument contracts, task-context binding, Cedar policy, signed approval receipts | YAML policy rules (the README's diagram also names OPA and Cedar), with `allow`, `deny` and `require_approval` actions | built-in and configured scanners: DLP patterns, injection patterns, URL and SSRF checks, 30 built-in tool-policy rules, tool-chain patterns |
 | **Human approval** | signed receipt bound to the exact call's fingerprint, with a `ttl` | `require_approval` with `approvers` in policy | lists human-in-the-loop modes, and an `ask` action for response findings |
 | **Evidence** | per-entry Ed25519-signed, hash-chained decision ledger; epochs anchored with RFC 3161 and Sigstore Rekor; offline `cloakpipe verify` of a tar pack | "tamper-evident" decision records; an Audit and Compliance spec covering "Merkle audit" | Ed25519-signed action receipts; a hash-chained flight recorder with signed checkpoints; receipt checkpoints anchored to a local backend or Rekor |
-| **Packaging** | one Rust binary | Python, npm, NuGet, crates.io and Go packages; a Claude Code plugin | one Go binary, container image, Helm chart |
+| **Packaging** | one Rust binary, container image; not on crates.io yet | Python, npm, NuGet, crates.io and Go packages; a Claude Code plugin | one Go binary, container image, Helm chart |
 | **Licence** | MIT | MIT | Apache-2.0 core; ELv2 for Pro and Enterprise features |
-| **Status (Oct 2026)** | v0.11.0 tagged; most features on these docs are in <span class="badge next">v0.12</span>, not tagged yet | v4.1.0, "Public Preview" | v3.7.1 |
+| **Status (Oct 2026)** | v0.12.0 released 27 Oct 2026; most features on these docs are new in <span class="badge next">v0.12</span> | v4.1.0, "Public Preview" | v3.7.1 |
 
 ## Where they differ
 

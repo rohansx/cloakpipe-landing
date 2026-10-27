@@ -5,10 +5,6 @@ import { getChangelog, CHANGELOG_GH_URL } from '../lib/changelog';
 import { GH_URL } from '../lib/github';
 
 const { html, source } = await getChangelog();
-// The v0.12 note only while the Unreleased section holds the v0.12 entries:
-// not before they reach the core repository's main, and not after the tag.
-const unreleased = html.split(/<h2[^>]*>/).find((s) => s.includes('Unreleased')) ?? '';
-const hasNext = unreleased.includes('cloakpipe.manifest.yaml');
 // Until CHANGELOG.md is on core's main, the build uses the vendored copy and
 // links the repository instead of a file that does not exist yet.
 const frontmatter = {
@@ -18,11 +14,11 @@ const frontmatter = {
 };
 ---
 <Docs frontmatter={frontmatter}>
-  {hasNext && <p class="changelog-lede">
-    <strong>Unreleased</strong> is the next release, <strong>v0.12</strong>: the single-file manifest, Cedar policies, the signed
-    decision ledger, shadow mode, scheduled anchoring and <code>cloakpipe verify</code>. It is not tagged yet. Entries for
-    v0.11.0 and earlier describe the product as it was then, including features that are now out of scope.
-  </p>}
+  <p class="changelog-lede">
+    <strong>v0.12.0</strong> (27 October 2026) is the gate release: the single-file manifest, Cedar policies, the signed
+    decision ledger, shadow mode, scheduled anchoring and <code>cloakpipe verify</code>. Entries for v0.11.0 and earlier
+    describe the product as it was then, including features that are now out of scope.
+  </p>
   <div class="changelog">
     <Fragment set:html={html} />
   </div>
