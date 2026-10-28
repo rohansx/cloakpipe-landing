@@ -17,6 +17,7 @@ export const DOCS: DocGroup[] = [
       { title: 'Manifest reference', href: '/docs/manifest' },
       { title: 'Policy (Cedar)', href: '/docs/policy' },
       { title: 'Evidence & verification', href: '/docs/evidence' },
+      { title: 'Alerts & events', href: '/docs/events' },
     ],
   },
   {
@@ -30,6 +31,7 @@ export const DOCS: DocGroup[] = [
     label: 'Reference',
     items: [
       { title: 'Integrations', href: '/docs/integrations' },
+      { title: 'Docker', href: '/docs/docker' },
       { title: 'Comparison', href: '/docs/comparison' },
       { title: 'FAQ & limitations', href: '/docs/faq' },
       { title: 'Changelog', href: '/changelog' },

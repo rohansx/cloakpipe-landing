@@ -34,14 +34,16 @@ An agent's model proposes tool calls. Those proposals can be wrong because the m
 - **The approver keys** passed with `--approver-key`, and the people holding them.
 - **The host the gate runs on**, its clock, the gate signing key and the databases under `$CLOAKPIPE_HOME`.
 - **The roots and keys** used to check anchors (`--tsa-root`, `--rekor-key`, or the built-in defaults).
+- <span class="badge unreleased">Unreleased</span> **Whoever can reach an HTTP listener.** With `--listen`, anyone who can connect to the address, and holds the `--listen-token-file` token if there is one, can make calls as the agent. The gate checks the token in constant time and rejects a browser `Origin` that is not loopback or its own, but it serves plain HTTP: bind loopback, or put a TLS reverse proxy in front, and always use a token on any other address.
+- <span class="badge unreleased">Unreleased</span> **Webhook and OpenTelemetry receivers** see each event's tool, reason, contract path, release and fingerprint, never an argument value. Anyone who learns the webhook secret can forge alerts, not decisions.
 
 ## What it cannot see
 
 - **Calls that do not go through it.** The gate only sees what the host sends through `mcp-proxy`. A tool configured without the gate, a shell tool, a direct HTTP request or another MCP server bypasses it, and leaves no entry. Wrap every server the agent can reach, and remove the ones you cannot wrap.
 - **What a tool does with an allowed call.** If `send_email` to the customer is allowed, the gate does not inspect the body for leaked data or check what the tool server actually does. Constrain arguments as tightly as the job allows (`enum`, `pattern`, `max_len`, `one_of_context`).
-- **Tool results and descriptions.** Results come back unchanged, and `tools/list` passes through without pinning, so a tool server that changes its descriptions or returns injected text is not detected. Pinning and diffing `tools/list` is <span class="badge building">Roadmap</span>.
+- **Tool results and descriptions.** Results come back unchanged, so a tool server that returns injected text is not detected. In v0.12.0, `tools/list` also passes through without pinning. <span class="badge unreleased">Unreleased</span> With a tools lock, or within a session even without one, a tool whose description or schema changes is hidden and refused as `tool_drift`; a tool that was already malicious when you pinned it is not detected.
 - **The model's intent.** The gate judges the call, not why it was made. A call that is within the contract but still wrong for the situation goes through. Approval exists for the cases where that matters.
-- **Other transports.** Only MCP over stdio is gated. HTTP/SSE MCP and tool calls inside LLM API responses are <span class="badge building">Roadmap</span>.
+- **Other transports.** In v0.12.0, only MCP over stdio is gated. <span class="badge unreleased">Unreleased</span> MCP over Streamable HTTP is gated too. Tool calls inside LLM API responses are <span class="badge building">Roadmap</span>.
 
 ## Host compromise
 

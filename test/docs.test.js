@@ -4,8 +4,11 @@
 // `npm test` with no build, against the Markdown sources.
 //
 // Every `cloakpipe ...` command shown in the docs is checked against
-// test/fixtures/cli-v0.12.json, the `--help` output of the v0.12 binary, so a
-// documented subcommand or flag that does not exist fails the build.
+// test/fixtures/cli-v0.13-unreleased.json, the `--help` output of the binary
+// built for the next release (scripts/cli-fixture.mjs), so a documented
+// subcommand or flag that does not exist fails the build. Anything that binary
+// has and v0.12.0 (test/fixtures/cli-v0.12.json) lacks must be labelled
+// Unreleased; test/docs-v013.test.js checks that.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
@@ -21,7 +24,7 @@ const docPages = () =>
     .map((f) => `${DOCS_DIR}/${f}`);
 const page = (slug) => read(`${DOCS_DIR}/${slug}.md`);
 
-const CLI = JSON.parse(read('test/fixtures/cli-v0.12.json'));
+const CLI = JSON.parse(read('test/fixtures/cli-v0.13-unreleased.json'));
 
 // ---------------------------------------------------------------------------
 // Structure
@@ -33,7 +36,7 @@ const REMOVED = {
   runtime: '/docs/mcp-gate',
   'audit-pack': '/docs/evidence#audit-pack',
 };
-const NEW_PAGES = ['manifest', 'policy', 'threat-model', 'keys', 'comparison'];
+const NEW_PAGES = ['manifest', 'policy', 'threat-model', 'keys', 'comparison', 'events', 'docker'];
 const ALL_PAGES = ['index', 'quickstart', 'mcp-gate', 'evidence', 'faq', 'integrations', ...NEW_PAGES];
 
 test('certification, evaluation, releases, runtime and audit-pack pages are removed', () => {
@@ -136,12 +139,21 @@ test('the overview leads with the action boundary', () => {
 
 const V012 = [/cloakpipe\.manifest\.yaml/, /--mode shadow/, /ledger export/, /cloakpipe verify\b/, /--anchor-every/, /\.cedar\b/, /--signing-key/];
 const NEXT_BADGE = '<span class="badge next">v0.12</span>';
-const UNRELEASED = [/not tagged/i, /next release/i, /in review/i, /Unreleased<\/strong> is the next/i];
+const UNRELEASED_BADGE = '<span class="badge unreleased">Unreleased</span>';
+// v0.13.0 features are legitimately unreleased (badge unreleased), so only a
+// claim that v0.12 itself is unreleased is wrong.
+const UNRELEASED = [
+  /v0\.12(?:\.0)? (?:is|was|remains) (?:not tagged|unreleased|in review|not (?:yet )?released)/i,
+  /v0\.12(?:\.0)?[^.\n]{0,20}\(?(?:unreleased|not tagged|in review)/i,
+  /next release,? (?:is )?v0\.12/i,
+  /Unreleased<\/strong> is the next/i,
+];
 
 test('features new in v0.12 carry the v0.12 badge', () => {
   for (const p of docPages()) {
     const src = read(p);
-    if (V012.some((re) => re.test(src))) assert.ok(src.includes(NEXT_BADGE), `${p} uses v0.12 features but has no v0.12 badge`);
+    // A page wholly about unreleased (v0.13.0) features carries that badge instead.
+    if (V012.some((re) => re.test(src))) assert.ok(src.includes(NEXT_BADGE) || src.includes(UNRELEASED_BADGE), `${p} uses v0.12 features but has no v0.12 badge`);
     assert.doesNotMatch(src, /badge oss">Main</, `${p}: the old "Main" badge`);
   }
   assert.ok(read('src/layouts/Docs.astro').includes('.badge.next'), 'the layout styles the v0.12 badge');
@@ -214,7 +226,7 @@ function invocations(md) {
   return out;
 }
 
-test('every documented cloakpipe command and flag exists in the v0.12 CLI', () => {
+test('every documented cloakpipe command and flag exists in the CLI built for v0.13.0', () => {
   let n = 0;
   for (const p of docPages()) {
     for (const { path, flags, text } of invocations(read(p))) {
@@ -319,8 +331,10 @@ test('integrations put Claude Code, Cursor and Codex first and label the roadmap
   const hosts = Math.max(at('claude mcp add'), at('.mcp.json'), at('.cursor/mcp.json'), at('~/.codex/config.toml'), at('[mcp_servers.'));
   assert.ok(hosts < at('LangChain'), 'host snippets come before LangChain');
   assert.match(md, /LangChain[\s\S]{0,400}PII/, 'LangChain is described as a PII proxy client');
-  assert.match(md, /OpenTelemetry[^\n]*badge building|badge building[^\n]*OpenTelemetry/, 'OTel is roadmap');
-  assert.match(md, /[Ww]ebhooks[^\n]*badge building|badge building[^\n]*[Ww]ebhooks/, 'webhooks are roadmap');
+  // Webhooks and OTel are built for v0.13.0 (unreleased); hosted alerts are not built.
+  assert.match(md, /OpenTelemetry[^\n]*badge unreleased|badge unreleased[^\n]*OpenTelemetry/, 'OTel is unreleased');
+  assert.match(md, /[Ww]ebhooks[^\n]*badge unreleased|badge unreleased[^\n]*[Ww]ebhooks/, 'webhooks are unreleased');
+  assert.match(md, /badge building[^\n]*[Hh]osted alerts/, 'hosted alerts stay roadmap');
 });
 
 test('comparison is dated, sourced and names the alternatives', () => {
@@ -337,7 +351,10 @@ test('the changelog page source has the dated v0.12.0 release', () => {
   assert.ok(v012.includes('cloakpipe.manifest.yaml'), '0.12.0 has the manifest entries');
   assert.ok(v012.includes('policy-enforcement gate'), '0.12.0 has the gate positioning');
   const unreleased = md.slice(md.indexOf('## [Unreleased]'), md.indexOf('## [0.12.0]'));
-  assert.ok(!unreleased.includes('cloakpipe.manifest.yaml'), 'Unreleased no longer holds the v0.12 entries');
+  assert.ok(!unreleased.includes('policy-enforcement gate for AI agent tool'), 'Unreleased no longer holds the v0.12 entries');
+  for (const s of ['--listen', '--server NAME=COMMAND', 'cloakpipe tools pin', '--webhook', '--otel-endpoint', 'docker/compose.example.yaml']) {
+    assert.ok(unreleased.includes(s), `Unreleased has ${s}`);
+  }
   const astro = read('src/pages/changelog.astro');
   assert.match(astro, /v0\.12\.0/, 'changelog page names v0.12.0');
   assert.match(astro, /out of scope/, 'changelog page says older entries describe out-of-scope features');

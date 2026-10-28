@@ -22,7 +22,7 @@ cd cloakpipe/examples/support-agent
 
 This page needs v0.12.0 ([release notes](https://github.com/rohansx/cloakpipe/releases/tag/v0.12.0)). Check your build: `cloakpipe manifest --help` should list `validate` and `hash`; if it does not, an older `cloakpipe` is first on your `PATH`.
 
-The release is also a Docker image, `ghcr.io/rohansx/cloakpipe:0.12.0`, with the same default binary. Its default command runs the PII proxy, not the gate, and the gate needs the MCP server it wraps inside the same container, so this page uses the local install.
+The release is also a Docker image, `ghcr.io/rohansx/cloakpipe:0.12.0`, with the same default binary. Its default command runs the PII proxy, not the gate, and the gate needs the MCP server it wraps inside the same container, so this page uses the local install. An image that runs the gate over HTTP in front of a separate tool server is <span class="badge unreleased">Unreleased</span>; see [Docker](/docs/docker).
 
 ## 2. Read the manifest
 

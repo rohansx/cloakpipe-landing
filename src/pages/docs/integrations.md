@@ -12,7 +12,8 @@ The gate works with any MCP host that starts servers as a command over stdio: yo
 |---|---|
 | Claude Code, Cursor, Codex and any stdio MCP host, by config | <span class="badge oss">v0.11</span>, with the v1 manifest in <span class="badge next">v0.12</span> |
 | One-command install for Claude Code, Cursor and Codex | <span class="badge building">Roadmap</span> |
-| HTTP/SSE MCP servers | <span class="badge building">Roadmap</span> |
+| Hosts that connect to the gate over HTTP (`--listen`), and HTTP MCP servers behind it (`--upstream-url`) | <span class="badge unreleased">Unreleased</span> |
+| Webhooks (Slack, Discord, any HTTPS receiver) and OpenTelemetry | <span class="badge unreleased">Unreleased</span> |
 
 In every snippet below, `npx -y @acme/support-mcp` stands for your server's original command. Use **absolute paths**: hosts start servers from a directory you do not control. The gate logs to stderr, which hosts show in their MCP logs.
 
@@ -27,6 +28,25 @@ claude mcp add --scope project support -- \
   --task-context /srv/agent/task-context.json \
   --operations-db /srv/agent/ops.db
 ```
+
+### Claude Code over HTTP
+
+<span class="badge unreleased">Unreleased</span> Or run the gate as an HTTP server and give Claude Code its URL. One gate can then serve several agents, and the host needs no command of its own:
+
+```bash
+mkdir -p ~/.cloakpipe && openssl rand -hex 32 > ~/.cloakpipe/listen.token
+cloakpipe mcp-proxy --listen 127.0.0.1:8900 --listen-token-file ~/.cloakpipe/listen.token \
+  --manifest /srv/agent/cloakpipe.manifest.yaml \
+  --task-context /srv/agent/task-context.json \
+  --operations-db /srv/agent/ops.db \
+  --upstream "npx -y @acme/support-mcp"
+claude mcp add --transport http support http://127.0.0.1:8900/mcp \
+  --header "Authorization: Bearer $(cat ~/.cloakpipe/listen.token)"
+```
+
+Keep the gate running (as a service, or in [Docker](/docs/docker)) while Claude Code uses it. The task context is the gate's, so every session that connects shares it. See [MCP over HTTP](/docs/mcp-gate#mcp-over-http).
+
+### `.mcp.json`
 
 Or write `.mcp.json` yourself:
 
@@ -92,7 +112,9 @@ Or from the command line: `codex mcp add support -- cloakpipe mcp-proxy --upstre
 
 ## Any other stdio MCP host
 
-Wherever a host takes a server command, use `cloakpipe` as the command and `mcp-proxy --upstream "<original command>" --manifest …` as the arguments. Wrap **every** server the agent can reach: a server configured without the gate is not gated. Run one `mcp-proxy` per server.
+Wherever a host takes a server command, use `cloakpipe` as the command and `mcp-proxy --upstream "<original command>" --manifest …` as the arguments. Wrap **every** server the agent can reach: a server configured without the gate is not gated. In v0.12.0, run one `mcp-proxy` per server. <span class="badge unreleased">Unreleased</span> One gate can front several stdio servers with `--server NAME=COMMAND`; see [Several servers](/docs/mcp-gate#several-servers).
+
+A host that takes a server URL instead can connect to a gate started with `--listen` <span class="badge unreleased">Unreleased</span>.
 
 ## Things to know
 
@@ -113,11 +135,11 @@ Gating wrappers for LangGraph, CrewAI and the OpenAI Agents SDK are <span class=
 
 ## Events and telemetry
 
-- <span class="badge building">Roadmap</span> Webhooks (HMAC-signed) for denials, approval requests and unknown side effects.
-- <span class="badge building">Roadmap</span> OpenTelemetry spans, one per gate decision.
-- <span class="badge building">Roadmap</span> Hosted alerts and approvals in Slack, Discord or PagerDuty. This is not built; [tell us on the waitlist](/waitlist) if you want it.
+- <span class="badge unreleased">Unreleased</span> Webhooks (HMAC-signed) for denials, approval requests, drift and unknown side effects, as raw JSON or as Slack and Discord messages. See [Alerts & events](/docs/events).
+- <span class="badge unreleased">Unreleased</span> OpenTelemetry spans, one per gate decision, allows included.
+- <span class="badge building">Roadmap</span> Hosted alerts and approvals in Slack, Discord or PagerDuty (grouped issues, routing, approval buttons). This is not built; [tell us on the waitlist](/waitlist) if you want it.
 
-Today the record of every decision is the [ledger](/docs/evidence), and the gate's log is on stderr.
+In v0.12.0 the record of every decision is the [ledger](/docs/evidence), and the gate's log is on stderr.
 
 ## CI
 
