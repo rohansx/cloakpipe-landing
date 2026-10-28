@@ -1,14 +1,15 @@
-// Docs for the gate features built for the next release, v0.13.0, and not in
-// v0.12.0: MCP over HTTP, several servers per gate, tool pinning, event
+// Docs for the gate features new in v0.13.0 (tagged 28 October 2026) and not
+// in v0.12.0: MCP over HTTP, several servers per gate, tool pinning, event
 // delivery (webhooks, OpenTelemetry, a JSONL log) and the gate-by-default
-// Docker image. They are labelled Unreleased until v0.13.0 is tagged.
+// Docker image. They carry the v0.13 badge.
 //
 // The claims are checked against what the code does, captured from the
-// binary built from rohansx/cloakpipe gate/integ (PR #42):
-//   - test/fixtures/cli-v0.13-unreleased.json: --help (scripts/cli-fixture.mjs)
-//   - test/fixtures/webhooks-v0.13-unreleased.json: real `cloakpipe events
+// binary built from rohansx/cloakpipe gate/integ (PR #42), which v0.13.0
+// merged with no change to the CLI, the events code or the entrypoint:
+//   - test/fixtures/cli-v0.13.json: --help (scripts/cli-fixture.mjs)
+//   - test/fixtures/webhooks-v0.13.json: real `cloakpipe events
 //     test` requests in each format, with the secret that signed them
-//   - test/fixtures/gate-entrypoint-v0.13-unreleased.sh: the image entrypoint
+//   - test/fixtures/gate-entrypoint-v0.13.sh: the image entrypoint
 //   - test/fixtures/claude-mcp-add.json: `claude mcp add --help`
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -27,12 +28,13 @@ const docPages = () =>
 const page = (slug) => read(`${DOCS_DIR}/${slug}.md`);
 
 const CLI012 = JSON.parse(read('test/fixtures/cli-v0.12.json'));
-const CLI013 = JSON.parse(read('test/fixtures/cli-v0.13-unreleased.json'));
-const HOOKS = JSON.parse(read('test/fixtures/webhooks-v0.13-unreleased.json'));
-const ENTRYPOINT = read('test/fixtures/gate-entrypoint-v0.13-unreleased.sh');
+const CLI013 = JSON.parse(read('test/fixtures/cli-v0.13.json'));
+const HOOKS = JSON.parse(read('test/fixtures/webhooks-v0.13.json'));
+const ENTRYPOINT = read('test/fixtures/gate-entrypoint-v0.13.sh');
 const CLAUDE = JSON.parse(read('test/fixtures/claude-mcp-add.json'));
 
-const UNREL = '<span class="badge unreleased">Unreleased</span>';
+const UNREL = '<span class="badge next">v0.13</span>';
+const TAG = 'https://github.com/rohansx/cloakpipe/blob/v0.13.0/';
 const ROADMAP = '<span class="badge building">Roadmap</span>';
 
 /** Code in a Markdown page: fenced blocks plus inline code spans. */
@@ -80,17 +82,16 @@ function sections(md) {
 // ---------------------------------------------------------------------------
 // The badge
 
-test('the layout styles the Unreleased badge and the overview explains it', () => {
-  assert.match(read('src/layouts/Docs.astro'), /\.badge\.unreleased \{ color: var\(--[a-z0-9-]+\); \}/);
+test('the layout styles the v0.13 badge and the overview explains it', () => {
+  assert.match(read('src/layouts/Docs.astro'), /\.badge\.next \{ color: var\(--[a-z0-9-]+\); \}/);
   const overview = page('index');
-  assert.match(overview, /<span class="badge unreleased">Unreleased<\/span> built for the next release, v0\.13\.0, and not in any release yet/);
-  // How to use it before the tag: build from source, not crates.io 0.12.0.
-  assert.match(overview, /cargo install --locked --path crates\/cloakpipe-cli/);
+  assert.match(overview, /<span class="badge next">v0\.13<\/span> new in v0\.13\.0/);
+  for (const p of docPages()) assert.ok(!read(p).includes('badge unreleased'), `${p}: no Unreleased badge is left`);
 });
 
-test('the fixtures come from the binary built for v0.13.0', () => {
-  assert.match(CLI013.source, /gate\/integ/);
-  assert.match(HOOKS.source, /gate\/integ/);
+test('the fixtures come from the binary v0.13.0 ships', () => {
+  assert.match(CLI013.source, /gate\/integ[^"]*v0\.13\.0/);
+  assert.match(HOOKS.source, /gate\/integ[^"]*v0\.13\.0/);
   // The generator reproduces the v0.12 fixture for every command v0.12 has,
   // apart from mcp-proxy, which gained flags.
   for (const [cmd, flags] of Object.entries(CLI012.commands)) {
@@ -100,7 +101,7 @@ test('the fixtures come from the binary built for v0.13.0', () => {
   for (const f of CLI012.commands['mcp-proxy']) assert.ok(CLI013.commands['mcp-proxy'].includes(f), `mcp-proxy keeps ${f}`);
 });
 
-test('a command or flag v0.12.0 does not have is only shown under an Unreleased badge', () => {
+test('a command or flag v0.12.0 does not have is only shown under the v0.13 badge', () => {
   let n = 0;
   for (const p of docPages()) {
     const { lede, sections: secs } = sections(read(p));
@@ -109,11 +110,11 @@ test('a command or flag v0.12.0 does not have is only shown under an Unreleased 
       const fresh = newIn013(s);
       n += fresh.length;
       if (fresh.length && !pageIsUnreleased) {
-        assert.ok(s.includes(UNREL), `${p}, section "${s.split('\n').find(Boolean)}": shows ${fresh[0]} without the Unreleased badge`);
+        assert.ok(s.includes(UNREL), `${p}, section "${s.split('\n').find(Boolean)}": shows ${fresh[0]} without the v0.13 badge`);
       }
     }
   }
-  assert.ok(n >= 15, `found ${n} unreleased commands and flags in the docs`);
+  assert.ok(n >= 15, `found ${n} v0.13 commands and flags in the docs`);
 });
 
 test('built-for-v0.13.0 features are not called Roadmap or v0.12', () => {
@@ -125,14 +126,14 @@ test('built-for-v0.13.0 features are not called Roadmap or v0.12', () => {
       if (line.includes('badge building') && !stillRoadmap.test(line)) {
         for (const re of built) assert.doesNotMatch(line, re, `${p}: Roadmap line names a built feature: ${line.trim().slice(0, 140)}`);
       }
-      if (line.includes('badge next') && !line.includes('badge unreleased')) {
-        assert.equal(newIn013(line.includes('`') ? line : '').length, 0, `${p}: a v0.12 line shows an unreleased flag: ${line.trim().slice(0, 140)}`);
+      if (line.includes('badge oss">v0.12') && !line.includes(UNREL)) {
+        assert.equal(newIn013(line.includes('`') ? line : '').length, 0, `${p}: a v0.12 line shows a v0.13 flag: ${line.trim().slice(0, 140)}`);
       }
     }
   }
 });
 
-test('the status tables put the new features under Unreleased', () => {
+test('the status tables put the new features under v0.13', () => {
   const row = (md, re) => {
     const r = md.split('\n').find((l) => l.startsWith('|') && re.test(l));
     assert.ok(r, `a status row matches ${re}`);
@@ -147,7 +148,7 @@ test('the status tables put the new features under Unreleased', () => {
     ['mcp-gate', /tools lock|pinning/],
     ['integrations', /over HTTP/],
   ]) {
-    assert.ok(row(page(slug), re).includes(UNREL), `${slug}: ${re} row is Unreleased`);
+    assert.ok(row(page(slug), re).includes(UNREL), `${slug}: ${re} row is v0.13`);
   }
   assert.ok(row(page('index'), /hosted/i).includes(ROADMAP), 'a hosted plane stays roadmap');
 });
@@ -216,9 +217,9 @@ test('mcp-gate documents several servers and tool pinning as the code behaves', 
 
 const EVENT_KINDS = ['decision.deny', 'approval.requested', 'approval.mismatch', 'shadow.finding', 'side_effect.replayed', 'side_effect.unknown', 'tool.drift', 'anchor.failed'];
 
-test('the events page is Unreleased and lists every event kind', () => {
+test('the events page is v0.13 and lists every event kind', () => {
   const md = page('events');
-  assert.ok(sections(md).lede.includes(UNREL), 'events page lede has the Unreleased badge');
+  assert.ok(sections(md).lede.includes(UNREL), 'events page lede has the v0.13 badge');
   for (const k of EVENT_KINDS) assert.match(md, new RegExp(`^\\| \`${k.replace('.', '\\.')}\` \\|`, 'm'), `events table lists ${k}`);
   for (const s of ['cloakpipe.event/v1', '--events-log', '--webhook', '--webhook-secret-file', '--webhook-format', '--otel-endpoint', '`--otel`', 'OTEL_EXPORTER_OTLP_ENDPOINT', '/v1/traces', 'cloakpipe.decision']) {
     assert.ok(md.includes(s), `events mentions ${s}`);
@@ -293,7 +294,7 @@ test('the events page states the delivery limits the code has', () => {
 
 test('the docker page documents every variable the entrypoint reads, and no other', () => {
   const md = page('docker');
-  assert.ok(sections(md).lede.includes(UNREL), 'docker page lede has the Unreleased badge');
+  assert.ok(sections(md).lede.includes(UNREL), 'docker page lede has the v0.13 badge');
   const read_ = new Set([...ENTRYPOINT.matchAll(/\$\{(CLOAKPIPE_[A-Z_]+)/g)].map((m) => m[1]));
   assert.ok(read_.size >= 12, `entrypoint reads ${read_.size} variables`);
   for (const v of read_) assert.ok(md.includes('`' + v), `docker documents ${v}`);
@@ -315,7 +316,9 @@ test('the docker page says what the image runs and where state lives', () => {
     'exit code 2',
     'cloakpipe-gate gate --mode shadow',
     'cloakpipe-gate start',
-    'ghcr.io/rohansx/cloakpipe:0.12.0',
+    'ghcr.io/rohansx/cloakpipe:0.13.0',
+    `${TAG}docker/compose.example.yaml`,
+    `${TAG}docker/gate-entrypoint.sh`,
   ]) {
     assert.ok(md.includes(s), `docker mentions ${s}`);
   }
@@ -324,7 +327,11 @@ test('the docker page says what the image runs and where state lives', () => {
   const refusals = md.slice(md.indexOf('refuses to start'));
   assert.ok(md.includes('refuses to start'), 'docker says when the entrypoint refuses to start');
   for (const s of ['no manifest', 'both', 'neither', 'non-loopback']) assert.ok(refusals.slice(0, 900).includes(s), `refusal: ${s}`);
-  assert.match(md, /0\.12\.0[^\n]*PII proxy/, 'the released image still runs the PII proxy by default');
+  // The released image runs the gate by default; nothing says to build it from main.
+  assert.doesNotMatch(md, /blob\/main\/docker\//, 'docker links point at the v0.13.0 tag');
+  assert.doesNotMatch(md, /clone of `main`|until v0\.13\.0 is tagged/i, 'no build-from-main instructions');
+  assert.doesNotMatch(md, /cloakpipe:0\.13\.0[^\n]*PII proxy|default command is still the PII proxy/, 'the 0.13.0 image runs the gate');
+  assert.match(md, /up to v0\.12\.0/, 'the PII proxy default is described as the old behaviour');
 });
 
 // ---------------------------------------------------------------------------
@@ -348,8 +355,8 @@ test('Claude Code setup over HTTP uses flags `claude mcp add` has', () => {
   assert.ok(n >= 3, `checked ${n} claude mcp add flags`);
 });
 
-test('the changelog page source carries the unreleased entries', () => {
+test('the changelog page source carries the v0.13.0 entries', () => {
   const md = read('src/content/CHANGELOG.md');
-  const unreleased = md.slice(md.indexOf('## [Unreleased]'), md.indexOf('## [0.12.0]'));
-  for (const s of ['--upstream-url', '--tools-lock', 'tool_drift', 'verify-signature', 'Breaking (Docker)']) assert.ok(unreleased.includes(s), `Unreleased has ${s}`);
+  const v013 = md.slice(md.indexOf('## [0.13.0] - 2026-10-28'), md.indexOf('## [0.12.0]'));
+  for (const s of ['--upstream-url', '--tools-lock', 'tool_drift', 'verify-signature', 'Breaking (Docker)']) assert.ok(v013.includes(s), `0.13.0 has ${s}`);
 });

@@ -1,5 +1,5 @@
 {
- "source": "cloakpipe --help, built from rohansx/cloakpipe gate/integ (d6efc15, PR #42), unreleased, for the next release v0.13.0; default features",
+ "source": "cloakpipe --help, built from rohansx/cloakpipe gate/integ (d6efc15, PR #42), merged into v0.13.0 (tag 0237415) with no change to any command or flag; default features",
  "commands": {
   "(root)": [
    "--config",

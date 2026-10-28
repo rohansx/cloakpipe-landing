@@ -1,5 +1,5 @@
 {
- "source": "`cloakpipe events test --webhook-secret-file` (secret below) to a local receiver, one per --webhook-format, from rohansx/cloakpipe gate/integ (d6efc15, PR #42), unreleased",
+ "source": "`cloakpipe events test --webhook-secret-file` (secret below) to a local receiver, one per --webhook-format, from rohansx/cloakpipe gate/integ (d6efc15, PR #42); the events code is unchanged in v0.13.0 (tag 0237415)",
  "secret": "whsec-docs-fixture-secret",
  "requests": [
   {

@@ -178,12 +178,12 @@ test('Declare, Enforce, Prove describe v0.12.0 as it ships', () => {
   for (const s of ['issue_refund', 'over $100']) assert.ok(text(html).includes(s), `contract panel: ${s}`);
 });
 
-test('nothing v0.12.0 ships is called roadmap on the home page', () => {
+test('nothing v0.12.0 or v0.13.0 ships is called roadmap on the home page', () => {
   const t = text(home());
   const roadmap = [...t.matchAll(/[^.]*\broadmap\b[^.]*\./gi)].map((m) => m[0]);
   for (const s of roadmap) {
-    for (const re of [/per-entry signatures/i, /every allowed call/i, /amount thresholds/i, /Cedar/, /shadow/i, /verify/i, /per tool/i]) {
-      assert.doesNotMatch(s, re, `"${s.trim()}" calls a v0.12.0 feature roadmap`);
+    for (const re of [/per-entry signatures/i, /every allowed call/i, /amount thresholds/i, /Cedar/, /shadow/i, /verify/i, /per tool/i, /Slack (?:and PagerDuty )?alerts/i, /webhook/i, /OpenTelemetry/i, /Discord/i]) {
+      assert.doesNotMatch(s, re, `"${s.trim()}" calls a shipped feature roadmap`);
     }
   }
   assert.doesNotMatch(t, /gate_denial=/, 'no v0.11 ledger field in the transcript');
@@ -206,7 +206,15 @@ test('four examples, each with an honest status badge', () => {
   assert.equal(four.kind, 'shipping');
   assert.equal(four.label, 'Shipping · manual reconcile');
   assert.match(text(cards[0]), /every decision/i, 'example 1: allowed calls are logged too');
-  assert.match(text(cards[1]), /Slack[^.]*roadmap/, 'example 2: alerts stay roadmap');
+  // v0.13.0 ships signed webhooks (Slack, Discord, generic) and OpenTelemetry in the
+  // open-source gate; hosted alerting, routing and approval cards are not built.
+  const two_ = text(cards[1]);
+  assert.match(two_, /webhook/i, 'example 2: denials go to a webhook');
+  assert.match(two_, /Slack/, 'example 2: Slack is a webhook format');
+  assert.match(two_, /Discord/, 'example 2: Discord is a webhook format');
+  assert.match(two_, /OpenTelemetry/, 'example 2: OpenTelemetry spans');
+  assert.match(two_, /[Hh]osted[^.]*roadmap/, 'example 2: hosted alerting stays roadmap');
+  assert.match(text(cards[2]), /approval\.requested/, 'example 3: the approval request is delivered as an event');
   assert.match(text(cards[2]), /over \$100/, 'example 3: approval is conditional on the amount');
   assert.match(text(cards[2]), /exact (?:call|arguments)/, 'example 3: approval is bound to the exact arguments');
   assert.match(text(cards[2]), /approval broker[^.]*roadmap|roadmap[^.]*approval broker/, 'example 3: no approval broker yet');

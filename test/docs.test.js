@@ -4,11 +4,11 @@
 // `npm test` with no build, against the Markdown sources.
 //
 // Every `cloakpipe ...` command shown in the docs is checked against
-// test/fixtures/cli-v0.13-unreleased.json, the `--help` output of the binary
-// built for the next release (scripts/cli-fixture.mjs), so a documented
-// subcommand or flag that does not exist fails the build. Anything that binary
-// has and v0.12.0 (test/fixtures/cli-v0.12.json) lacks must be labelled
-// Unreleased; test/docs-v013.test.js checks that.
+// test/fixtures/cli-v0.13.json, the `--help` output of the v0.13.0 binary
+// (scripts/cli-fixture.mjs), so a documented subcommand or flag that does
+// not exist fails the build. Anything that binary has and v0.12.0
+// (test/fixtures/cli-v0.12.json) lacks must carry the v0.13 badge;
+// test/docs-v013.test.js checks that.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
@@ -24,7 +24,7 @@ const docPages = () =>
     .map((f) => `${DOCS_DIR}/${f}`);
 const page = (slug) => read(`${DOCS_DIR}/${slug}.md`);
 
-const CLI = JSON.parse(read('test/fixtures/cli-v0.13-unreleased.json'));
+const CLI = JSON.parse(read('test/fixtures/cli-v0.13.json'));
 
 // ---------------------------------------------------------------------------
 // Structure
@@ -134,50 +134,63 @@ test('the overview leads with the action boundary', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Release status: v0.12.0 is tagged (27 October 2026). Features new in it
-// carry the v0.12 badge; nothing says it is unreleased.
+// Release status: v0.13.0 is tagged (28 October 2026) and v0.12.0 before it
+// (27 October 2026). Features new in each carry that release's badge: the
+// newest release is `badge next`, older ones `badge oss`, as v0.11 was once
+// v0.12 shipped. Nothing says either is unreleased.
 
 const V012 = [/cloakpipe\.manifest\.yaml/, /--mode shadow/, /ledger export/, /cloakpipe verify\b/, /--anchor-every/, /\.cedar\b/, /--signing-key/];
-const NEXT_BADGE = '<span class="badge next">v0.12</span>';
-const UNRELEASED_BADGE = '<span class="badge unreleased">Unreleased</span>';
-// v0.13.0 features are legitimately unreleased (badge unreleased), so only a
-// claim that v0.12 itself is unreleased is wrong.
+const V012_BADGE = '<span class="badge oss">v0.12</span>';
+const V013_BADGE = '<span class="badge next">v0.13</span>';
 const UNRELEASED = [
-  /v0\.12(?:\.0)? (?:is|was|remains) (?:not tagged|unreleased|in review|not (?:yet )?released)/i,
-  /v0\.12(?:\.0)?[^.\n]{0,20}\(?(?:unreleased|not tagged|in review)/i,
-  /next release,? (?:is )?v0\.12/i,
+  /v0\.1[23](?:\.0)? (?:is|was|remains) (?:not tagged|unreleased|in review|not (?:yet )?released)/i,
+  /v0\.1[23](?:\.0)?[^.\n]{0,20}\(?(?:unreleased|not tagged|in review)/i,
+  /next release,? (?:is )?v0\.1[23]/i,
   /Unreleased<\/strong> is the next/i,
+  /badge unreleased/,
+  /\bunreleased\b/i,
+  /before the tag|until v0\.13(?:\.0)? is tagged/i,
 ];
 
 test('features new in v0.12 carry the v0.12 badge', () => {
   for (const p of docPages()) {
     const src = read(p);
-    // A page wholly about unreleased (v0.13.0) features carries that badge instead.
-    if (V012.some((re) => re.test(src))) assert.ok(src.includes(NEXT_BADGE) || src.includes(UNRELEASED_BADGE), `${p} uses v0.12 features but has no v0.12 badge`);
+    // A page wholly about v0.13 features carries that badge instead.
+    if (V012.some((re) => re.test(src))) assert.ok(src.includes(V012_BADGE) || src.includes(V013_BADGE), `${p} uses v0.12 features but has no v0.12 badge`);
     assert.doesNotMatch(src, /badge oss">Main</, `${p}: the old "Main" badge`);
+    assert.doesNotMatch(src, /badge next">v0\.12</, `${p}: v0.12 is no longer the newest release`);
   }
-  assert.ok(read('src/layouts/Docs.astro').includes('.badge.next'), 'the layout styles the v0.12 badge');
+  const layout = read('src/layouts/Docs.astro');
+  assert.ok(layout.includes('.badge.next'), 'the layout styles the v0.13 badge');
+  assert.ok(!layout.includes('.badge.unreleased'), 'no Unreleased badge style is left');
 });
 
-test('no page says v0.12 is unreleased', () => {
+test('no page says v0.12 or v0.13 is unreleased', () => {
   for (const p of [...docPages(), 'src/pages/changelog.astro', 'src/partials/index.html']) {
     const src = read(p);
     for (const re of UNRELEASED) assert.doesNotMatch(src, re, `${p} matches ${re}`);
   }
 });
 
-test('the overview says the latest release is v0.12.0 and explains the badges', () => {
+test('the overview says the latest release is v0.13.0 and explains the badges', () => {
   const overview = page('index');
-  assert.match(overview, /latest release is \*\*v0\.12\.0\*\* \(27 October 2026\)/);
-  assert.match(overview, /<span class="badge oss">v0\.11<\/span> since v0\.11/);
-  assert.match(overview, /<span class="badge next">v0\.12<\/span> new in v0\.12\.0/);
+  assert.match(overview, /latest release is \*\*v0\.13\.0\*\* \(28 October 2026\)/);
+  for (const s of [
+    'https://github.com/rohansx/cloakpipe/releases/tag/v0.13.0',
+    'https://crates.io/crates/cloakpipe-cli/0.13.0',
+    'ghcr.io/rohansx/cloakpipe:0.13.0',
+  ]) assert.ok(overview.includes(s), `overview links ${s}`);
+  assert.match(overview, /<span class="badge oss">v0\.11<\/span> since v0\.11, and still in v0\.13\.0/);
+  assert.match(overview, /<span class="badge oss">v0\.12<\/span> since v0\.12, and still in v0\.13\.0/);
+  assert.match(overview, /<span class="badge next">v0\.13<\/span> new in v0\.13\.0/);
+  assert.doesNotMatch(overview, /--path crates\/cloakpipe-cli/, 'no build-from-main instructions');
   assert.match(overview, /<span class="badge building">Roadmap<\/span> planned, not built/);
 });
 
-test('the comparison status row says v0.12.0 is released', () => {
+test('the comparison status row says v0.13.0 is released', () => {
   const row = page('comparison').split('\n').find((l) => l.startsWith('| **Status'));
   assert.ok(row, 'comparison has a status row');
-  assert.ok(row.includes('v0.12.0 released 27 Oct 2026'), row);
+  assert.ok(row.includes('v0.13.0 released 28 Oct 2026'), row);
 });
 
 test('operations reconcile --manifest takes a v1 manifest in v0.12.0', () => {
@@ -186,14 +199,18 @@ test('operations reconcile --manifest takes a v1 manifest in v0.12.0', () => {
   assert.match(md, /`operations reconcile --manifest` takes either format/);
 });
 
-test('install lines use crates.io pinned to 0.12.0 and mention the Docker image', () => {
+test('install lines use crates.io pinned to 0.13.0 and mention the Docker image', () => {
   const qs = page('quickstart');
-  assert.match(qs, /cargo install --locked cloakpipe-cli@0\.12\.0/);
-  assert.match(qs, /git clone --branch v0\.12\.0 https:\/\/github\.com\/rohansx\/cloakpipe/);
-  assert.ok(qs.includes('ghcr.io/rohansx/cloakpipe:0.12.0'), 'quickstart mentions the Docker image');
+  assert.match(qs, /cargo install --locked cloakpipe-cli@0\.13\.0/);
+  assert.match(qs, /git clone --branch v0\.13\.0 https:\/\/github\.com\/rohansx\/cloakpipe/);
+  assert.ok(qs.includes('ghcr.io/rohansx/cloakpipe:0.13.0'), 'quickstart mentions the Docker image');
+  assert.match(qs, /releases\/tag\/v0\.13\.0/, 'quickstart links the v0.13.0 release notes');
+  assert.doesNotMatch(qs, /PII proxy/, 'the image runs the gate by default now');
+  assert.match(qs, /\/docs\/docker/, 'quickstart points at the Docker page');
   assert.match(page('index'), /https:\/\/crates\.io\/crates\/cloakpipe-cli/);
   for (const p of docPages()) {
     const md = read(p);
+    assert.doesNotMatch(md, /cloakpipe-cli@0\.12|--branch v0\.12|cloakpipe:0\.12\.0`? (?:image )?(?:runs|is the)/, `${p}: install lines name 0.13.0`);
     assert.doesNotMatch(md, /not on crates\.io/i, `${p}: 0.12.0 is on crates.io`);
     assert.doesNotMatch(md, /cargo install --git/, `${p}: install from crates.io`);
   }
@@ -331,9 +348,9 @@ test('integrations put Claude Code, Cursor and Codex first and label the roadmap
   const hosts = Math.max(at('claude mcp add'), at('.mcp.json'), at('.cursor/mcp.json'), at('~/.codex/config.toml'), at('[mcp_servers.'));
   assert.ok(hosts < at('LangChain'), 'host snippets come before LangChain');
   assert.match(md, /LangChain[\s\S]{0,400}PII/, 'LangChain is described as a PII proxy client');
-  // Webhooks and OTel are built for v0.13.0 (unreleased); hosted alerts are not built.
-  assert.match(md, /OpenTelemetry[^\n]*badge unreleased|badge unreleased[^\n]*OpenTelemetry/, 'OTel is unreleased');
-  assert.match(md, /[Ww]ebhooks[^\n]*badge unreleased|badge unreleased[^\n]*[Ww]ebhooks/, 'webhooks are unreleased');
+  // Webhooks and OTel are new in v0.13.0; hosted alerts are not built.
+  assert.match(md, /OpenTelemetry[^\n]*badge next">v0\.13|badge next">v0\.13[^\n]*OpenTelemetry/, 'OTel is v0.13');
+  assert.match(md, /[Ww]ebhooks[^\n]*badge next">v0\.13|badge next">v0\.13[^\n]*[Ww]ebhooks/, 'webhooks are v0.13');
   assert.match(md, /badge building[^\n]*[Hh]osted alerts/, 'hosted alerts stay roadmap');
 });
 
@@ -344,18 +361,21 @@ test('comparison is dated, sourced and names the alternatives', () => {
   }
 });
 
-test('the changelog page source has the dated v0.12.0 release', () => {
+test('the changelog page source has the dated v0.12.0 and v0.13.0 releases', () => {
   const md = read('src/content/CHANGELOG.md');
   assert.ok(md.includes('\n## [0.12.0] - 2026-10-27\n'), 'vendored changelog has a dated 0.12.0 section');
   const v012 = md.slice(md.indexOf('## [0.12.0]'), md.indexOf('## [0.11.0]'));
   assert.ok(v012.includes('cloakpipe.manifest.yaml'), '0.12.0 has the manifest entries');
   assert.ok(v012.includes('policy-enforcement gate'), '0.12.0 has the gate positioning');
-  const unreleased = md.slice(md.indexOf('## [Unreleased]'), md.indexOf('## [0.12.0]'));
-  assert.ok(!unreleased.includes('policy-enforcement gate for AI agent tool'), 'Unreleased no longer holds the v0.12 entries');
+  assert.ok(md.includes('\n## [0.13.0] - 2026-10-28\n'), 'vendored changelog has a dated 0.13.0 section');
+  const unreleased = md.slice(md.indexOf('## [Unreleased]'), md.indexOf('## [0.13.0]'));
+  assert.equal(unreleased.trim(), '## [Unreleased]', 'nothing is unreleased at the tag');
+  const v013 = md.slice(md.indexOf('## [0.13.0]'), md.indexOf('## [0.12.0]'));
   for (const s of ['--listen', '--server NAME=COMMAND', 'cloakpipe tools pin', '--webhook', '--otel-endpoint', 'docker/compose.example.yaml']) {
-    assert.ok(unreleased.includes(s), `Unreleased has ${s}`);
+    assert.ok(v013.includes(s), `0.13.0 has ${s}`);
   }
   const astro = read('src/pages/changelog.astro');
   assert.match(astro, /v0\.12\.0/, 'changelog page names v0.12.0');
+  assert.match(astro, /<strong>v0\.13\.0<\/strong> \(28 October 2026\)/, 'changelog page leads with v0.13.0');
   assert.match(astro, /out of scope/, 'changelog page says older entries describe out-of-scope features');
 });
