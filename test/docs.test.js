@@ -174,14 +174,16 @@ test('operations reconcile --manifest takes a v1 manifest in v0.12.0', () => {
   assert.match(md, /`operations reconcile --manifest` takes either format/);
 });
 
-test('install lines pin the v0.12.0 tag and mention the Docker image', () => {
+test('install lines use crates.io pinned to 0.12.0 and mention the Docker image', () => {
   const qs = page('quickstart');
-  assert.match(qs, /cargo install --git https:\/\/github\.com\/rohansx\/cloakpipe --tag v0\.12\.0 --locked cloakpipe-cli/);
+  assert.match(qs, /cargo install --locked cloakpipe-cli@0\.12\.0/);
   assert.match(qs, /git clone --branch v0\.12\.0 https:\/\/github\.com\/rohansx\/cloakpipe/);
   assert.ok(qs.includes('ghcr.io/rohansx/cloakpipe:0.12.0'), 'quickstart mentions the Docker image');
-  assert.match(qs, /not on crates\.io yet/i);
+  assert.match(page('index'), /https:\/\/crates\.io\/crates\/cloakpipe-cli/);
   for (const p of docPages()) {
-    for (const m of read(p).matchAll(/cargo install --git [^\n`]*/g)) assert.match(m[0], /--tag v0\.12\.0/, `${p}: ${m[0]}`);
+    const md = read(p);
+    assert.doesNotMatch(md, /not on crates\.io/i, `${p}: 0.12.0 is on crates.io`);
+    assert.doesNotMatch(md, /cargo install --git/, `${p}: install from crates.io`);
   }
 });
 

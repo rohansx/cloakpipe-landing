@@ -52,7 +52,6 @@ The binary can pseudonymize personal data in allowed calls (`mcp-proxy --transfo
 - **The LLM proxy does not gate tool calls.** `cloakpipe start` transforms PII only. <span class="badge building">Roadmap</span>
 - **Counters count calls, not amounts.** Money budgets are <span class="badge building">Roadmap</span>.
 - **Keys are files.** KMS and HSM support and in-ledger key rotation are <span class="badge building">Roadmap</span>. See [Keys](/docs/keys).
-- **Not on crates.io yet.** Install from source; see the [quick start](/docs/quickstart#1-install).
 - **Verifier gaps.** TSA revocation (CRL/OCSP) and Rekor log consistency are not checked. See [Evidence & verification](/docs/evidence#what-the-evidence-does-and-does-not-prove).
 
 ## Still stuck?
