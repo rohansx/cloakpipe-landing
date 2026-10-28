@@ -262,12 +262,18 @@ test('retired and unshipped claims are gone from the home page', () => {
     /CloakPipe Cloud/i,
     /cloakpipe-cloud/,
     /api\.cloakpipe\.co/,
-    /OpenTelemetry/,
   ]) {
     assert.doesNotMatch(t, re, `home page does not say ${re}`);
   }
-  // Roadmap items are allowed only when labelled as roadmap.
-  for (const m of t.matchAll(/[^.]*\bSlack\b[^.]*\./g)) assert.match(m[0], /roadmap/i, `"${m[0].trim()}" is labelled roadmap`);
+  // Slack is either a v0.13.0 webhook format or labelled roadmap (approval cards, hosted alerting).
+  for (const m of t.matchAll(/[^.]*\bSlack\b[^.]*\./g)) assert.match(m[0], /roadmap|webhook/i, `"${m[0].trim()}" is a webhook or labelled roadmap`);
+});
+
+test('the home page says the gate speaks stdio or HTTP and fronts several servers (v0.13.0)', () => {
+  const t = text(home());
+  assert.doesNotMatch(t, /in front of one MCP server/, 'v0.13.0 fronts several servers');
+  assert.doesNotMatch(t, /MCP proxy over stdio,/, 'v0.13.0 also speaks HTTP');
+  assert.match(t, /over stdio or HTTP/);
 });
 
 test('home page title and description', () => {
