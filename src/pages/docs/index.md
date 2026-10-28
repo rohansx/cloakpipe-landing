@@ -26,7 +26,7 @@ The [quick start](/docs/quickstart) runs all three on a sample support agent in 
 
 ## Release status
 
-The latest release is **v0.12.0** (27 October 2026): a [GitHub release](https://github.com/rohansx/cloakpipe/releases/tag/v0.12.0) and the Docker image `ghcr.io/rohansx/cloakpipe:0.12.0`. It is not on crates.io yet; the [quick start](/docs/quickstart#1-install) installs it from the tag. Every page labels what it describes:
+The latest release is **v0.12.0** (27 October 2026): a [GitHub release](https://github.com/rohansx/cloakpipe/releases/tag/v0.12.0), the [`cloakpipe-cli`](https://crates.io/crates/cloakpipe-cli) package on crates.io, and the Docker image `ghcr.io/rohansx/cloakpipe:0.12.0`. The [quick start](/docs/quickstart#1-install) shows the install. Every page labels what it describes:
 
 - <span class="badge oss">v0.11</span> since v0.11, and still in v0.12.0.
 - <span class="badge next">v0.12</span> new in v0.12.0.
