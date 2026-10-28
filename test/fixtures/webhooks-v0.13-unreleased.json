@@ -1,0 +1,36 @@
+{
+ "source": "`cloakpipe events test --webhook-secret-file` (secret below) to a local receiver, one per --webhook-format, from rohansx/cloakpipe gate/integ (d6efc15, PR #42), unreleased",
+ "secret": "whsec-docs-fixture-secret",
+ "requests": [
+  {
+   "path": "/generic",
+   "headers": {
+    "content-type": "application/json",
+    "cloakpipe-event": "decision.deny",
+    "cloakpipe-fingerprint": "sha256:a40b3a80f7cf10d9d9b6cce82272febe2ceb43a8ac8f450a7e1aa1e967ce0c0c",
+    "cloakpipe-signature": "t=1793183455,v1=946c22670c54aed574ee4edd5bcc1d83828fdbbebbafe6b962286ce414d2ceee"
+   },
+   "body": "{\"kind\":\"decision.deny\",\"fingerprint\":\"sha256:a40b3a80f7cf10d9d9b6cce82272febe2ceb43a8ac8f450a7e1aa1e967ce0c0c\",\"ts\":\"2026-10-28T10:30:55Z\",\"release\":\"cloakpipe-events-test\",\"release_digest\":null,\"policy_version\":null,\"tool\":\"send_email\",\"server\":null,\"reason\":\"scope_mismatch\",\"path\":\"/to\",\"decision\":\"deny\",\"mode\":\"enforce\",\"operation_id\":null,\"ledger_seq\":null,\"entry_hash\":null,\"schema\":\"cloakpipe.event/v1\"}"
+  },
+  {
+   "path": "/slack",
+   "headers": {
+    "content-type": "application/json",
+    "cloakpipe-event": "decision.deny",
+    "cloakpipe-fingerprint": "sha256:a40b3a80f7cf10d9d9b6cce82272febe2ceb43a8ac8f450a7e1aa1e967ce0c0c",
+    "cloakpipe-signature": "t=1793183455,v1=610df816aa46090801a15111acd71f090ba9dc19fa4fa7651685865842c5263a"
+   },
+   "body": "{\"text\":\"CloakPipe: Tool call denied: send_email (scope_mismatch)\",\"blocks\":[{\"type\":\"header\",\"text\":{\"type\":\"plain_text\",\"text\":\"Tool call denied: send_email\"}},{\"type\":\"section\",\"fields\":[{\"type\":\"mrkdwn\",\"text\":\"*Reason*\\n`scope_mismatch`\"},{\"type\":\"mrkdwn\",\"text\":\"*Tool*\\n`send_email`\"},{\"type\":\"mrkdwn\",\"text\":\"*Path*\\n`/to`\"},{\"type\":\"mrkdwn\",\"text\":\"*Release*\\n`cloakpipe-events-test`\"},{\"type\":\"mrkdwn\",\"text\":\"*Mode*\\n`enforce`\"}]},{\"type\":\"context\",\"elements\":[{\"type\":\"mrkdwn\",\"text\":\"decision.deny · fingerprint `sha256:a40b3a80f7cf10d9d9b6cce82272febe2ceb43a8ac8f450a7e1aa1e967ce0c0c`\"}]}]}"
+  },
+  {
+   "path": "/discord",
+   "headers": {
+    "content-type": "application/json",
+    "cloakpipe-event": "decision.deny",
+    "cloakpipe-fingerprint": "sha256:a40b3a80f7cf10d9d9b6cce82272febe2ceb43a8ac8f450a7e1aa1e967ce0c0c",
+    "cloakpipe-signature": "t=1793183455,v1=60f476c902cda42e9c4f7c49c4a4af30872a27bd2b9aee01999adb92a09a465e"
+   },
+   "body": "{\"username\":\"CloakPipe\",\"embeds\":[{\"title\":\"Tool call denied: send_email\",\"description\":\"`decision.deny`\",\"color\":14233637,\"fields\":[{\"name\":\"Reason\",\"value\":\"scope_mismatch\",\"inline\":true},{\"name\":\"Tool\",\"value\":\"send_email\",\"inline\":true},{\"name\":\"Path\",\"value\":\"/to\",\"inline\":true},{\"name\":\"Release\",\"value\":\"cloakpipe-events-test\",\"inline\":true},{\"name\":\"Mode\",\"value\":\"enforce\",\"inline\":true}],\"footer\":{\"text\":\"sha256:a40b3a80f7cf10d9d9b6cce82272febe2ceb43a8ac8f450a7e1aa1e967ce0c0c\"},\"timestamp\":\"2026-10-28T10:30:55Z\"}]}"
+  }
+ ]
+}
