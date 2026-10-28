@@ -6,7 +6,7 @@ description: The signed decision ledger, its entry format, anchoring epochs with
 
 # Evidence & verification
 
-<span class="badge next">v0.12</span> Every decision the gate makes is one entry in a **decision ledger**: hash-chained, signed with Ed25519 one entry at a time, and free of argument values. On a schedule, the gate seals new entries into numbered **epochs** and has each one timestamped by an RFC 3161 authority and logged in Sigstore Rekor. An auditor gets one tar file and checks all of it offline, without trusting the operator.
+<span class="badge oss">v0.12</span> Every decision the gate makes is one entry in a **decision ledger**: hash-chained, signed with Ed25519 one entry at a time, and free of argument values. On a schedule, the gate seals new entries into numbered **epochs** and has each one timestamped by an RFC 3161 authority and logged in Sigstore Rekor. An auditor gets one tar file and checks all of it offline, without trusting the operator.
 
 ## The decision ledger
 

@@ -6,7 +6,7 @@ description: Gate events for refusals, approvals, drift and unknown side effects
 
 # Alerts & events
 
-<span class="badge unreleased">Unreleased</span> After stopping an out-of-contract call, the gate's next job is telling a human. `cloakpipe mcp-proxy` raises a **gate event** for every decision that needs attention and delivers it three ways: HMAC-signed webhooks (raw JSON, or a Slack or Discord message), OpenTelemetry spans, and an append-only JSONL file. This is built for the next release, v0.13.0; v0.12.0 has the ledger and stderr only.
+<span class="badge next">v0.13</span> After stopping an out-of-contract call, the gate's next job is telling a human. `cloakpipe mcp-proxy` raises a **gate event** for every decision that needs attention and delivers it three ways: HMAC-signed webhooks (raw JSON, or a Slack or Discord message), OpenTelemetry spans, and an append-only JSONL file. This is new in v0.13.0; v0.12.0 has the ledger and stderr only.
 
 Delivery is off the decision path. Events go on a bounded queue that a background thread drains, so a slow or dead endpoint never delays a decision or changes it. Everything runs on your machines: the gate sends events only to the endpoints you give it.
 

@@ -6,9 +6,9 @@ description: Run the gate as a container that serves MCP over HTTP in front of y
 
 # Docker
 
-<span class="badge unreleased">Unreleased</span> The image built from the repository's `Dockerfile` runs the gate over HTTP by default: agents connect to `http://<host>:8900/mcp`, and the gate checks each tool call before it reaches your MCP server. This is built for the next release, v0.13.0.
+<span class="badge next">v0.13</span> The image built from the repository's `Dockerfile`, released as `ghcr.io/rohansx/cloakpipe:0.13.0`, runs the gate over HTTP by default: agents connect to `http://<host>:8900/mcp`, and the gate checks each tool call before it reaches your MCP server.
 
-The released image `ghcr.io/rohansx/cloakpipe:0.12.0` has none of this: its default command is still the PII proxy. Until v0.13.0 is tagged, build the image from a clone of `main`.
+Up to v0.12.0, the image's default command was the PII proxy; that is now `start`, below.
 
 ## Run it
 
@@ -25,7 +25,7 @@ docker run --rm -p 127.0.0.1:8900:8900 \
   cloakpipe-gate
 ```
 
-The image's entrypoint, `cloakpipe-entrypoint` ([docker/gate-entrypoint.sh](https://github.com/rohansx/cloakpipe/blob/main/docker/gate-entrypoint.sh)), turns the variables below into flags and runs `cloakpipe mcp-proxy --listen 0.0.0.0:8900 --manifest /app/cloakpipe.manifest.yaml --upstream-url $CLOAKPIPE_UPSTREAM_URL …`. Every decision is the same as with the binary; see [MCP over HTTP](/docs/mcp-gate#mcp-over-http).
+The image's entrypoint, `cloakpipe-entrypoint` ([docker/gate-entrypoint.sh](https://github.com/rohansx/cloakpipe/blob/v0.13.0/docker/gate-entrypoint.sh)), turns the variables below into flags and runs `cloakpipe mcp-proxy --listen 0.0.0.0:8900 --manifest /app/cloakpipe.manifest.yaml --upstream-url $CLOAKPIPE_UPSTREAM_URL …`. Every decision is the same as with the binary; see [MCP over HTTP](/docs/mcp-gate#mcp-over-http).
 
 Then point the agent at the gate, for example Claude Code:
 
@@ -67,7 +67,7 @@ The health check asks `GET /health` on the listen port, which needs no token.
 
 ## Compose example
 
-[docker/compose.example.yaml](https://github.com/rohansx/cloakpipe/blob/main/docker/compose.example.yaml) runs the gate in front of the support-agent example's tools, served over HTTP by `examples/support-agent/mock_http_upstream.py`:
+[docker/compose.example.yaml](https://github.com/rohansx/cloakpipe/blob/v0.13.0/docker/compose.example.yaml) runs the gate in front of the support-agent example's tools, served over HTTP by `examples/support-agent/mock_http_upstream.py`:
 
 ```bash
 openssl rand -hex 32 > docker/listen.token

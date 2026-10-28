@@ -6,7 +6,7 @@ description: Cedar policies in the tool gate - the principal, action, resource a
 
 # Policy (Cedar)
 
-<span class="badge next">v0.12</span> The manifest says what a single call may look like. A [Cedar](https://www.cedarpolicy.com) policy adds rules that need more than one call or more than the call itself: rate limits, tiers, time windows, and rules over the task. The gate evaluates it with the official `cedar-policy` crate (4.x) for every call that passed the manifest's contract.
+<span class="badge oss">v0.12</span> The manifest says what a single call may look like. A [Cedar](https://www.cedarpolicy.com) policy adds rules that need more than one call or more than the call itself: rate limits, tiers, time windows, and rules over the task. The gate evaluates it with the official `cedar-policy` crate (4.x) for every call that passed the manifest's contract.
 
 Reference the policy file from the manifest:
 

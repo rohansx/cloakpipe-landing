@@ -6,7 +6,7 @@ description: The keys CloakPipe uses - the gate signing key, approver keys and t
 
 # Keys
 
-<span class="badge next">v0.12</span> The gate uses three kinds of key material. All signing keys are Ed25519 and are files in the format `cloakpipe release keygen` writes: `{ "keyid": "ed25519:…", "publicKey": "<64 hex>", "privateKey": "<hex>" }`. Keys are identified by `keyid`, which is derived from the public key.
+<span class="badge oss">v0.12</span> The gate uses three kinds of key material. All signing keys are Ed25519 and are files in the format `cloakpipe release keygen` writes: `{ "keyid": "ed25519:…", "publicKey": "<64 hex>", "privateKey": "<hex>" }`. Keys are identified by `keyid`, which is derived from the public key.
 
 ```bash
 cloakpipe release keygen --out approver.json     # written 0600, never overwrites; prints only the public part
