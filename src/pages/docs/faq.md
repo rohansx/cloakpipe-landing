@@ -8,11 +8,11 @@ description: Common questions about the CloakPipe gate, and an honest list of wh
 
 ## Is CloakPipe open source?
 
-Yes. Everything on these pages is in [rohansx/cloakpipe](https://github.com/rohansx/cloakpipe) under the MIT licence <span class="badge next">v0.12</span> (v0.11.0 had two crates under Apache-2.0). There is no paid edition of the gate, and no feature on these pages needs an account.
+Yes. Everything on these pages is in [rohansx/cloakpipe](https://github.com/rohansx/cloakpipe) under the MIT licence <span class="badge oss">v0.12</span> (v0.11.0 had two crates under Apache-2.0). There is no paid edition of the gate, and no feature on these pages needs an account.
 
 ## Do I need an account or a service?
 
-No. Hosted alerts and approvals (Slack and Discord cards, escalation, digests) are an idea we are testing and are not built. If you would use them, [tell us on the waitlist](/waitlist). The gate is self-hosted by design: it never needs to send arguments, credentials or results anywhere.
+No. Webhook alerts to your own Slack or Discord <span class="badge next">v0.13</span> go straight from the gate to the URL you give it. Hosted alerts and approvals (grouped issues, approval cards, escalation, digests) are an idea we are testing and are not built. If you would use them, [tell us on the waitlist](/waitlist). The gate is self-hosted by design: it never needs to send arguments, credentials or results anywhere.
 
 ## Why not just tell the model the rules in the prompt?
 
@@ -44,11 +44,11 @@ The binary can pseudonymize personal data in allowed calls (`mcp-proxy --transfo
 
 ## Known limitations
 
-- **One server per gate, stdio only.** HTTP/SSE MCP and several upstreams behind one gate are <span class="badge building">Roadmap</span>.
-- **`tools/list` is not pinned.** A server that changes its tool descriptions is not detected. <span class="badge building">Roadmap</span>
+- **One server per gate, stdio only, up to v0.12.0.** <span class="badge next">v0.13</span> MCP over HTTP on both sides, several stdio servers behind one gate, and `tools/list` pinning with drift detection are in v0.13.0. See [MCP tool gate](/docs/mcp-gate#mcp-over-http). Still <span class="badge building">Roadmap</span>: SSE response streams to HTTP agents, and HTTP servers behind `--server`.
+- **`tools/list` is not pinned up to v0.12.0.** A server that changes its tool descriptions is not detected there. <span class="badge next">v0.13</span> `cloakpipe tools pin` and `--tools-lock` hide and refuse a changed tool.
 - **Static task context.** `--task-context` is read once at start-up; run one gate per task when tasks change. A per-task channel from the orchestrator is <span class="badge building">Roadmap</span>.
-- **No approval broker.** `approval_required` carries the approver routes and the call fingerprint, but nothing sends the request or delivers the receipt. <span class="badge building">Roadmap</span>
-- **No alerts.** Webhooks, OpenTelemetry and hosted alerts are <span class="badge building">Roadmap</span>; the ledger and stderr are the record today.
+- **No approval broker.** `approval_required` carries the approver routes and the call fingerprint. <span class="badge next">v0.13</span> The gate also raises an `approval.requested` event (see [Alerts & events](/docs/events)), but nothing collects the approval or delivers the receipt: a human still runs `cloakpipe approve`. <span class="badge building">Roadmap</span>
+- **No alerts up to v0.12.0.** The ledger and stderr are the record there. <span class="badge next">v0.13</span> Signed webhooks (Slack, Discord), OpenTelemetry spans and a JSONL event log; see [Alerts & events](/docs/events). Hosted alerts are <span class="badge building">Roadmap</span>.
 - **The LLM proxy does not gate tool calls.** `cloakpipe start` transforms PII only. <span class="badge building">Roadmap</span>
 - **Counters count calls, not amounts.** Money budgets are <span class="badge building">Roadmap</span>.
 - **Keys are files.** KMS and HSM support and in-ledger key rotation are <span class="badge building">Roadmap</span>. See [Keys](/docs/keys).

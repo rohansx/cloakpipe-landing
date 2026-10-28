@@ -35,7 +35,7 @@
 <section class="statement-band" id="statement">
   <div class="wrap">
     <p class="statement reveal"><span class="hi">Model proposes. Code disposes. CloakPipe is the code.</span> It sits on the action, not the prompt, so it never has to spot the injection. It only has to see that the call falls outside the contract.</p>
-    <p class="works-with reveal" data-d="1"><span>Runs as an MCP proxy over stdio, with no code changes in the agent</span><span class="sep"></span><span>Claude Code</span><span>Cursor</span><span>Codex</span><span>any MCP host</span></p>
+    <p class="works-with reveal" data-d="1"><span>Runs as an MCP proxy over stdio or HTTP, with no code changes in the agent</span><span class="sep"></span><span>Claude Code</span><span>Cursor</span><span>Codex</span><span>any MCP host</span></p>
   </div>
 </section>
 
@@ -75,7 +75,7 @@
     <div class="section-head reveal">
       <h2>Declare. Enforce.<br><span class="dim">Prove.</span></h2>
       <div>
-        <p>The gate runs as <code class="mono">cloakpipe mcp-proxy</code> in front of one MCP server, over stdio. It decides with plain code, so the same call always gets the same answer.</p>
+        <p>The gate runs as <code class="mono">cloakpipe mcp-proxy</code> in front of your MCP servers, over stdio or HTTP. It decides with plain code, so the same call always gets the same answer.</p>
         <a class="learn-more" href="/docs/mcp-gate">How the gate works <span class="arr">→</span></a>
       </div>
     </div>
@@ -172,13 +172,13 @@
         <div class="ex-head"><span class="ex-n">02 · Agent tricked</span><span class="status shipping">Shipping</span></div>
         <h3>Wrong recipient, refused</h3>
         <p>Hidden text in a ticket makes the agent call <code class="mono">send_email</code> to <code class="mono">attacker@evil.com</code>. The recipient is not the ticket's customer, so the gate refuses with <code class="mono">scope_mismatch</code> (JSON-RPC <code class="mono">-32001</code>). The email server never sees it. A call to an undeclared <code class="mono">export_customers</code> is refused as <code class="mono">undeclared_tool</code>.</p>
-        <p class="ex-note">Slack and PagerDuty alerts on denials are on the roadmap.</p>
+        <p class="ex-note">Each refusal can go to a signed webhook, as a Slack or Discord message or raw JSON, and to OpenTelemetry as a span. Hosted alerting and routing are on the roadmap.</p>
       </article>
       <article class="ex">
         <div class="ex-head"><span class="ex-n">03 · Risky but legitimate</span><span class="status partial">CLI approval today; Slack approvals on roadmap</span></div>
         <h3>A refund needs a human</h3>
         <p>The contract says a refund over $100 needs approval. A $350 refund is refused with <code class="mono">approval_required</code> until someone signs an approval for that exact call with <code class="mono">cloakpipe approve</code>. The agent retries and the gate forwards it. Reusing that approval for a different amount is refused with <code class="mono">approval_required</code> again: the receipt is bound to the exact call, so it matches no other.</p>
-        <p class="ex-note">The refusal names the approvers and the call's fingerprint, but nothing delivers the request yet: an approval broker and Slack approvals are on the roadmap.</p>
+        <p class="ex-note">The refusal names the approvers and the call's fingerprint, and the gate sends an <code class="mono">approval.requested</code> event to your webhook. Approving still happens on the command line: an approval broker and Slack approval cards are on the roadmap.</p>
       </article>
       <article class="ex">
         <div class="ex-head"><span class="ex-n">04 · Did it happen?</span><span class="status shipping">Shipping · manual reconcile</span></div>

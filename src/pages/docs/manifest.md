@@ -6,7 +6,7 @@ description: The cloakpipe.manifest.yaml format, key by key - tools, argument ru
 
 # Manifest reference
 
-<span class="badge next">v0.12</span> One file, `cloakpipe.manifest.yaml`, declares everything an agent release may do at its tools. The gate is **closed by default**: a tool the manifest does not list cannot be called, and an argument a tool does not list cannot be sent.
+<span class="badge oss">v0.12</span> One file, `cloakpipe.manifest.yaml`, declares everything an agent release may do at its tools. The gate is **closed by default**: a tool the manifest does not list cannot be called, and an argument a tool does not list cannot be sent.
 
 ```yaml
 release: support-agent
@@ -134,4 +134,4 @@ The **manifest digest** is `sha256:` over the canonical JSON (RFC 8785) of the p
 
 ## The legacy format
 
-v0.11 configured the gate with two files: an `AgentRelease` (`apiVersion: cloakpipe.co/v1alpha1`, `kind: AgentRelease`) and a `ToolContract` passed with `--tool-contract`. v0.12 still reads them, with a deprecation warning on stderr, and tells the formats apart by the top-level key (`release` or `apiVersion`). The legacy names map as: `arguments` → `args`, `maxLength` → `max_len`, `minimum`/`maximum` → `min`/`max`, `bindTo: task.x` → `one_of_context: ["x"]`, `sideEffect` → `side_effect`, `requiresApproval: true` → `approval: {}`. The legacy denial `argument_not_allowed` is now `undeclared_argument` in both formats.
+v0.11 configured the gate with two files: an `AgentRelease` (`apiVersion: cloakpipe.co/v1alpha1`, `kind: AgentRelease`) and a `ToolContract` passed with `--tool-contract`. v0.12 and v0.13 still read them, with a deprecation warning on stderr, and tells the formats apart by the top-level key (`release` or `apiVersion`). The legacy names map as: `arguments` → `args`, `maxLength` → `max_len`, `minimum`/`maximum` → `min`/`max`, `bindTo: task.x` → `one_of_context: ["x"]`, `sideEffect` → `side_effect`, `requiresApproval: true` → `approval: {}`. The legacy denial `argument_not_allowed` is now `undeclared_argument` in both formats.

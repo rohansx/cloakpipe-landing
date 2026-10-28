@@ -1,0 +1,5 @@
+{
+ "source": "`claude mcp add --help`, Claude Code 2.1.287, 28 October 2026. Usage: claude mcp add [options] <name> <commandOrUrl> [args...]",
+ "flags": ["--callback-port", "--client-id", "--client-secret", "--env", "--header", "--help", "--scope", "--transport"],
+ "transports": ["stdio", "sse", "http"]
+}

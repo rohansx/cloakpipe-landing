@@ -29,11 +29,11 @@ People ask how CloakPipe relates to two other open-source projects, Microsoft's 
 | **Evidence** | per-entry Ed25519-signed, hash-chained decision ledger; epochs anchored with RFC 3161 and Sigstore Rekor; offline `cloakpipe verify` of a tar pack | "tamper-evident" decision records; an Audit and Compliance spec covering "Merkle audit" | Ed25519-signed action receipts; a hash-chained flight recorder with signed checkpoints; receipt checkpoints anchored to a local backend or Rekor |
 | **Packaging** | one Rust binary (crates.io), container image | Python, npm, NuGet, crates.io and Go packages; a Claude Code plugin | one Go binary, container image, Helm chart |
 | **Licence** | MIT | MIT | Apache-2.0 core; ELv2 for Pro and Enterprise features |
-| **Status (Oct 2026)** | v0.12.0 released 27 Oct 2026; most features on these docs are new in <span class="badge next">v0.12</span> | v4.1.0, "Public Preview" | v3.7.1 |
+| **Status (Oct 2026)** | v0.13.0 released 28 Oct 2026; most features on these docs are new in <span class="badge oss">v0.12</span> or <span class="badge next">v0.13</span> | v4.1.0, "Public Preview" | v3.7.1 |
 
 ## Where they differ
 
-**Breadth.** CloakPipe does much less than either project. AGT covers identity, sandboxing, SRE and compliance mappings across an agent system, and its README lists adapters for over a dozen frameworks. Pipelock covers network egress, content scanning for secrets and injection, MCP and A2A, process containment and a kill switch. CloakPipe only decides tool calls to MCP servers, over stdio, one server per gate.
+**Breadth.** CloakPipe does much less than either project. AGT covers identity, sandboxing, SRE and compliance mappings across an agent system, and its README lists adapters for over a dozen frameworks. Pipelock covers network egress, content scanning for secrets and injection, MCP and A2A, process containment and a kill switch. CloakPipe only decides tool calls to MCP servers: in v0.12.0 over stdio, one server per gate, and in the next release also over Streamable HTTP and with several servers per gate <span class="badge next">v0.13</span>.
 
 **Where the check runs.** AGT's README says its policy engine runs in the agent's process and recommends running each agent in its own container for OS-level isolation. CloakPipe and Pipelock run as separate processes the agent's traffic passes through. An in-process SDK can see richer context, such as the framework's own objects; a separate process cannot be switched off from inside the agent's process, but sees only what crosses the wire, and only if the agent's traffic is routed through it.
 

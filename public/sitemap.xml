@@ -26,6 +26,16 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://cloakpipe.co/docs/events</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://cloakpipe.co/docs/docker</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://cloakpipe.co/docs/manifest</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
