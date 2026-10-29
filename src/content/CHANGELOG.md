@@ -9,6 +9,61 @@ may contain breaking changes; these are marked **Breaking**.
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-10-29
+
+Approvals can now go through a broker, such as CloakPipe Cloud or your own:
+the gate files a signed approval request carrying only the arguments the
+manifest lists in `approval.show`, polls for signed receipts in the
+background, and verifies each receipt locally before writing it, so the
+decision path never waits on the network.
+
+### Added
+
+- Approvals through a broker ([docs/APPROVALS.md](docs/APPROVALS.md)), an
+  open protocol any service can implement (CloakPipe Cloud does):
+  - `mcp-proxy --approvals-url <broker>/v1/gates/<id>
+    --approvals-secret-file FILE [--approvals-poll-interval 5s]`. A call
+    refused as `approval_required` is filed with a signed
+    `POST <url>/approvals` (`cloakpipe.approval-request/v1`: fingerprint,
+    release, tool, approver routes, task id, ttl, ledger seq and only the
+    `approval.show` values), queued and sent in the background, once per
+    fingerprint while open. A poller fetches finished requests with a
+    signed `GET <url>/approvals?since=<cursor>`, verifies each receipt
+    against `--approver-key`, the release, tool, task id, fingerprint and
+    ttl, and only then writes it atomically to `--approvals`; one that does
+    not verify is not written and raises `approval.mismatch`. Decisions
+    never wait on the broker; if it is down, approvals do not arrive.
+    A polled record whose `task_id` names another task (another gate
+    process sharing the gate URL) is skipped quietly. Needs `--approvals`, `--approver-key` and a task context with a
+    `taskId`, checked at start-up.
+  - The refusal's `error.data` gains `approval_request` (`requested`,
+    `pending` or `denied`) and a `hint` to retry after approval.
+  - A new reason, `approval_denied`: an approver denied this exact call,
+    and it is refused until the denial's `not_after` (else the request's
+    ttl), without filing a new request. The gate also honours a
+    `<fingerprint hex>.denied.json` marker in the approvals directory,
+    with or without a broker. An expired request is `approval_required`
+    again and is filed anew; `approval_expired` still means a receipt past
+    its `notAfter`.
+  - `cloakpipe approvals keys --approvals-url URL --approvals-secret-file
+    FILE --out DIR` writes the broker's approver public keys
+    (`GET <url>/approver-keys`) as `--approver-key` files, refusing any key
+    whose keyid is not its own.
+  - Library: `cloakpipe_mcp::broker` (`ApprovalBroker`, `BrokerConfig`,
+    `RequestStatus`), `ToolGate::with_broker` / `request_approval`,
+    `Denial::ApprovalDenied`.
+- Manifest: `approval.show: [amount, ticket_id]`, the top-level arguments
+  whose values an approval broker may see (default: none). Names must be
+  declared arguments, not of type object or array; only scalar values are
+  sent. `ApprovalRule::shown`. A fingerprint of
+  low-entropy arguments can be guessed by brute force; see
+  [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md).
+
+### Changed
+
+- **Breaking (library):** `cloakpipe_release::rules::ApprovalRule` has a
+  new public field, `show`.
+
 ## [0.13.0] - 2026-10-28
 
 The gate now runs over MCP's HTTP transport on both sides, fronts several
@@ -685,7 +740,8 @@ the lean gate. Licence: MIT only.
 
 - First release: privacy middleware for LLM and RAG pipelines.
 
-[Unreleased]: https://github.com/rohansx/cloakpipe/compare/v0.13.0...HEAD
+[Unreleased]: https://github.com/rohansx/cloakpipe/compare/v0.14.0...HEAD
+[0.14.0]: https://github.com/rohansx/cloakpipe/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/rohansx/cloakpipe/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/rohansx/cloakpipe/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/rohansx/cloakpipe/compare/v0.10.0...v0.11.0
