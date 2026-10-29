@@ -174,5 +174,12 @@
  "approvals_dir_after_deny": [
   "8b704be6f47ed616f8b6930d8fe2ce9684a268405ae34234161064da00de9f9a.denied.json",
   "d6a943476c0caf55703e72960703b1196a4e2744f1518091ee8421bfef70f483.approval.json"
- ]
+ ],
+ "denial_marker": {
+  "schema": "cloakpipe.approval-denial/v1",
+  "fingerprint": "sha256:8b704be6f47ed616f8b6930d8fe2ce9684a268405ae34234161064da00de9f9a",
+  "status": "denied",
+  "decidedAt": "2026-10-29T10:03:00Z",
+  "notAfter": "2027-10-30T07:12:01Z"
+ }
 }

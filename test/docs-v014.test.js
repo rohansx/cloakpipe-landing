@@ -258,6 +258,10 @@ test('approving by hand still works without a broker', () => {
   assert.match(offline, /cloakpipe approve /, 'cloakpipe approve by hand');
   assert.match(offline, /offline|no network|without a network/i);
   assert.match(offline, /\.denied\.json/, 'a denial marker works without a broker too');
+  // The marker shown has the members of the one the gate wrote.
+  const marker = /```json\n(\{\n  "schema": "cloakpipe\.approval-denial\/v1"[\s\S]*?)```/.exec(offline);
+  assert.ok(marker, 'shows a denial marker');
+  assert.deepEqual(Object.keys(JSON.parse(marker[1])).sort(), Object.keys(BROKER.denial_marker).sort());
 });
 
 test('CloakPipe Cloud is a broker that is coming, with Slack approval cards, and nothing links a private repository', () => {
