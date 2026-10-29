@@ -1,0 +1,264 @@
+{
+ "source": "cloakpipe --help of cloakpipe-cli 0.14.0 from crates.io (cargo install --locked cloakpipe-cli@0.14.0), tag v0.14.0 (55c806a); default features",
+ "commands": {
+  "(root)": [
+   "--config",
+   "--help",
+   "--version"
+  ],
+  "start": [
+   "--help"
+  ],
+  "test": [
+   "--file",
+   "--help",
+   "--text"
+  ],
+  "stats": [
+   "--help"
+  ],
+  "init": [
+   "--help"
+  ],
+  "setup": [
+   "--help"
+  ],
+  "mcp": [
+   "--help"
+  ],
+  "mcp-proxy": [
+   "--anchor-every",
+   "--anchor-interval",
+   "--approvals",
+   "--approvals-poll-interval",
+   "--approvals-secret-file",
+   "--approvals-url",
+   "--approver-key",
+   "--events-log",
+   "--help",
+   "--ledger-db",
+   "--listen",
+   "--listen-token-file",
+   "--manifest",
+   "--mode",
+   "--no-ledger",
+   "--no-rekor",
+   "--no-tsa",
+   "--operations-db",
+   "--otel",
+   "--otel-endpoint",
+   "--rekor",
+   "--rekor-key",
+   "--server",
+   "--signing-key",
+   "--state-db",
+   "--task-context",
+   "--tool-contract",
+   "--tools-lock",
+   "--transform",
+   "--tsa",
+   "--tsa-root",
+   "--upstream",
+   "--upstream-header",
+   "--upstream-url",
+   "--webhook",
+   "--webhook-format",
+   "--webhook-secret-file"
+  ],
+  "sessions": [
+   "--help"
+  ],
+  "sessions list": [
+   "--help"
+  ],
+  "sessions inspect": [
+   "--help"
+  ],
+  "sessions flush": [
+   "--help"
+  ],
+  "sessions flush-all": [
+   "--help"
+  ],
+  "manifest": [
+   "--help"
+  ],
+  "manifest validate": [
+   "--help"
+  ],
+  "manifest hash": [
+   "--help",
+   "--json"
+  ],
+  "release": [
+   "--help"
+  ],
+  "release validate": [
+   "--help"
+  ],
+  "release hash": [
+   "--help"
+  ],
+  "release diff": [
+   "--help",
+   "--json"
+  ],
+  "release register": [
+   "--help",
+   "--json"
+  ],
+  "release inspect": [
+   "--help",
+   "--json"
+  ],
+  "release keygen": [
+   "--help",
+   "--out"
+  ],
+  "anchor": [
+   "--batch-id",
+   "--clock-skew-secs",
+   "--help",
+   "--key",
+   "--no-rekor",
+   "--no-tsa",
+   "--out",
+   "--rekor-key",
+   "--rekor-url",
+   "--timeout-secs",
+   "--tsa-root",
+   "--tsa-url"
+  ],
+  "action": [
+   "--help"
+  ],
+  "action fingerprint": [
+   "--args",
+   "--help",
+   "--manifest",
+   "--tool"
+  ],
+  "approve": [
+   "--args",
+   "--expires",
+   "--help",
+   "--key",
+   "--manifest",
+   "--now",
+   "--operation-id",
+   "--out",
+   "--task-context",
+   "--tool"
+  ],
+  "approvals": [
+   "--help"
+  ],
+  "approvals keys": [
+   "--approvals-secret-file",
+   "--approvals-url",
+   "--help",
+   "--out"
+  ],
+  "tools": [
+   "--help"
+  ],
+  "tools pin": [
+   "--help",
+   "--manifest",
+   "--out",
+   "--server",
+   "--upstream"
+  ],
+  "tools diff": [
+   "--against",
+   "--help",
+   "--lock",
+   "--server",
+   "--upstream"
+  ],
+  "operations": [
+   "--help"
+  ],
+  "operations list": [
+   "--help",
+   "--operations-db",
+   "--state"
+  ],
+  "operations reconcile": [
+   "--force",
+   "--help",
+   "--ledger-db",
+   "--manifest",
+   "--no-ledger",
+   "--operations-db",
+   "--outcome",
+   "--signing-key"
+  ],
+  "ledger": [
+   "--help"
+  ],
+  "ledger entries": [
+   "--from-seq",
+   "--help",
+   "--ledger-db"
+  ],
+  "ledger public-key": [
+   "--help",
+   "--signing-key"
+  ],
+  "ledger export": [
+   "--help",
+   "--ledger-db",
+   "--out",
+   "--signing-key",
+   "--since",
+   "--until"
+  ],
+  "verify": [
+   "--clock-skew-secs",
+   "--help",
+   "--key",
+   "--rekor-key",
+   "--require-anchors",
+   "--tsa-root"
+  ],
+  "events": [
+   "--help"
+  ],
+  "events test": [
+   "--help",
+   "--webhook",
+   "--webhook-format",
+   "--webhook-secret-file"
+  ],
+  "events verify-signature": [
+   "--body-file",
+   "--header",
+   "--help",
+   "--secret-file",
+   "--tolerance"
+  ],
+  "scan": [
+   "--detect-only",
+   "--help",
+   "--min-confidence",
+   "--output",
+   "--strategy"
+  ]
+ },
+ "hidden": {
+  "mcp-proxy": [
+   "--gate"
+  ]
+ },
+ "cloakpipe-verify": [
+  "chain",
+  "sigs",
+  "anchors",
+  "proofs",
+  "manifest",
+  "all",
+  "decisions",
+  "pack"
+ ]
+}

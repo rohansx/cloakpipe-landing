@@ -1,0 +1,178 @@
+{
+ "source": "real traffic between cloakpipe-cli 0.14.0 (crates.io, tag v0.14.0) mcp-proxy / approvals keys and a recording mock broker, on examples/support-agent with approval.show: [amount] added; approve and deny paths",
+ "secret": "test-secret-for-the-docs-fixture",
+ "gate_url": "http://127.0.0.1:18765/v1/gates/g1",
+ "approvals_keys_stdout": "ed25519:9dbc2c0b722f399a keys/9dbc2c0b722f399a.approver.json\n",
+ "approvals_keys_files": [
+  "9dbc2c0b722f399a.approver.json"
+ ],
+ "requests": [
+  {
+   "method": "GET",
+   "target": "/v1/gates/g1/approver-keys",
+   "headers": {
+    "cloakpipe-signature": "t=1793257915,v1=88c5135cecb6e0a0bfd9bdf44e261da7c36f781e1ff1a42022815c7bf1883bef"
+   },
+   "body": null
+  },
+  {
+   "method": "POST",
+   "target": "/v1/gates/g1/approvals",
+   "headers": {
+    "content-type": "application/json",
+    "cloakpipe-signature": "t=1793257915,v1=b4cac55bb72c14d393063c90a05541436ebe3dc8a7794a50630a623d333b12a8"
+   },
+   "body": "{\"schema\":\"cloakpipe.approval-request/v1\",\"fingerprint\":\"sha256:d6a943476c0caf55703e72960703b1196a4e2744f1518091ee8421bfef70f483\",\"release\":\"support-agent\",\"version\":\"2026.10.3\",\"release_digest\":\"sha256:7d60f4ce962b22855ba3c337afc17056d76295a8b872a5853b3f7b3049320850\",\"tool\":\"issue_refund\",\"approvers\":[\"slack:#support-leads\"],\"task_id\":\"t-1042\",\"ttl_secs\":900,\"requested_at\":\"2026-10-29T07:11:55Z\",\"expires_at\":\"2026-10-29T07:26:55Z\",\"ledger_seq\":0,\"shown\":{\"amount\":350}}"
+  },
+  {
+   "method": "GET",
+   "target": "/v1/gates/g1/approvals",
+   "headers": {
+    "cloakpipe-signature": "t=1793257916,v1=c93558de0e1f39d3f77b0cc6c748759af0da12db627d160ce9b6fd5bd57f93b8"
+   },
+   "body": null
+  },
+  {
+   "method": "GET",
+   "target": "/v1/gates/g1/approvals?since=c-0",
+   "headers": {
+    "cloakpipe-signature": "t=1793257917,v1=f275a7fad24575defa780d4666cae46425f8622bd22ac075f2adc50fa8590323"
+   },
+   "body": null
+  },
+  {
+   "method": "GET",
+   "target": "/v1/gates/g1/approvals?since=c-1",
+   "headers": {
+    "cloakpipe-signature": "t=1793257918,v1=d8724037431d4e5f8e13502713bdcd912c9cd4551ca94c95d50b032a4e03680c"
+   },
+   "body": null
+  },
+  {
+   "method": "GET",
+   "target": "/v1/gates/g1/approvals?since=c-1",
+   "headers": {
+    "cloakpipe-signature": "t=1793257919,v1=09d5ad3458f8f39fbb5be5c38418615c6c92c03366cac66be2a93696f7bb49eb"
+   },
+   "body": null
+  },
+  {
+   "method": "POST",
+   "target": "/v1/gates/g1/approvals",
+   "headers": {
+    "content-type": "application/json",
+    "cloakpipe-signature": "t=1793257919,v1=c53d5cd5754476512b71aee9e1bc1bd886b76c6cd5835441fc671cad02becd9b"
+   },
+   "body": "{\"schema\":\"cloakpipe.approval-request/v1\",\"fingerprint\":\"sha256:8b704be6f47ed616f8b6930d8fe2ce9684a268405ae34234161064da00de9f9a\",\"release\":\"support-agent\",\"version\":\"2026.10.3\",\"release_digest\":\"sha256:7d60f4ce962b22855ba3c337afc17056d76295a8b872a5853b3f7b3049320850\",\"tool\":\"issue_refund\",\"approvers\":[\"slack:#support-leads\"],\"task_id\":\"t-1042\",\"ttl_secs\":900,\"requested_at\":\"2026-10-29T07:11:59Z\",\"expires_at\":\"2026-10-29T07:26:59Z\",\"ledger_seq\":4,\"shown\":{\"amount\":450}}"
+  },
+  {
+   "method": "GET",
+   "target": "/v1/gates/g1/approvals?since=c-1",
+   "headers": {
+    "cloakpipe-signature": "t=1793257920,v1=28b8d45479a1b1c05d4c2300d08933968a5035ff30c42ff44ed39ed39ad66846"
+   },
+   "body": null
+  },
+  {
+   "method": "GET",
+   "target": "/v1/gates/g1/approvals?since=c-2",
+   "headers": {
+    "cloakpipe-signature": "t=1793257921,v1=c7511f827744cb4ce0a122b7fc754a05ae6ecec8d27acd8e688382ead581b121"
+   },
+   "body": null
+  }
+ ],
+ "refusals": [
+  {
+   "jsonrpc": "2.0",
+   "id": 2,
+   "error": {
+    "code": -32001,
+    "message": "tool call refused by CloakPipe: approval_required",
+    "data": {
+     "reason": "approval_required",
+     "tool": "issue_refund",
+     "release": "sha256:7d60f4ce962b22855ba3c337afc17056d76295a8b872a5853b3f7b3049320850",
+     "approvers": [
+      "slack:#support-leads"
+     ],
+     "fingerprint": "sha256:d6a943476c0caf55703e72960703b1196a4e2744f1518091ee8421bfef70f483",
+     "approval_request": "requested",
+     "hint": "approval requested; retry the same call after approval"
+    }
+   }
+  },
+  {
+   "jsonrpc": "2.0",
+   "id": 3,
+   "error": {
+    "code": -32001,
+    "message": "tool call refused by CloakPipe: approval_required",
+    "data": {
+     "reason": "approval_required",
+     "tool": "issue_refund",
+     "release": "sha256:7d60f4ce962b22855ba3c337afc17056d76295a8b872a5853b3f7b3049320850",
+     "approvers": [
+      "slack:#support-leads"
+     ],
+     "fingerprint": "sha256:d6a943476c0caf55703e72960703b1196a4e2744f1518091ee8421bfef70f483",
+     "approval_request": "pending",
+     "hint": "approval requested; retry the same call after approval"
+    }
+   }
+  },
+  {
+   "jsonrpc": "2.0",
+   "id": 5,
+   "error": {
+    "code": -32001,
+    "message": "tool call refused by CloakPipe: approval_required",
+    "data": {
+     "reason": "approval_required",
+     "tool": "issue_refund",
+     "release": "sha256:7d60f4ce962b22855ba3c337afc17056d76295a8b872a5853b3f7b3049320850",
+     "approvers": [
+      "slack:#support-leads"
+     ],
+     "fingerprint": "sha256:8b704be6f47ed616f8b6930d8fe2ce9684a268405ae34234161064da00de9f9a",
+     "approval_request": "requested",
+     "hint": "approval requested; retry the same call after approval"
+    }
+   }
+  },
+  {
+   "jsonrpc": "2.0",
+   "id": 6,
+   "error": {
+    "code": -32001,
+    "message": "tool call refused by CloakPipe: approval_denied",
+    "data": {
+     "reason": "approval_denied",
+     "tool": "issue_refund",
+     "release": "sha256:7d60f4ce962b22855ba3c337afc17056d76295a8b872a5853b3f7b3049320850",
+     "approval_request": "denied",
+     "hint": "an approver denied this exact call; it will not be approved"
+    }
+   }
+  }
+ ],
+ "allowed": {
+  "jsonrpc": "2.0",
+  "id": 4,
+  "result": {
+   "content": [
+    {
+     "type": "text",
+     "text": "issue_refund: done"
+    }
+   ]
+  }
+ },
+ "approvals_dir_after_approve": [
+  "d6a943476c0caf55703e72960703b1196a4e2744f1518091ee8421bfef70f483.approval.json"
+ ],
+ "approvals_dir_after_deny": [
+  "8b704be6f47ed616f8b6930d8fe2ce9684a268405ae34234161064da00de9f9a.denied.json",
+  "d6a943476c0caf55703e72960703b1196a4e2744f1518091ee8421bfef70f483.approval.json"
+ ]
+}

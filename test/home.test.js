@@ -178,11 +178,11 @@ test('Declare, Enforce, Prove describe v0.12.0 as it ships', () => {
   for (const s of ['issue_refund', 'over $100']) assert.ok(text(html).includes(s), `contract panel: ${s}`);
 });
 
-test('nothing v0.12.0 or v0.13.0 ships is called roadmap on the home page', () => {
+test('nothing v0.12.0, v0.13.0 or v0.14.0 ships is called roadmap on the home page', () => {
   const t = text(home());
   const roadmap = [...t.matchAll(/[^.]*\broadmap\b[^.]*\./gi)].map((m) => m[0]);
   for (const s of roadmap) {
-    for (const re of [/per-entry signatures/i, /every allowed call/i, /amount thresholds/i, /Cedar/, /shadow/i, /verify/i, /per tool/i, /Slack (?:and PagerDuty )?alerts/i, /webhook/i, /OpenTelemetry/i, /Discord/i]) {
+    for (const re of [/per-entry signatures/i, /every allowed call/i, /amount thresholds/i, /Cedar/, /shadow/i, /verify/i, /per tool/i, /Slack (?:and PagerDuty )?alerts/i, /webhook/i, /OpenTelemetry/i, /Discord/i, /approval broker/i, /your own broker/i]) {
       assert.doesNotMatch(s, re, `"${s.trim()}" calls a shipped feature roadmap`);
     }
   }
@@ -202,7 +202,8 @@ test('four examples, each with an honest status badge', () => {
   assert.deepEqual(one, { kind: 'shipping', label: 'Shipping' });
   assert.deepEqual(two, { kind: 'shipping', label: 'Shipping' });
   assert.equal(three.kind, 'partial');
-  assert.equal(three.label, 'CLI approval today; Slack approvals on roadmap');
+  // v0.14.0 files approval requests with a broker you run; hosted Slack approval cards are not deployed.
+  assert.equal(three.label, 'CLI or broker approval today; Slack approval cards on roadmap');
   assert.equal(four.kind, 'shipping');
   assert.equal(four.label, 'Shipping · manual reconcile');
   assert.match(text(cards[0]), /every decision/i, 'example 1: allowed calls are logged too');
@@ -217,7 +218,12 @@ test('four examples, each with an honest status badge', () => {
   assert.match(text(cards[2]), /approval\.requested/, 'example 3: the approval request is delivered as an event');
   assert.match(text(cards[2]), /over \$100/, 'example 3: approval is conditional on the amount');
   assert.match(text(cards[2]), /exact (?:call|arguments)/, 'example 3: approval is bound to the exact arguments');
-  assert.match(text(cards[2]), /approval broker[^.]*roadmap|roadmap[^.]*approval broker/, 'example 3: no approval broker yet');
+  const three_ = text(cards[2]);
+  assert.match(three_, /approval broker/, 'example 3: approvals can go through an approval broker (v0.14.0)');
+  assert.doesNotMatch(three_, /approval broker[^.]*roadmap|roadmap[^.]*approval broker/, 'example 3: the broker client is not roadmap');
+  assert.doesNotMatch(three_, /(?:still|only) (?:happens )?on the command line/i, 'example 3: approval is not command-line only');
+  assert.match(three_, /verif/i, 'example 3: the gate verifies what the broker sends');
+  assert.match(three_, /Slack approval cards[^.]*roadmap/, 'example 3: hosted Slack approval cards stay roadmap');
   assert.match(text(cards[1]), /attacker@evil\.com/);
   assert.match(text(cards[1]), /undeclared_tool/);
   assert.match(text(cards[2]), /approval_required/);
