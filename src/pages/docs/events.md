@@ -6,7 +6,7 @@ description: Gate events for refusals, approvals, drift and unknown side effects
 
 # Alerts & events
 
-<span class="badge next">v0.13</span> After stopping an out-of-contract call, the gate's next job is telling a human. `cloakpipe mcp-proxy` raises a **gate event** for every decision that needs attention and delivers it three ways: HMAC-signed webhooks (raw JSON, or a Slack or Discord message), OpenTelemetry spans, and an append-only JSONL file. This is new in v0.13.0; v0.12.0 has the ledger and stderr only.
+<span class="badge oss">v0.13</span> After stopping an out-of-contract call, the gate's next job is telling a human. `cloakpipe mcp-proxy` raises a **gate event** for every decision that needs attention and delivers it three ways: HMAC-signed webhooks (raw JSON, or a Slack or Discord message), OpenTelemetry spans, and an append-only JSONL file. This is new in v0.13.0; v0.12.0 has the ledger and stderr only.
 
 Delivery is off the decision path. Events go on a bounded queue that a background thread drains, so a slow or dead endpoint never delays a decision or changes it. Everything runs on your machines: the gate sends events only to the endpoints you give it.
 
@@ -14,9 +14,9 @@ Delivery is off the decision path. Events go on a bounded queue that a backgroun
 
 | kind | when |
 |---|---|
-| `decision.deny` | a call was refused in enforce mode, including `fail_closed` and an expired receipt (`approval_expired`) |
+| `decision.deny` | a call was refused in enforce mode, including `fail_closed`, an expired receipt (`approval_expired`) and <span class="badge next">v0.14</span> a call an approver denied through a broker (`approval_denied`) |
 | `approval.requested` | a call needs an approval receipt and has none |
-| `approval.mismatch` | a receipt was presented that does not cover this exact call (other arguments, release or tool, or a bad signature) |
+| `approval.mismatch` | a receipt was presented that does not cover this exact call (other arguments, release or tool, or a bad signature); <span class="badge next">v0.14</span> also a receipt from an [approval broker](/docs/approvals) that does not verify and was not written (no ledger entry) |
 | `shadow.finding` | shadow mode forwarded a call that enforce mode would have refused |
 | `side_effect.replayed` | a retry of a completed side effect was answered from the operations store |
 | `side_effect.unknown` | a forwarded side effect never got its reply: [reconcile it](/docs/mcp-gate#side-effects-and-reconciliation) |
@@ -164,4 +164,4 @@ The [Docker image](/docs/docker) takes the same settings as variables: `CLOAKPIP
 
 - <span class="badge building">Roadmap</span> A different secret and format for each webhook. Today one `--webhook-secret-file` and one `--webhook-format` apply to every `--webhook`.
 - <span class="badge building">Roadmap</span> Delivery that survives a restart.
-- <span class="badge building">Roadmap</span> A hosted plane on top of these events: grouping repeats into issues, routing by tool, approval cards, escalation and digests. It is not built, and nothing is sent to a hosted service; if you want it, [tell us on the waitlist](/waitlist).
+- <span class="badge building">Roadmap</span> A hosted plane on top of these events: grouping repeats into issues, routing by tool, approval cards in Slack, escalation and digests. It is not built (the open-source gate can already file approvals with a broker you run: see [Approvals](/docs/approvals)), and nothing is sent to a hosted service; if you want it, [tell us on the waitlist](/waitlist).

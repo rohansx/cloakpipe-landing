@@ -12,7 +12,7 @@ Yes. Everything on these pages is in [rohansx/cloakpipe](https://github.com/roha
 
 ## Do I need an account or a service?
 
-No. Webhook alerts to your own Slack or Discord <span class="badge next">v0.13</span> go straight from the gate to the URL you give it. Hosted alerts and approvals (grouped issues, approval cards, escalation, digests) are an idea we are testing and are not built. If you would use them, [tell us on the waitlist](/waitlist). The gate is self-hosted by design: it never needs to send arguments, credentials or results anywhere.
+No. Webhook alerts to your own Slack or Discord <span class="badge oss">v0.13</span> go straight from the gate to the URL you give it. Hosted alerts and approvals (grouped issues, approval cards, escalation, digests) are an idea we are testing and are not built. <span class="badge next">v0.14</span> The gate can file approval requests with an approval broker, but only one you configure; enforcement never depends on it. If you would use them, [tell us on the waitlist](/waitlist). The gate is self-hosted by design: it never needs to send arguments, credentials or results anywhere.
 
 ## Why not just tell the model the rules in the prompt?
 
@@ -44,11 +44,11 @@ The binary can pseudonymize personal data in allowed calls (`mcp-proxy --transfo
 
 ## Known limitations
 
-- **One server per gate, stdio only, up to v0.12.0.** <span class="badge next">v0.13</span> MCP over HTTP on both sides, several stdio servers behind one gate, and `tools/list` pinning with drift detection are in v0.13.0. See [MCP tool gate](/docs/mcp-gate#mcp-over-http). Still <span class="badge building">Roadmap</span>: SSE response streams to HTTP agents, and HTTP servers behind `--server`.
-- **`tools/list` is not pinned up to v0.12.0.** A server that changes its tool descriptions is not detected there. <span class="badge next">v0.13</span> `cloakpipe tools pin` and `--tools-lock` hide and refuse a changed tool.
+- **One server per gate, stdio only, up to v0.12.0.** <span class="badge oss">v0.13</span> MCP over HTTP on both sides, several stdio servers behind one gate, and `tools/list` pinning with drift detection are in v0.13.0. See [MCP tool gate](/docs/mcp-gate#mcp-over-http). Still <span class="badge building">Roadmap</span>: SSE response streams to HTTP agents, and HTTP servers behind `--server`.
+- **`tools/list` is not pinned up to v0.12.0.** A server that changes its tool descriptions is not detected there. <span class="badge oss">v0.13</span> `cloakpipe tools pin` and `--tools-lock` hide and refuse a changed tool.
 - **Static task context.** `--task-context` is read once at start-up; run one gate per task when tasks change. A per-task channel from the orchestrator is <span class="badge building">Roadmap</span>.
-- **No approval broker.** `approval_required` carries the approver routes and the call fingerprint. <span class="badge next">v0.13</span> The gate also raises an `approval.requested` event (see [Alerts & events](/docs/events)), but nothing collects the approval or delivers the receipt: a human still runs `cloakpipe approve`. <span class="badge building">Roadmap</span>
-- **No alerts up to v0.12.0.** The ledger and stderr are the record there. <span class="badge next">v0.13</span> Signed webhooks (Slack, Discord), OpenTelemetry spans and a JSONL event log; see [Alerts & events](/docs/events). Hosted alerts are <span class="badge building">Roadmap</span>.
+- **Approvals need a broker you run, or `cloakpipe approve` by hand.** Up to v0.13.0, nothing collected the approval or delivered the receipt: a human ran `cloakpipe approve`. <span class="badge next">v0.14</span> The gate files approval requests with an approval broker (`--approvals-url`) and verifies the receipts it hands back; the protocol is open, so you can run your own. See [Approvals](/docs/approvals). <span class="badge building">Roadmap</span> CloakPipe Cloud as a hosted broker with approval cards in Slack is coming soon, not deployed yet; approving with an edit (changing an argument) is not built.
+- **No alerts up to v0.12.0.** The ledger and stderr are the record there. <span class="badge oss">v0.13</span> Signed webhooks (Slack, Discord), OpenTelemetry spans and a JSONL event log; see [Alerts & events](/docs/events). Hosted alerts are <span class="badge building">Roadmap</span>.
 - **The LLM proxy does not gate tool calls.** `cloakpipe start` transforms PII only. <span class="badge building">Roadmap</span>
 - **Counters count calls, not amounts.** Money budgets are <span class="badge building">Roadmap</span>.
 - **Keys are files.** KMS and HSM support and in-ledger key rotation are <span class="badge building">Roadmap</span>. See [Keys](/docs/keys).

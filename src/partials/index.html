@@ -175,10 +175,10 @@
         <p class="ex-note">Each refusal can go to a signed webhook, as a Slack or Discord message or raw JSON, and to OpenTelemetry as a span. Hosted alerting and routing are on the roadmap.</p>
       </article>
       <article class="ex">
-        <div class="ex-head"><span class="ex-n">03 · Risky but legitimate</span><span class="status partial">CLI approval today; Slack approvals on roadmap</span></div>
+        <div class="ex-head"><span class="ex-n">03 · Risky but legitimate</span><span class="status partial">CLI or broker approval today; Slack approval cards on roadmap</span></div>
         <h3>A refund needs a human</h3>
-        <p>The contract says a refund over $100 needs approval. A $350 refund is refused with <code class="mono">approval_required</code> until someone signs an approval for that exact call with <code class="mono">cloakpipe approve</code>. The agent retries and the gate forwards it. Reusing that approval for a different amount is refused with <code class="mono">approval_required</code> again: the receipt is bound to the exact call, so it matches no other.</p>
-        <p class="ex-note">The refusal names the approvers and the call's fingerprint, and the gate sends an <code class="mono">approval.requested</code> event to your webhook. Approving still happens on the command line: an approval broker and Slack approval cards are on the roadmap.</p>
+        <p>The contract says a refund over $100 needs approval. A $350 refund is refused with <code class="mono">approval_required</code> until someone signs an approval for that exact call, by hand with <code class="mono">cloakpipe approve</code> or through an approval broker. The agent retries and the gate forwards it. Reusing that approval for a different amount is refused with <code class="mono">approval_required</code> again: the receipt is bound to the exact call, so it matches no other.</p>
+        <p class="ex-note">The refusal names the approvers and the call's fingerprint, and the gate sends an <code class="mono">approval.requested</code> event to your webhook. The gate can also file the request with an approval broker you run, showing the approver only the arguments the contract lists, and it verifies each approval the broker hands back before using it. Hosted Slack approval cards are on the roadmap.</p>
       </article>
       <article class="ex">
         <div class="ex-head"><span class="ex-n">04 · Did it happen?</span><span class="status shipping">Shipping · manual reconcile</span></div>

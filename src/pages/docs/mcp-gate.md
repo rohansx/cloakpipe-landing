@@ -8,16 +8,19 @@ description: Every cloakpipe mcp-proxy flag, the order in which a tools/call is 
 
 `cloakpipe mcp-proxy` sits between an agent and an MCP server that speaks stdio. With `--manifest`, it decides every `tools/call` before the server sees it: a call the manifest and policy allow is forwarded exactly as the agent sent it, and any other call is answered with a JSON-RPC error and never reaches the tool. Every decision is written to a signed ledger.
 
-<span class="badge next">v0.13</span> The gate can also speak MCP over HTTP on either side, and front several servers at once with their tool definitions pinned. See [MCP over HTTP](#mcp-over-http), [Several servers](#several-servers) and [Pinning tool definitions](#pinning-tool-definitions).
+<span class="badge oss">v0.13</span> The gate can also speak MCP over HTTP on either side, and front several servers at once with their tool definitions pinned. See [MCP over HTTP](#mcp-over-http), [Several servers](#several-servers) and [Pinning tool definitions](#pinning-tool-definitions).
+
+<span class="badge next">v0.14</span> A call that needs approval can be filed with an approval broker, which hands back a signed receipt the gate verifies before using it. See [Approvals](/docs/approvals).
 
 | Capability | Status |
 |---|---|
 | stdio proxy for one upstream server, tool gate, approval receipts, operations store | <span class="badge oss">v0.11</span> |
 | v1 manifest (`cloakpipe.manifest.yaml`), Cedar policy, conditional approval, `idempotency_key` | <span class="badge oss">v0.12</span> |
 | Decision ledger by default, `--signing-key`, `--mode shadow`, anchoring flags | <span class="badge oss">v0.12</span> |
-| MCP over HTTP (Streamable HTTP): `--listen` for agents, `--upstream-url` for one HTTP server | <span class="badge next">v0.13</span> |
-| Several stdio servers per gate (`--server`), `tools/list` pinning with a tools lock (`--tools-lock`) and drift detection | <span class="badge next">v0.13</span> |
-| Event delivery: `--webhook`, `--otel-endpoint`, `--events-log` ([Alerts & events](/docs/events)) | <span class="badge next">v0.13</span> |
+| MCP over HTTP (Streamable HTTP): `--listen` for agents, `--upstream-url` for one HTTP server | <span class="badge oss">v0.13</span> |
+| Several stdio servers per gate (`--server`), `tools/list` pinning with a tools lock (`--tools-lock`) and drift detection | <span class="badge oss">v0.13</span> |
+| Event delivery: `--webhook`, `--otel-endpoint`, `--events-log` ([Alerts & events](/docs/events)) | <span class="badge oss">v0.13</span> |
+| Approvals through a broker: `--approvals-url`, `--approvals-secret-file`, `--approvals-poll-interval`, the `approval_denied` refusal ([Approvals](/docs/approvals)) | <span class="badge next">v0.14</span> |
 | SSE response streams and a `GET /mcp` stream for HTTP agents; HTTP servers behind `--server` | <span class="badge building">Roadmap</span> |
 
 ## Usage
@@ -37,18 +40,21 @@ cloakpipe mcp-proxy \
 
 | Flag | Meaning |
 |---|---|
-| `--upstream CMD` | the upstream MCP server command and its arguments, as one string: the server named `default`. Required up to v0.12.0; <span class="badge next">v0.13</span> optional when `--upstream-url` or `--server` is given. |
-| `--server NAME=COMMAND` | <span class="badge next">v0.13</span> another stdio server (repeatable), such as `--server 'mail=npx -y @acme/mail-mcp'`. See [Several servers](#several-servers). |
-| `--tools-lock FILE` | <span class="badge next">v0.13</span> a tools lock from `cloakpipe tools pin`: a tool that does not match its pin is hidden and refused as `tool_drift`. See [Pinning tool definitions](#pinning-tool-definitions). |
-| `--upstream-url URL` | <span class="badge next">v0.13</span> the upstream MCP server over Streamable HTTP, instead of `--upstream`. Not with `--server` or `--tools-lock` yet (exit 2). |
-| `--upstream-header 'Name: value'` | <span class="badge next">v0.13</span> a header sent on every request to `--upstream-url` (repeatable). A value `env:VAR` is read from that environment variable; values are never logged. |
-| `--listen ADDR` | <span class="badge next">v0.13</span> serve agents MCP over HTTP on `ADDR` (such as `127.0.0.1:8900`) instead of stdio. Port `0` picks one. See [MCP over HTTP](#mcp-over-http). |
-| `--listen-token-file FILE` | <span class="badge next">v0.13</span> a file holding a bearer token every `/mcp` request must carry. |
-| `--manifest FILE` | the manifest the agent runs under. Enables the gate. A v1 `cloakpipe.manifest.yaml` is detected by its top-level `release` key; a legacy `AgentRelease` (top-level `apiVersion`) still works in v0.13.0, with a deprecation warning. See [Manifest reference](/docs/manifest). |
+| `--upstream CMD` | the upstream MCP server command and its arguments, as one string: the server named `default`. Required up to v0.12.0; <span class="badge oss">v0.13</span> optional when `--upstream-url` or `--server` is given. |
+| `--server NAME=COMMAND` | <span class="badge oss">v0.13</span> another stdio server (repeatable), such as `--server 'mail=npx -y @acme/mail-mcp'`. See [Several servers](#several-servers). |
+| `--tools-lock FILE` | <span class="badge oss">v0.13</span> a tools lock from `cloakpipe tools pin`: a tool that does not match its pin is hidden and refused as `tool_drift`. See [Pinning tool definitions](#pinning-tool-definitions). |
+| `--upstream-url URL` | <span class="badge oss">v0.13</span> the upstream MCP server over Streamable HTTP, instead of `--upstream`. Not with `--server` or `--tools-lock` yet (exit 2). |
+| `--upstream-header 'Name: value'` | <span class="badge oss">v0.13</span> a header sent on every request to `--upstream-url` (repeatable). A value `env:VAR` is read from that environment variable; values are never logged. |
+| `--listen ADDR` | <span class="badge oss">v0.13</span> serve agents MCP over HTTP on `ADDR` (such as `127.0.0.1:8900`) instead of stdio. Port `0` picks one. See [MCP over HTTP](#mcp-over-http). |
+| `--listen-token-file FILE` | <span class="badge oss">v0.13</span> a file holding a bearer token every `/mcp` request must carry. |
+| `--manifest FILE` | the manifest the agent runs under. Enables the gate. A v1 `cloakpipe.manifest.yaml` is detected by its top-level `release` key; a legacy `AgentRelease` (top-level `apiVersion`) still works in v0.14.0, with a deprecation warning. See [Manifest reference](/docs/manifest). |
 | `--mode enforce\|shadow` | `enforce` (default) refuses calls that fail the gate. `shadow` forwards every call the gate can read and records what enforce mode would have decided, with `mode: shadow` in each ledger entry. |
 | `--task-context FILE` | the trusted task context: a JSON object the orchestrator writes, such as `{"taskId":"t-981","ticket":{"id":"T-1042"}}`. `one_of_context` arguments are checked against it. Default: `CLOAKPIPE_TASK_CONTEXT`. |
-| `--approvals DIR` | directory of approval receipts, `<fingerprint hex>.approval.json`, from `cloakpipe approve`. Needs `--approver-key`. |
+| `--approvals DIR` | directory of approval receipts, `<fingerprint hex>.approval.json`, from `cloakpipe approve` or, <span class="badge next">v0.14</span> written by the gate after verifying them, from an approval broker. Needs `--approver-key`. |
 | `--approver-key FILE` | an approver key file from `cloakpipe release keygen` (only the public part is read); repeatable. A receipt must be signed by one of these keys. |
+| `--approvals-url URL` | <span class="badge next">v0.14</span> the gate's base URL at an approval broker: a call refused as `approval_required` is filed there in the background, and finished approvals are fetched, verified against `--approver-key` and written to `--approvals`. Needs `--approvals`, `--approver-key`, `--approvals-secret-file` and a task context with a `taskId`. See [Approvals](/docs/approvals). |
+| `--approvals-secret-file FILE` | <span class="badge next">v0.14</span> the HMAC secret both directions of the broker protocol are signed with; the webhook secret file may be reused. |
+| `--approvals-poll-interval DURATION` | <span class="badge next">v0.14</span> how often finished approvals are fetched: `5s` (default), `1m`, … |
 | `--operations-db PATH` | SQLite store of side-effecting calls. Required when the manifest has a tool with `side_effect: true`. Default: `CLOAKPIPE_OPERATIONS_DB`. One gate per database. |
 | `--state-db PATH` | SQLite store of the Cedar policy's call counters, used when the manifest has `policy:`. Default: `CLOAKPIPE_STATE_DB`, else `$CLOAKPIPE_HOME/state.db`. The counters survive a restart. |
 | `--ledger-db PATH` | the decision ledger. Default: `CLOAKPIPE_LEDGER_DB`, else `$CLOAKPIPE_HOME/ledger.db`. `CLOAKPIPE_HOME` defaults to `~/.cloakpipe`. |
@@ -59,12 +65,12 @@ cloakpipe mcp-proxy \
 | `--tsa URL` / `--tsa-root PEM` / `--no-tsa` | the RFC 3161 timestamp authority (default `https://freetsa.org/tsr`), the root(s) its answers must chain to (default: freetsa.org and DigiCert roots built in), or no timestamping. |
 | `--rekor URL` / `--rekor-key PEM` / `--no-rekor` | the Sigstore Rekor log (default `https://rekor.sigstore.dev`), its public key (default: built in), or no Rekor entry. |
 | `--tool-contract FILE` | legacy `AgentRelease` only, deprecated: a `ToolContract` file. A v1 manifest declares its rules inline, and passing this flag with one is a usage error. |
-| `--events-log PATH` | <span class="badge next">v0.13</span> append every gate event to a JSONL file. See [Alerts & events](/docs/events). |
-| `--webhook URL` | <span class="badge next">v0.13</span> POST every gate event to `URL` (repeatable), off the decision path. |
-| `--webhook-secret-file FILE` | <span class="badge next">v0.13</span> sign webhook requests with HMAC-SHA256 under this secret. |
-| `--webhook-format generic\|slack\|discord` | <span class="badge next">v0.13</span> the webhook payload: the event JSON (default), a Slack Block Kit message or a Discord embed. |
-| `--otel-endpoint URL` | <span class="badge next">v0.13</span> export one OpenTelemetry span per tool-call decision, allows included, over OTLP/HTTP to `URL/v1/traces`. |
-| `--otel` | <span class="badge next">v0.13</span> export spans to `OTEL_EXPORTER_OTLP_ENDPOINT`; the variable on its own exports nothing. |
+| `--events-log PATH` | <span class="badge oss">v0.13</span> append every gate event to a JSONL file. See [Alerts & events](/docs/events). |
+| `--webhook URL` | <span class="badge oss">v0.13</span> POST every gate event to `URL` (repeatable), off the decision path. |
+| `--webhook-secret-file FILE` | <span class="badge oss">v0.13</span> sign webhook requests with HMAC-SHA256 under this secret. |
+| `--webhook-format generic\|slack\|discord` | <span class="badge oss">v0.13</span> the webhook payload: the event JSON (default), a Slack Block Kit message or a Discord embed. |
+| `--otel-endpoint URL` | <span class="badge oss">v0.13</span> export one OpenTelemetry span per tool-call decision, allows included, over OTLP/HTTP to `URL/v1/traces`. |
+| `--otel` | <span class="badge oss">v0.13</span> export spans to `OTEL_EXPORTER_OTLP_ENDPOINT`; the variable on its own exports nothing. |
 | `--transform pii` | optional. After a call is allowed, pseudonymize personal data in its arguments before the tool sees it and put the real values back in results, through the encrypted vault (`CLOAKPIPE_VAULT_KEY`). Off by default: the gate never rewrites an allowed call. The manifest is always checked on the raw arguments. |
 
 `--gate warn` from v0.11 still works as a hidden alias of `--mode shadow`.
@@ -76,7 +82,7 @@ Each `tools/call` goes through these stages in order. The first refusal wins, an
 1. **Read.** Only a message the gate can parse in full is forwarded, and it is re-serialized rather than passed through raw. Unparseable lines, batches, non-objects and case variants of JSON-RPC member names are refused.
 2. **Contract.** The manifest must declare the tool (`undeclared_tool`). The call may carry only the arguments the tool lists (`undeclared_argument`), must carry the `required` ones (`argument_missing`), and each value must pass its rules (`argument_invalid`, or `scope_mismatch` / `task_context_missing` for `one_of_context`).
 3. **Cedar.** If the manifest has `policy:`, the policy must permit the call (`policy_denied`, naming the deciding policies). See [Policy](/docs/policy).
-4. **Approval.** If the manifest's `approval.when` holds, or every Cedar permit that allowed the call carries `@approval`, the call needs a valid receipt for exactly this call (`approval_required`, `approval_invalid`, `approval_expired`).
+4. **Approval.** If the manifest's `approval.when` holds, or every Cedar permit that allowed the call carries `@approval`, the call needs a valid receipt for exactly this call (`approval_required`, `approval_invalid`, `approval_expired`), and must not have been denied (`approval_denied`, <span class="badge next">v0.14</span>).
 5. **Side effects.** For a tool with `side_effect: true`, the operations store must have no conflicting or unsettled attempt (`operation_conflict`, `reconcile_before_retry`).
 6. **Record, then forward.** The decision is written to the ledger first. If it cannot be written, the call is refused as `fail_closed` and not forwarded.
 
@@ -84,7 +90,7 @@ The test suite asserts that the contract and Cedar stages together take under 5m
 
 ## Refusals
 
-A refused call gets JSON-RPC error **`-32001`** with `data: {reason, tool, release}` and, where it applies, `path` (the argument path, never its value), `policies`, `approvers` and `fingerprint`. `release` is the manifest digest. Notifications get no reply.
+A refused call gets JSON-RPC error **`-32001`** with `data: {reason, tool, release}` and, where it applies, `path` (the argument path, never its value), `policies`, `approvers` and `fingerprint`; with an approval broker <span class="badge next">v0.14</span>, also `approval_request` and a `hint`. `release` is the manifest digest. Notifications get no reply.
 
 ```json
 {"jsonrpc":"2.0","id":2,"error":{"code":-32001,"message":"tool call refused by CloakPipe: scope_mismatch","data":{"reason":"scope_mismatch","tool":"send_email","release":"sha256:c558…","path":"/to"}}}
@@ -99,7 +105,8 @@ A refused call gets JSON-RPC error **`-32001`** with `data: {reason, tool, relea
 | `scope_mismatch` | a `one_of_context` value matches no task context value and no `or_pattern` |
 | `task_context_missing` | no task context, or it lacks a key a rule needs |
 | `policy_denied` | no Cedar permit holds, or a forbid does; `data.policies` lists the deciding forbids by `@id` |
-| `approval_required` | the call needs a receipt and there is none for this exact call; `data.approvers` and `data.fingerprint` are for an approval broker |
+| `approval_required` | the call needs a receipt and there is none for this exact call; `data.approvers` and `data.fingerprint` route the request. With a broker, `data.approval_request` is `requested`, `pending` or `denied` |
+| `approval_denied` | <span class="badge next">v0.14</span> an approver denied this exact call through a broker (or a `<fingerprint hex>.denied.json` marker says so), and the denial still holds. See [Approvals](/docs/approvals#denied-and-expired) |
 | `approval_invalid` | bad signature, untrusted approver, another release, tool, task or call, or a validity window longer than the tool's `ttl` |
 | `approval_expired` | the receipt's `notAfter` has passed |
 | `operation_conflict` | the operation id is already used by a different call |
@@ -107,8 +114,8 @@ A refused call gets JSON-RPC error **`-32001`** with `data: {reason, tool, relea
 | `request_id_missing`, `request_id_in_use` | a side-effecting call sent as a notification, or reusing a request id still in flight |
 | `operations_unavailable` | the operations store cannot be read or written |
 | `fail_closed` | a stage could not decide: a Cedar evaluation error, the counter store failing, or a ledger entry that could not be written |
-| `tool_drift` | <span class="badge next">v0.13</span> the tool's definition does not match its pin in `--tools-lock`, has no pin, or changed during the session |
-| `upstream_unavailable` | <span class="badge next">v0.13</span> the server could not be reached or exited: error **`-32003`**. A side-effecting call that was sent becomes `unknown` |
+| `tool_drift` | <span class="badge oss">v0.13</span> the tool's definition does not match its pin in `--tools-lock`, has no pin, or changed during the session |
+| `upstream_unavailable` | <span class="badge oss">v0.13</span> the server could not be reached or exited: error **`-32003`**. A side-effecting call that was sent becomes `unknown` |
 
 Messages the gate cannot read get an error with `id: null`: `unreadable` (**`-32700`**), `batch`, `not_an_object` or `noncanonical`.
 
@@ -132,7 +139,7 @@ The **call fingerprint** is SHA-256 over the canonical JSON (RFC 8785) of the re
 
 The gate looks the receipt up by the fingerprint it computes from the call it received, then checks the signature against `--approver-key`, the validity window (and that it is no longer than the tool's `ttl`), the release, the tool and the task's `taskId`. A receipt for a 350 refund cannot be replayed for 3,500: that is a different fingerprint, so no receipt is found.
 
-There is no approval broker yet <span class="badge building">Roadmap</span>: the `approval_required` refusal carries `approvers` and `fingerprint` so that your own tooling can route the request, and the receipt has to be put in `--approvals` by hand or by that tooling.
+The `approval_required` refusal carries `approvers` and `fingerprint`, so any tooling can route the request and put the receipt in `--approvals`. <span class="badge next">v0.14</span> The gate can do that itself through an approval broker (`--approvals-url`), with an open, signed protocol and every receipt verified against `--approver-key` before it is written: see [Approvals](/docs/approvals).
 
 ## Side effects and reconciliation
 
@@ -165,11 +172,12 @@ The gate refuses to start (non-zero exit) when:
 - a side-effecting tool has no `--operations-db`, or another gate holds that database;
 - the ledger database or signing key cannot be opened;
 - anchoring flags are given with `--no-ledger` or without `--manifest`;
-- `--tool-contract` is given with a v1 manifest.
+- `--tool-contract` is given with a v1 manifest;
+- <span class="badge next">v0.14</span> `--approvals-url` is given without `--approvals`, an `--approver-key`, `--approvals-secret-file` or a task context with a `taskId`, or the manifest's `approval.show` lists an argument the tool does not declare or one declared as an object or array.
 
 ## MCP over HTTP
 
-<span class="badge next">v0.13</span> Either side of the gate can speak MCP's Streamable HTTP transport (spec revision 2025-06-18) instead of stdio. Every `tools/call` gets the same decision, refusal and ledger entry as over stdio.
+<span class="badge oss">v0.13</span> Either side of the gate can speak MCP's Streamable HTTP transport (spec revision 2025-06-18) instead of stdio. Every `tools/call` gets the same decision, refusal and ledger entry as over stdio.
 
 **Agents connect over HTTP** with `--listen`:
 
@@ -204,7 +212,7 @@ The gate POSTs each message with the given headers (an `env:VAR` value is read a
 
 ## Several servers
 
-<span class="badge next">v0.13</span> One gate can front several stdio MCP servers. Give each as `--server NAME=COMMAND`; `--upstream` is still accepted and is the server named `default`.
+<span class="badge oss">v0.13</span> One gate can front several stdio MCP servers. Give each as `--server NAME=COMMAND`; `--upstream` is still accepted and is the server named `default`.
 
 ```bash
 cloakpipe mcp-proxy --manifest cloakpipe.manifest.yaml \
@@ -222,7 +230,7 @@ cloakpipe mcp-proxy --manifest cloakpipe.manifest.yaml \
 
 ## Pinning tool definitions
 
-<span class="badge next">v0.13</span> The model reads tool descriptions as instructions. A server that changes a description or a schema after you reviewed it changes what the agent does without any change to your manifest. A tools lock pins each definition as you reviewed it:
+<span class="badge oss">v0.13</span> The model reads tool descriptions as instructions. A server that changes a description or a schema after you reviewed it changes what the agent does without any change to your manifest. A tools lock pins each definition as you reviewed it:
 
 ```bash
 cloakpipe tools pin --manifest cloakpipe.manifest.yaml \
@@ -253,8 +261,8 @@ Without a lock, the first definition the gate sees for each tool in a session is
 
 ## Limits
 
-- Up to v0.12.0, one upstream server per gate, over stdio: run one `mcp-proxy` per server. <span class="badge next">v0.13</span> adds HTTP and several stdio servers, as above.
-- Up to v0.12.0, `tools/list` is passed through unchanged: tool descriptions are not pinned or diffed. <span class="badge next">v0.13</span> adds pinning and drift detection.
+- Up to v0.12.0, one upstream server per gate, over stdio: run one `mcp-proxy` per server. <span class="badge oss">v0.13</span> adds HTTP and several stdio servers, as above.
+- Up to v0.12.0, `tools/list` is passed through unchanged: tool descriptions are not pinned or diffed. <span class="badge oss">v0.13</span> adds pinning and drift detection.
 - The task context is a file read at start-up, so one gate process serves one task context. Restart the gate, or run one per task, when the task changes.
 
 See the [threat model](/docs/threat-model) for what the gate cannot see.

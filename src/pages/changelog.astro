@@ -15,7 +15,9 @@ const frontmatter = {
 ---
 <Docs frontmatter={frontmatter}>
   <p class="changelog-lede">
-    <strong>v0.13.0</strong> (28 October 2026) adds MCP over HTTP on both sides of the gate, several servers behind one gate
+    <strong>v0.14.0</strong> (29 October 2026) sends approvals through a broker: the gate files a signed request carrying
+    only the arguments the manifest lists in <code>approval.show</code>, and verifies every receipt the broker hands back
+    before using it. <strong>v0.13.0</strong> (28 October 2026) adds MCP over HTTP on both sides of the gate, several servers behind one gate
     with pinned tool definitions, signed webhooks (Slack, Discord or generic), OpenTelemetry spans, and a Docker image that
     runs the gate by default. <strong>v0.12.0</strong> (27 October 2026) is the gate release: the single-file manifest,
     Cedar policies, the signed decision ledger, shadow mode, scheduled anchoring and <code>cloakpipe verify</code>. Entries for v0.11.0 and earlier

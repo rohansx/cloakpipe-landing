@@ -1,7 +1,8 @@
 // Docs for the gate features new in v0.13.0 (tagged 28 October 2026) and not
 // in v0.12.0: MCP over HTTP, several servers per gate, tool pinning, event
 // delivery (webhooks, OpenTelemetry, a JSONL log) and the gate-by-default
-// Docker image. They carry the v0.13 badge.
+// Docker image. They carry the v0.13 badge, `badge oss` since v0.14.0 shipped
+// (29 October 2026); test/docs-v014.test.js covers what v0.14.0 added.
 //
 // The claims are checked against what the code does, captured from the
 // binary built from rohansx/cloakpipe gate/integ (PR #42), which v0.13.0
@@ -33,8 +34,9 @@ const HOOKS = JSON.parse(read('test/fixtures/webhooks-v0.13.json'));
 const ENTRYPOINT = read('test/fixtures/gate-entrypoint-v0.13.sh');
 const CLAUDE = JSON.parse(read('test/fixtures/claude-mcp-add.json'));
 
-const UNREL = '<span class="badge next">v0.13</span>';
-const TAG = 'https://github.com/rohansx/cloakpipe/blob/v0.13.0/';
+const UNREL = '<span class="badge oss">v0.13</span>';
+// The Docker files are unchanged in v0.14.0; links to core point at the latest tag.
+const TAG = 'https://github.com/rohansx/cloakpipe/blob/v0.14.0/';
 const ROADMAP = '<span class="badge building">Roadmap</span>';
 
 /** Code in a Markdown page: fenced blocks plus inline code spans. */
@@ -61,13 +63,15 @@ function invocations(md) {
   return out;
 }
 
-/** The commands and flags a page shows that v0.12.0 does not have. */
+/** The commands and flags a page shows that v0.13.0 added (not in v0.12.0).
+ * What v0.14.0 added is left to test/docs-v014.test.js. */
 function newIn013(md) {
   const found = [];
   for (const { path, flags, text } of invocations(md)) {
+    if (!CLI013.commands[path]) continue;
     if (!CLI012.commands[path]) found.push(`cloakpipe ${path} (${text})`);
     const known = new Set([...(CLI012.commands[path] ?? []), ...(CLI012.hidden[path] ?? []), ...CLI012.commands['(root)']]);
-    for (const f of flags) if (!known.has(f)) found.push(`${f} (${text})`);
+    for (const f of flags) if (!known.has(f) && CLI013.commands[path].includes(f)) found.push(`${f} (${text})`);
   }
   return found;
 }
@@ -82,10 +86,10 @@ function sections(md) {
 // ---------------------------------------------------------------------------
 // The badge
 
-test('the layout styles the v0.13 badge and the overview explains it', () => {
+test('the overview explains the v0.13 badge, now an older release', () => {
   assert.match(read('src/layouts/Docs.astro'), /\.badge\.next \{ color: var\(--[a-z0-9-]+\); \}/);
   const overview = page('index');
-  assert.match(overview, /<span class="badge next">v0\.13<\/span> new in v0\.13\.0/);
+  assert.match(overview, /<span class="badge oss">v0\.13<\/span> since v0\.13, and still in v0\.14\.0/);
   for (const p of docPages()) assert.ok(!read(p).includes('badge unreleased'), `${p}: no Unreleased badge is left`);
 });
 
@@ -316,7 +320,7 @@ test('the docker page says what the image runs and where state lives', () => {
     'exit code 2',
     'cloakpipe-gate gate --mode shadow',
     'cloakpipe-gate start',
-    'ghcr.io/rohansx/cloakpipe:0.13.0',
+    'ghcr.io/rohansx/cloakpipe:0.14.0',
     `${TAG}docker/compose.example.yaml`,
     `${TAG}docker/gate-entrypoint.sh`,
   ]) {
@@ -328,9 +332,9 @@ test('the docker page says what the image runs and where state lives', () => {
   assert.ok(md.includes('refuses to start'), 'docker says when the entrypoint refuses to start');
   for (const s of ['no manifest', 'both', 'neither', 'non-loopback']) assert.ok(refusals.slice(0, 900).includes(s), `refusal: ${s}`);
   // The released image runs the gate by default; nothing says to build it from main.
-  assert.doesNotMatch(md, /blob\/main\/docker\//, 'docker links point at the v0.13.0 tag');
+  assert.doesNotMatch(md, /blob\/(?:main|v0\.13\.0)\/docker\//, 'docker links point at the v0.14.0 tag');
   assert.doesNotMatch(md, /clone of `main`|until v0\.13\.0 is tagged/i, 'no build-from-main instructions');
-  assert.doesNotMatch(md, /cloakpipe:0\.13\.0[^\n]*PII proxy|default command is still the PII proxy/, 'the 0.13.0 image runs the gate');
+  assert.doesNotMatch(md, /cloakpipe:0\.1[34]\.0[^\n]*PII proxy|default command is still the PII proxy/, 'the image runs the gate');
   assert.match(md, /up to v0\.12\.0/, 'the PII proxy default is described as the old behaviour');
 });
 

@@ -15,14 +15,14 @@ Everything here is in [`examples/support-agent`](https://github.com/rohansx/cloa
 The CLI is the Cargo package `cloakpipe-cli`; it installs a binary named `cloakpipe`. You need a Rust toolchain ([rustup](https://rustup.rs)) and, for the stand-in tool server, Python 3.
 
 ```bash
-cargo install --locked cloakpipe-cli@0.13.0
-git clone --branch v0.13.0 https://github.com/rohansx/cloakpipe
+cargo install --locked cloakpipe-cli@0.14.0
+git clone --branch v0.14.0 https://github.com/rohansx/cloakpipe
 cd cloakpipe/examples/support-agent
 ```
 
-This page needs v0.12.0 or later; the install above is v0.13.0 ([release notes](https://github.com/rohansx/cloakpipe/releases/tag/v0.13.0)). Check your build: `cloakpipe manifest --help` should list `validate` and `hash`; if it does not, an older `cloakpipe` is first on your `PATH`.
+This page needs v0.12.0 or later; the install above is v0.14.0 ([release notes](https://github.com/rohansx/cloakpipe/releases/tag/v0.14.0)). Check your build: `cloakpipe manifest --help` should list `validate` and `hash`; if it does not, an older `cloakpipe` is first on your `PATH`.
 
-The release is also a Docker image, `ghcr.io/rohansx/cloakpipe:0.13.0`, with the same default binary. <span class="badge next">v0.13</span> It runs the gate over HTTP by default, in front of a tool server that it reaches over HTTP. This page's stand-in tool server speaks stdio, so it uses the local install; see [Docker](/docs/docker) for the image.
+The release is also a Docker image, `ghcr.io/rohansx/cloakpipe:0.14.0`, with the same default binary. <span class="badge oss">v0.13</span> It runs the gate over HTTP by default, in front of a tool server that it reaches over HTTP. This page's stand-in tool server speaks stdio, so it uses the local install; see [Docker](/docs/docker) for the image.
 
 ## 2. Read the manifest
 
@@ -155,6 +155,8 @@ cloakpipe approve --manifest cloakpipe.manifest.yaml --tool issue_refund --args 
 ```
 
 Run call 4 again with `--approvals "$tmp/approvals" --approver-key "$tmp/approver.json"` added to the `mcp-proxy` command, and the 350 refund goes through. A 500 refund is still refused with `approval_required`, and a receipt made with `--expires 1h` is refused as `approval_invalid`, because the manifest's `ttl` is 15 minutes.
+
+<span class="badge next">v0.14</span> To have a person approve from wherever they work instead of running `cloakpipe approve`, point the gate at an approval broker with `--approvals-url`: it files the request, fetches the signed receipt and verifies it before writing it to `--approvals`. See [Approvals](/docs/approvals).
 
 ## 6. Verify the evidence
 

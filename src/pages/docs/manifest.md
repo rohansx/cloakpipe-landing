@@ -104,13 +104,22 @@ approval:
   when: "amount > 100 && currency == 'EUR'"
   approvers: ["slack:#support-leads", "pagerduty:refunds"]
   ttl: 15m
+  show: [amount]   # v0.14: the only value an approval broker may see
 ```
 
 - **`when`**: a condition over the call's arguments. Comparisons `path OP literal`, with `OP` one of `>` `>=` `<` `<=` `==` `!=` and a literal that is a number, a quoted string or `true`/`false`, joined by `&&` and `||` (`&&` binds tighter) with parentheses. `path` is a dotted path into the arguments, and each one must be a declared argument (here, `amount` and `currency`); ordering operators take numbers only. Without `when`, every call needs approval. Evaluation fails closed: if a comparison meets a missing value or a value of another type, the condition holds and approval is required.
-- **`approvers`**: free-form routing strings. The gate does not send anything to them; it returns them in the `approval_required` refusal, with the call fingerprint, for your approval tooling to route.
+- **`approvers`**: free-form routing strings. The gate does not contact anyone itself; it returns them in the `approval_required` refusal, with the call fingerprint, and puts them in the request it files with an approval broker, if you run one, for routing.
 - **`ttl`**: the longest validity a receipt may have, such as `15m` or `1h30m` (units `d`, `h`, `m`, `s`). A receipt whose `notAfter` minus `approvedAt` is longer is refused as `approval_invalid`.
+- **`show`** <span class="badge next">v0.14</span>: the top-level arguments (declared under `args`) whose values an approval broker may see in a request, so the approver can decide: `[amount, ticket_id]`. Scalar values only: an argument declared `type: object` or `type: array` makes the manifest invalid, and an object or array value of an untyped argument is left out. The default is none, and no other value is ever sent. Keep it short: the request also carries the call fingerprint, and a fingerprint over low-entropy arguments can be brute-forced by anyone who can guess the other arguments. See [Approvals](/docs/approvals#approvalshow).
 
-Receipts are signed with `cloakpipe approve` by a key the gate trusts through `--approver-key`. See [MCP tool gate](/docs/mcp-gate#approval-receipts).
+Receipts are signed with `cloakpipe approve` by a key the gate trusts through `--approver-key`, or <span class="badge next">v0.14</span> fetched from an approval broker and verified against those keys ([Approvals](/docs/approvals)). See [MCP tool gate](/docs/mcp-gate#approval-receipts). A call that needs approval is refused with one of these reasons:
+
+| `reason` | Why |
+|---|---|
+| `approval_required` | no receipt for this exact call |
+| `approval_invalid` | a receipt that fails a check: signature, approver, release, tool, task, call or `ttl` |
+| `approval_expired` | a receipt past its `notAfter` |
+| `approval_denied` | <span class="badge next">v0.14</span> an approver denied this exact call through an approval broker, and the denial still holds |
 
 ## Check and hash a manifest
 

@@ -15,7 +15,7 @@ cloakpipe release keygen --out approver.json     # written 0600, never overwrite
 | Key | Signs | Held by | Given to the gate with |
 |---|---|---|---|
 | Gate signing key | every ledger entry, every epoch head, every audit pack, and the Rekor entries | the gate host | `--signing-key`, `CLOAKPIPE_SIGNING_KEY`, or `$CLOAKPIPE_HOME/gate.key` |
-| Approver keys | approval receipts (`cloakpipe approve`) | the people or service that approve calls | public part only, `--approver-key` (repeatable) |
+| Approver keys | approval receipts (`cloakpipe approve`, or an approval broker <span class="badge next">v0.14</span>) | the people or service that approve calls | public part only, `--approver-key` (repeatable) |
 | Anchoring trust roots | nothing: they check TSA and Rekor answers | the verifier | `--tsa-root`, `--rekor-key` (built-in defaults) |
 
 ## The gate signing key
@@ -59,7 +59,20 @@ cloakpipe mcp-proxy … --approvals approvals/ --approver-key alice.pub.json --a
 
 A receipt is accepted only if one of the `--approver-key` keys signed it and its `approver` field names that key. To rotate, add the new public key, restart the gate, then remove the old one; receipts signed by a key that is no longer listed are refused as `approval_invalid`. Receipts are short-lived by design (`--expires`, capped by the tool's `ttl`), so a receipt signed with a key that later leaks is only usable until it expires; new ones from that key stop working once you remove it.
 
-Approver identities are key ids, not names like `slack:@alice`. Mapping people to keys, and keeping approver keys in a broker or hardware token, is up to you today; an approval broker is <span class="badge building">Roadmap</span>.
+Approver identities are key ids, not names like `slack:@alice`. Mapping people to keys is up to you, or to the approval broker that holds their keys.
+
+### Approver keys held by a broker
+
+<span class="badge next">v0.14</span> With an approval broker (`mcp-proxy --approvals-url`, see [Approvals](/docs/approvals)), the broker holds one key per approver and signs the receipt when that person approves. The gate still trusts only the public keys you pin with `--approver-key`, and verifies every receipt before writing it and again on the call. Fetch the broker's public keys as `--approver-key` files with:
+
+```bash
+cloakpipe approvals keys --approvals-url https://broker.example/v1/gates/$GATE_ID \
+  --approvals-secret-file gate.secret --out approver-keys
+```
+
+It refuses a key whose `keyid` is not `ed25519:` and the first 16 hex characters of SHA-256 over the key, and then writes nothing. Review the list before you pin it: whoever holds a pinned key can approve any call the manifest and policy allow. When the broker rotates a key, pin the new one; the old one may stay until its receipts have expired.
+
+The request a broker gets carries the call fingerprint and only the arguments the manifest's `approval.show` lists. A fingerprint over low-entropy arguments (an amount, a ticket id) can be brute-forced by anyone who can guess the other arguments, so treat it as revealing them and use `show` sparingly.
 
 ## Anchoring trust roots
 
@@ -74,5 +87,4 @@ Pass `--tsa-root` and `--rekor-key` to the gate when you use your own TSA or Rek
 
 - <span class="badge building">Roadmap</span> Gate signing keys in a KMS or HSM (AWS KMS, GCP KMS, PKCS#11), so a host compromise does not expose the key.
 - <span class="badge building">Roadmap</span> Signed key rotation and revocation records in the ledger.
-- <span class="badge building">Roadmap</span> Approver keys held by an approval broker, with human identities bound to keys.
 - <span class="badge building">Roadmap</span> Signed manifests, verified by the gate at start-up.
