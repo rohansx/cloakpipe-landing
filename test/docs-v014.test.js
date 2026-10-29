@@ -298,3 +298,9 @@ test('the changelog page source carries the v0.14.0 entries', () => {
   for (const s of ['--approvals-url', 'approval.show', 'approval_denied', 'cloakpipe approvals keys', '.denied.json', 'ApprovalRule']) assert.ok(v014.includes(s), `0.14.0 has ${s}`);
   assert.match(read('src/pages/changelog.astro'), /approval broker|broker/);
 });
+
+test('the comparison page does not say the gate fronts one stdio MCP server (stale since v0.13)', () => {
+  const md = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'src/pages/docs/comparison.md'), 'utf8');
+  assert.doesNotMatch(md, /one stdio MCP server/);
+  assert.match(md, /stdio or HTTP/);
+});
