@@ -2,7 +2,8 @@
 // Static marketing nav + mobile drawer, rendered at build time (was chrome.js).
 // `page` is the current page slug, used to mark the active link.
 // Three tabs plus the GitHub star; the logo goes home. The primary call to
-// action is the open-source quick start.
+// action is the open-source quick start; Sign in / Sign up open the Cloud
+// dashboard.
 import GitHubStar from './GitHubStar.astro';
 import LogoMark from './LogoMark.astro';
 
@@ -10,6 +11,8 @@ interface Props { page?: string }
 const { page = '' } = Astro.props;
 
 const QUICKSTART = '/docs/quickstart';
+const SIGN_IN = 'https://app.cloakpipe.co/login';
+const SIGN_UP = 'https://app.cloakpipe.co/signup';
 
 const NAV = [
   { label: 'Docs', href: '/docs', slug: 'docs' },
@@ -37,6 +40,8 @@ const NAV = [
       <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14c-1 4-5 7-9 7-5 0-9-4-9-9 0-4 3-8 7-9-2 4 0 9 4 10 3 1 6 0 7-0z"/></svg>
     </button>
     <GitHubStar />
+    <a class="btn btn-quiet nav-desk-cta" href={SIGN_IN}>Sign in</a>
+    <a class="btn nav-desk-cta" href={SIGN_UP}>Sign up</a>
     <a class="btn btn-cta nav-desk-cta" href={QUICKSTART}><span class="corner"></span>Get started <span class="arr">→</span></a>
     <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -53,6 +58,8 @@ const NAV = [
   </div>
   <div class="nav-drawer-cta">
     <GitHubStar variant="drawer" />
+    <a class="btn" href={SIGN_IN}>Sign in</a>
+    <a class="btn" href={SIGN_UP}>Sign up</a>
     <a class="btn btn-cta" href={QUICKSTART}><span class="corner"></span>Get started <span class="arr">→</span></a>
   </div>
 </div>

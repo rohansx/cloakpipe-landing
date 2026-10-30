@@ -259,3 +259,17 @@ test('CI runs the unit tests and the site build on pull requests', () => {
   assert.match(wf, /npm test/);
   assert.match(wf, /npm run test:site/);
 });
+
+test('nav: Sign in and Sign up go to the Cloud dashboard, on desktop and in the drawer', () => {
+  const nav = read('src/components/Nav.astro');
+  assert.match(nav, /const SIGN_IN = 'https:\/\/app\.cloakpipe\.co\/login'/);
+  assert.match(nav, /const SIGN_UP = 'https:\/\/app\.cloakpipe\.co\/signup'/);
+  const desk = nav.slice(nav.indexOf('<div class="nav-right">'), nav.indexOf('</nav>'));
+  const drawer = nav.slice(nav.indexOf('<div class="nav-drawer-cta">'), nav.indexOf('<script'));
+  for (const [where, html] of [['desktop', desk], ['drawer', drawer]]) {
+    assert.match(html, /href=\{SIGN_IN\}[^>]*>Sign in</, `${where} Sign in`);
+    assert.match(html, /href=\{SIGN_UP\}[^>]*>Sign up</, `${where} Sign up`);
+  }
+  assert.ok(desk.indexOf('href={SIGN_IN}') < desk.indexOf('href={QUICKSTART}'), 'Get started stays the last, primary CTA');
+  assert.match(desk, /class="btn btn-quiet nav-desk-cta" href=\{SIGN_IN\}/);
+});
