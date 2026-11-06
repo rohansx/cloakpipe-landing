@@ -1,0 +1,70 @@
+---
+// Terms of service for the hosted CloakPipe Cloud. The open-source gate is
+// covered by its MIT licence, not by this page.
+import Base from '../layouts/Base.astro';
+
+const UPDATED = '6 November 2026';
+---
+<Base title="Terms of service · CloakPipe" description="The terms for using the hosted CloakPipe Cloud at app.cloakpipe.co." page="terms">
+  <div class="wrap legal">
+    <article class="legal-body">
+      <div class="eyebrow">Legal · Terms</div>
+      <h1>Terms of service</h1>
+      <p class="legal-meta">Last updated {UPDATED}. These terms cover <strong>CloakPipe Cloud</strong> (app.cloakpipe.co, api.cloakpipe.co) and this website. The open-source gate is licensed under the <a href="https://github.com/rohansx/cloakpipe/blob/main/LICENSE">MIT licence</a> and is not covered here.</p>
+
+      <h2>The agreement</h2>
+      <p>By creating an account or using CloakPipe Cloud you agree to these terms with Rohan Sharma, trading as CloakPipe ("we"). If you use it for an organisation, you confirm you may bind that organisation. If you do not agree, do not use the service.</p>
+
+      <h2>Your account</h2>
+      <ul>
+        <li>You need a valid email address. Keep your credentials private; you are responsible for what happens under your account.</li>
+        <li>Admins can invite teammates into a workspace and set their roles. Invited people get their own accounts under these same terms.</li>
+        <li>Tell us promptly at <a href="mailto:rohan@cloakpipe.co">rohan@cloakpipe.co</a> if you think your account has been compromised.</li>
+      </ul>
+
+      <h2>Acceptable use</h2>
+      <p>Do not use CloakPipe Cloud to break the law, to attack or probe systems you are not authorised to test, to send unsolicited messages, to upload malware, or to interfere with the service or other customers. Do not resell access without our written agreement. We may suspend accounts that put the service or other users at risk.</p>
+
+      <h2>Your data</h2>
+      <p>You own the data you send us: gates, policies, events, approvals and workspace settings. You give us the rights needed to store, process and display it to run the service for you. Our <a href="/privacy">privacy policy</a> explains what we collect and how we handle it. You are responsible for making sure that what your gates send us (the argument fields you mark as shareable) is data you are allowed to share with us.</p>
+
+      <h2>Plans, fees and changes</h2>
+      <ul>
+        <li>The Free plan is free. Paid plans are billed in advance through Stripe for the period you pick and renew until cancelled. Fees are listed on the pricing page and exclude taxes.</li>
+        <li>You can cancel at any time; the plan stays active until the end of the paid period. We do not refund partial periods unless the law requires it.</li>
+        <li>We may change prices with at least 30 days' notice by email; the change applies from your next renewal.</li>
+        <li>Plan limits (number of gates, approver seats, event history) are enforced by the service. After a downgrade, data beyond the new limits may be purged.</li>
+      </ul>
+
+      <h2>Availability and support</h2>
+      <p>CloakPipe Cloud is offered as is, without a guaranteed uptime unless we have signed a separate agreement with you. Your gates keep enforcing policy locally when the Cloud is unreachable; only hosted alerts, approvals and the dashboard depend on it. Support is by email at <a href="mailto:rohan@cloakpipe.co">rohan@cloakpipe.co</a>.</p>
+
+      <h2>Intellectual property</h2>
+      <p>We own CloakPipe Cloud, this website and their branding. The open-source gate remains MIT-licensed. Feedback you send us may be used to improve the product without obligation to you.</p>
+
+      <h2>Warranties and liability</h2>
+      <p>To the extent the law allows, CloakPipe Cloud is provided without warranties of any kind, and we are not liable for indirect, incidental or consequential losses, or for lost profits, data or business. Our total liability for any claim is limited to the fees you paid us in the 12 months before the claim, or 100 USD if you paid nothing. Nothing here limits liability that cannot be limited by law.</p>
+
+      <h2>Ending the agreement</h2>
+      <p>You can delete your account at any time by emailing us. We can end or suspend your access with notice if you breach these terms, or with 30 days' notice for any reason. After termination we delete your workspace data within 30 days, except what we must keep by law.</p>
+
+      <h2>General</h2>
+      <p>These terms are governed by the laws of India, and disputes go to the courts of Bengaluru, unless mandatory consumer law where you live says otherwise. If a clause is unenforceable the rest still applies. We may update these terms; material changes are announced in the dashboard or by email at least 14 days before they take effect, and continuing to use the service after that means you accept them.</p>
+    </article>
+  </div>
+</Base>
+
+<style is:global>
+  .legal { padding-top: 48px; padding-bottom: 96px; }
+  .legal-body { max-width: 760px; }
+  .legal-body .eyebrow { margin-bottom: 18px; }
+  .legal-body h1 { font-size: clamp(30px, 4vw, 44px); letter-spacing: -0.028em; line-height: 1.08; margin-bottom: 18px; }
+  .legal-body h2 { font: 600 24px var(--sans); letter-spacing: -0.018em; margin: 48px 0 14px; padding-top: 20px; border-top: 1px solid var(--line); }
+  .legal-body p, .legal-body li { font-size: 15.5px; line-height: 1.7; color: var(--text-2); }
+  .legal-body p { margin-bottom: 16px; }
+  .legal-body strong { color: var(--text); font-weight: 600; }
+  .legal-body ul { margin: 0 0 18px 22px; }
+  .legal-body li { margin-bottom: 6px; }
+  .legal-body a { color: var(--accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .legal-body .legal-meta { color: var(--text-3); font-size: 14px; }
+</style>
