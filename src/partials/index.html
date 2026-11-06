@@ -1,6 +1,7 @@
 <!-- ============== HERO ============== -->
 <section class="hero" id="hero">
-  <div class="wrap">
+  <div class="wrap hero-top">
+   <div class="hero-copy">
     <h1 class="home-h1 reveal">The gate between your AI agents <br class="br-d">and their tools</h1>
     <div class="hero-sub">
       <p class="lede reveal" data-d="1">Every tool call is checked against a contract you declared before it runs. Anything outside it is refused, and the refusal is logged where no one can quietly edit it.</p>
@@ -10,6 +11,9 @@
       <a class="btn btn-lg btn-cta" href="/docs/quickstart">Get started <span class="arr">→</span></a>
       <a class="btn btn-lg btn-gh" href="https://github.com/rohansx/cloakpipe" aria-label="CloakPipe on GitHub"><svg class="gh-mark" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
     </div>
+   </div>
+    <div class="hairline-fig fig-hero reveal" data-d="2" data-hairline="relay" data-play
+         aria-label="A hub with four branches of tiles: the path to the tile under the pointer lights hop by hop, the way every tool call is routed through one gate."></div>
   </div>
 
   <figure class="gate-scene reveal" data-d="3" id="gate-scene">
@@ -128,7 +132,11 @@
   <div class="wrap">
     <div class="section-head reveal">
       <h2>The agent was tricked.<br><span class="dim">The gate didn't need to notice.</span></h2>
-      <p>Hidden text in a support ticket tells the agent to forward the thread to an outside address. The recipient is not the ticket's customer, so the call is outside the contract and the email server never sees it. This is what the gate sends back for that call (abridged).</p>
+      <div>
+        <p>Hidden text in a support ticket tells the agent to forward the thread to an outside address. The recipient is not the ticket's customer, so the call is outside the contract and the email server never sees it. This is what the gate sends back for that call (abridged).</p>
+        <div class="hairline-fig fig-side" data-hairline="lockers"
+           aria-label="A bank of lockers: only the one the pointer is on opens, the way only a call inside the contract goes through."></div>
+      </div>
     </div>
     <figure class="term reveal" aria-labelledby="deny-cap">
       <div class="term-bar"><span class="dots"><i></i><i></i><i></i></span><span>support-agent · ticket #4472</span><span class="deny-tag">DENIED</span></div>
@@ -179,6 +187,8 @@
         <h3>A refund needs a human</h3>
         <p>The contract says a refund over $100 needs approval. A $350 refund is refused with <code class="mono">approval_required</code> until someone signs an approval for that exact call, by hand with <code class="mono">cloakpipe approve</code> or through an approval broker. The agent retries and the gate forwards it. Reusing that approval for a different amount is refused with <code class="mono">approval_required</code> again: the receipt is bound to the exact call, so it matches no other.</p>
         <p class="ex-note">The refusal names the approvers and the call's fingerprint, and the gate sends an <code class="mono">approval.requested</code> event to your webhook. The gate can also file the request with an approval broker you run, showing the approver only the arguments the contract lists, and it verifies each approval the broker hands back before using it. Hosted Slack approval cards are on the roadmap.</p>
+        <div class="hairline-fig fig-card" data-hairline="vault"
+             aria-label="A vault door: the dial turns, and only on the right combination do the bolts draw back, the way a signed approval releases one exact call."></div>
       </article>
       <article class="ex">
         <div class="ex-head"><span class="ex-n">04 · Did it happen?</span><span class="status shipping">Shipping · manual reconcile</span></div>
@@ -208,6 +218,8 @@
 <!-- ============== CLOSER ============== -->
 <section class="closer">
   <div class="wrap">
+    <div class="hairline-fig fig-closer reveal" data-hairline="terminal"
+         aria-label="A terminal window: the pointer scrolls back through its history, one binary in front of your tools."></div>
     <h2 class="reveal">Put a gate in front of<br><span class="dim">your agent's tools.</span></h2>
     <p class="reveal" data-d="1">Free, open-source gate (MIT). It runs on your machines, and enforcement will never be behind a paywall. Declare what the agent may do, and watch what it refuses.</p>
     <div class="ctas reveal" data-d="2">
@@ -228,6 +240,22 @@
   .hero-new span:first-child { color: var(--text); font-weight: 500; }
   .hero-new:hover { color: var(--text); }
   .hero-ctas { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* ---------- hairline figures (https://hairline.lucasmarkes.com) ---------- */
+  /* Drawn in the site's own tokens: lit strokes in the accent, plates in the
+     background they sit on. Loaded only when one scrolls near the viewport. */
+  .hairline-fig { --hairline-plate: var(--bg); --hairline-hi: var(--accent); --hairline-edge: var(--text-2);
+        --hairline-mid: var(--text-4); --hairline-lo: var(--line); --hairline-stroke: 1;
+        width: 100%; aspect-ratio: 5 / 4; }
+  .hero-top { display: grid; grid-template-columns: 1fr; }
+  .fig-hero { display: none; }
+  @media (min-width: 1100px) {
+    .hero-top { grid-template-columns: minmax(0, 1fr) 380px; gap: 56px; align-items: center; }
+    .fig-hero { display: block; }
+  }
+  .fig-side { max-width: 260px; margin-top: 24px; }
+  .fig-card { max-width: 260px; margin-top: 8px; }
+  .fig-closer { max-width: 280px; margin: -40px auto 24px; }
 
   /* ---------- the layered scene ---------- */
   .gate-scene { margin: 24px 0 0; position: relative; }
