@@ -1,0 +1,109 @@
+---
+// Privacy policy for cloakpipe.co and the hosted CloakPipe Cloud
+// (app.cloakpipe.co, api.cloakpipe.co). Required by Google's OAuth consent
+// screen and linked from the footer and the sign-in pages.
+import Base from '../layouts/Base.astro';
+
+const UPDATED = '6 November 2026';
+---
+<Base title="Privacy policy · CloakPipe" description="What CloakPipe collects, why, where it is processed and how to get it deleted." page="privacy">
+  <div class="wrap legal">
+    <article class="legal-body">
+      <div class="eyebrow">Legal · Privacy</div>
+      <h1>Privacy policy</h1>
+      <p class="legal-meta">Last updated {UPDATED}. Applies to <strong>cloakpipe.co</strong>, the hosted <strong>CloakPipe Cloud</strong> at app.cloakpipe.co and api.cloakpipe.co, and the sign-in service at logto.rohan.sh. The open-source gate you run yourself sends nothing to us.</p>
+
+      <h2>Who we are</h2>
+      <p>CloakPipe is operated by Rohan Sharma, trading as CloakPipe ("we"). Contact: <a href="mailto:rohan@cloakpipe.co">rohan@cloakpipe.co</a>.</p>
+
+      <h2>What we collect</h2>
+      <h3>When you create an account</h3>
+      <ul>
+        <li><strong>Email address, name and avatar</strong>, from the sign-in method you choose: Google, GitHub, or an email address with a password. Sign-in is handled by Logto, an open-source identity service that we self-host; it stores your credentials (password hashes, OAuth identity links) and session records.</li>
+        <li><strong>Verification codes</strong> sent to your email address when you sign up or reset a password. These are delivered through Resend.</li>
+      </ul>
+      <h3>When you use the dashboard</h3>
+      <ul>
+        <li><strong>Workspace data you create</strong>: gates, policies, approver seats, alert destinations (for example a Slack webhook), team invites and the roles of your teammates.</li>
+        <li><strong>Events your gates send us</strong>: signed decision records (which tool was called, whether it was allowed, denied or escalated, and the argument fields your manifest marks as shareable). Argument values that your manifest does not mark as shareable never leave your gate.</li>
+        <li><strong>Approval requests and receipts</strong>, when you route approvals through CloakPipe Cloud.</li>
+        <li><strong>API keys</strong> you create, stored as hashes.</li>
+      </ul>
+      <h3>When you visit the website</h3>
+      <ul>
+        <li><strong>Aggregate analytics</strong> (page views, referrer, browser, country) through a self-hosted Umami instance. Umami does not use cookies and does not identify you.</li>
+        <li><strong>Waitlist and contact details</strong> you submit on purpose, such as an email address on the waitlist form.</li>
+        <li><strong>Server logs</strong> with IP addresses and request paths, kept for a short time for security and debugging.</li>
+      </ul>
+
+      <h2>What we do not collect</h2>
+      <ul>
+        <li>The prompts, tool arguments or outputs of the agents you protect, unless your manifest explicitly marks a field as shareable or you send it to our proxy yourself.</li>
+        <li>Payment card numbers. If you buy a paid plan, payment is handled by Stripe, which holds your card details; we receive a customer id and the plan you bought.</li>
+        <li>Data from the open-source gate when it runs without a Cloud connection.</li>
+      </ul>
+
+      <h2>Why we use it</h2>
+      <ul>
+        <li>To run the service: sign you in, show your workspace, deliver alerts and approvals, enforce plan limits.</li>
+        <li>To keep it secure: verify signed events, detect abuse, investigate incidents.</li>
+        <li>To talk to you about your account: verification codes, invites your admin sends, service notices. We do not send marketing email unless you opt in.</li>
+        <li>To understand how the website is used, in aggregate.</li>
+      </ul>
+      <p>We do not sell personal data and we do not use it to train models.</p>
+
+      <h2>Who processes it for us</h2>
+      <table>
+        <thead><tr><th>Processor</th><th>What</th><th>Where</th></tr></thead>
+        <tbody>
+          <tr><td>Hostinger (our own server)</td><td>CloakPipe Cloud, Logto sign-in, Umami analytics</td><td>India (Mumbai)</td></tr>
+          <tr><td>Vercel</td><td>This website</td><td>Global edge, origin US</td></tr>
+          <tr><td>Google, GitHub</td><td>Sign-in, only if you choose them</td><td>US</td></tr>
+          <tr><td>Resend (Amazon SES)</td><td>Transactional email</td><td>US</td></tr>
+          <tr><td>Stripe</td><td>Payments for paid plans</td><td>US / EU</td></tr>
+          <tr><td>Slack, Discord, PagerDuty</td><td>Alert delivery, only to destinations you configure</td><td>Per provider</td></tr>
+        </tbody>
+      </table>
+
+      <h2>How long we keep it</h2>
+      <ul>
+        <li>Account and workspace data: until you delete your account or ask us to.</li>
+        <li>Gate events and issues: for the retention period of your plan (7 days on Free, longer on paid plans), then purged automatically.</li>
+        <li>Verification codes: 10 minutes.</li>
+        <li>Server logs: up to 30 days.</li>
+      </ul>
+
+      <h2>Your rights</h2>
+      <p>You can ask us to show you, correct, export or delete the personal data we hold about you, and you can object to or restrict how we process it. Email <a href="mailto:rohan@cloakpipe.co">rohan@cloakpipe.co</a> from the address on your account and we answer within 30 days. If you are in the EU or UK you can also complain to your data protection authority.</p>
+      <p>To stop using Google or GitHub sign-in, revoke CloakPipe's access in your Google account or GitHub settings; your CloakPipe account stays until you delete it.</p>
+
+      <h2>Cookies</h2>
+      <p>app.cloakpipe.co and api.cloakpipe.co set strictly necessary cookies to keep you signed in (a sealed session cookie and a short-lived sign-in state cookie). logto.rohan.sh sets a session cookie for the same purpose. This website sets none; your theme choice is kept in your browser's local storage.</p>
+
+      <h2>Children</h2>
+      <p>CloakPipe is not directed at children under 16 and we do not knowingly collect their data.</p>
+
+      <h2>Changes</h2>
+      <p>We update this page when our practices change and note the date at the top. Material changes are announced in the dashboard or by email.</p>
+    </article>
+  </div>
+</Base>
+
+<style is:global>
+  .legal { padding-top: 48px; padding-bottom: 96px; }
+  .legal-body { max-width: 760px; }
+  .legal-body .eyebrow { margin-bottom: 18px; }
+  .legal-body h1 { font-size: clamp(30px, 4vw, 44px); letter-spacing: -0.028em; line-height: 1.08; margin-bottom: 18px; }
+  .legal-body h2 { font: 600 24px var(--sans); letter-spacing: -0.018em; margin: 48px 0 14px; padding-top: 20px; border-top: 1px solid var(--line); }
+  .legal-body h3 { font: 600 18px var(--sans); letter-spacing: -0.01em; margin: 28px 0 10px; }
+  .legal-body p, .legal-body li, .legal-body td { font-size: 15.5px; line-height: 1.7; color: var(--text-2); }
+  .legal-body p { margin-bottom: 16px; }
+  .legal-body strong { color: var(--text); font-weight: 600; }
+  .legal-body ul, .legal-body ol { margin: 0 0 18px 22px; }
+  .legal-body li { margin-bottom: 6px; }
+  .legal-body a { color: var(--accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .legal-body .legal-meta { color: var(--text-3); font-size: 14px; }
+  .legal-body table { width: 100%; border-collapse: collapse; margin: 0 0 22px; font-size: 14px; display: block; overflow-x: auto; }
+  .legal-body th, .legal-body td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .legal-body th { font: 500 10.5px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); border-bottom-color: var(--text-4); }
+</style>
