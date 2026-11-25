@@ -36,6 +36,16 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://cloakpipe.co/docs/infer</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://cloakpipe.co/docs/prove</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://cloakpipe.co/docs/docker</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

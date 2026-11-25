@@ -14,7 +14,7 @@ The gate works with any MCP host that starts servers as a command over stdio: yo
 | One-command install for Claude Code, Cursor and Codex | <span class="badge building">Roadmap</span> |
 | Hosts that connect to the gate over HTTP (`--listen`), and HTTP MCP servers behind it (`--upstream-url`) | <span class="badge oss">v0.13</span> |
 | Webhooks (Slack, Discord, any HTTPS receiver) and OpenTelemetry | <span class="badge oss">v0.13</span> |
-| Approval brokers: any service that implements the open protocol ([Approvals](/docs/approvals)) | <span class="badge next">v0.14</span> |
+| Approval brokers: any service that implements the open protocol ([Approvals](/docs/approvals)) | <span class="badge oss">v0.14</span> |
 
 In every snippet below, `npx -y @acme/support-mcp` stands for your server's original command. Use **absolute paths**: hosts start servers from a directory you do not control. The gate logs to stderr, which hosts show in their MCP logs.
 
@@ -138,7 +138,7 @@ Gating wrappers for LangGraph, CrewAI and the OpenAI Agents SDK are <span class=
 
 - <span class="badge oss">v0.13</span> Webhooks (HMAC-signed) for denials, approval requests, drift and unknown side effects, as raw JSON or as Slack and Discord messages. See [Alerts & events](/docs/events).
 - <span class="badge oss">v0.13</span> OpenTelemetry spans, one per gate decision, allows included.
-- <span class="badge next">v0.14</span> Approval requests filed with an approval broker you run, which hands back signed receipts the gate verifies. See [Approvals](/docs/approvals).
+- <span class="badge oss">v0.14</span> Approval requests filed with an approval broker you run, which hands back signed receipts the gate verifies. See [Approvals](/docs/approvals).
 - <span class="badge building">Roadmap</span> Hosted alerts and approvals in Slack, Discord or PagerDuty (grouped issues, routing, approval buttons). This is not built; [tell us on the waitlist](/waitlist) if you want it.
 
 Without any of these, the record of every decision is the [ledger](/docs/evidence), and the gate's log is on stderr, as it was up to v0.12.0.

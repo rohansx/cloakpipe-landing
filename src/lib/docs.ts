@@ -15,9 +15,11 @@ export const DOCS: DocGroup[] = [
     items: [
       { title: 'MCP tool gate', href: '/docs/mcp-gate' },
       { title: 'Manifest reference', href: '/docs/manifest' },
+      { title: 'Drafting a contract', href: '/docs/infer' },
       { title: 'Policy (Cedar)', href: '/docs/policy' },
       { title: 'Approvals', href: '/docs/approvals' },
       { title: 'Evidence & verification', href: '/docs/evidence' },
+      { title: 'Attack proof', href: '/docs/prove' },
       { title: 'Alerts & events', href: '/docs/events' },
     ],
   },

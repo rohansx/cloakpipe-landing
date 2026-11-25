@@ -92,7 +92,7 @@
           <div class="pc-row off"><span></span><span>not declared, so refused</span></div>
         </div>
         <div class="step-n">01</div><h3>Declare</h3>
-        <p>A tool contract lists the tools the agent may call and the shape of every argument: types, lengths, ranges, patterns, and values that must match the current task. It is closed by default: an undeclared tool or argument is refused. An optional Cedar policy adds what one call cannot show: rate limits over persistent counters, tiers and time windows.</p>
+        <p>A tool contract lists the tools the agent may call and the shape of every argument: types, lengths, ranges, patterns, and values that must match the current task. It is closed by default: an undeclared tool or argument is refused. An optional Cedar policy adds what one call cannot show: rate limits over persistent counters, tiers and time windows. No contract yet? <code class="mono">cloakpipe infer</code> drafts one from the calls your agent makes in shadow mode, for you to review.</p>
       </div>
       <div class="how">
         <div class="panel" aria-hidden="true">
@@ -117,7 +117,7 @@
           <div class="pl-row"><span>chain, offline</span><span class="ok">OK</span></div>
         </div>
         <div class="step-n">03</div><h3>Prove</h3>
-        <p>Every decision, allowed or refused, is an entry in a hash-chained ledger that never stores raw argument values, and each entry is signed with the gate's Ed25519 key. The gate seals entries into epochs and timestamps each one with an RFC 3161 authority and Sigstore Rekor. <code class="mono">cloakpipe verify</code> checks an exported audit pack offline.</p>
+        <p>Every decision, allowed or refused, is an entry in a hash-chained ledger that never stores raw argument values, and each entry is signed with the gate's Ed25519 key. The gate seals entries into epochs and timestamps each one with an RFC 3161 authority and Sigstore Rekor. <code class="mono">cloakpipe verify</code> checks an exported audit pack offline. <code class="mono">cloakpipe prove</code> runs your agent through an attack pack with the gate off and on, and reports which attacks reached the tools.</p>
       </div>
     </div>
   </div>

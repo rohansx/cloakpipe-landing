@@ -15,7 +15,7 @@ cloakpipe release keygen --out approver.json     # written 0600, never overwrite
 | Key | Signs | Held by | Given to the gate with |
 |---|---|---|---|
 | Gate signing key | every ledger entry, every epoch head, every audit pack, and the Rekor entries | the gate host | `--signing-key`, `CLOAKPIPE_SIGNING_KEY`, or `$CLOAKPIPE_HOME/gate.key` |
-| Approver keys | approval receipts (`cloakpipe approve`, or an approval broker <span class="badge next">v0.14</span>) | the people or service that approve calls | public part only, `--approver-key` (repeatable) |
+| Approver keys | approval receipts (`cloakpipe approve`, or an approval broker <span class="badge oss">v0.14</span>) | the people or service that approve calls | public part only, `--approver-key` (repeatable) |
 | Anchoring trust roots | nothing: they check TSA and Rekor answers | the verifier | `--tsa-root`, `--rekor-key` (built-in defaults) |
 
 ## The gate signing key
@@ -63,7 +63,7 @@ Approver identities are key ids, not names like `slack:@alice`. Mapping people t
 
 ### Approver keys held by a broker
 
-<span class="badge next">v0.14</span> With an approval broker (`mcp-proxy --approvals-url`, see [Approvals](/docs/approvals)), the broker holds one key per approver and signs the receipt when that person approves. The gate still trusts only the public keys you pin with `--approver-key`, and verifies every receipt before writing it and again on the call. Fetch the broker's public keys as `--approver-key` files with:
+<span class="badge oss">v0.14</span> With an approval broker (`mcp-proxy --approvals-url`, see [Approvals](/docs/approvals)), the broker holds one key per approver and signs the receipt when that person approves. The gate still trusts only the public keys you pin with `--approver-key`, and verifies every receipt before writing it and again on the call. Fetch the broker's public keys as `--approver-key` files with:
 
 ```bash
 cloakpipe approvals keys --approvals-url https://broker.example/v1/gates/$GATE_ID \
