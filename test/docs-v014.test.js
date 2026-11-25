@@ -2,7 +2,8 @@
 // `approval.show`, `mcp-proxy --approvals-url / --approvals-secret-file /
 // --approvals-poll-interval`, `cloakpipe approvals keys`, the open broker
 // protocol and the `approval_denied` refusal. New things carry the v0.14
-// badge (`badge next`, the newest release).
+// badge, `badge oss` since v0.15.0 shipped (24 November 2026);
+// test/docs-v015.test.js covers what v0.15.0 added.
 //
 // The claims are checked against what the released binary does:
 //   - test/fixtures/cli-v0.14.json: --help of cloakpipe-cli 0.14.0 from
@@ -31,7 +32,7 @@ const CLI013 = JSON.parse(read('test/fixtures/cli-v0.13.json'));
 const CLI014 = JSON.parse(read('test/fixtures/cli-v0.14.json'));
 const BROKER = JSON.parse(read('test/fixtures/approval-broker-v0.14.json'));
 
-const V014 = '<span class="badge next">v0.14</span>';
+const V014 = '<span class="badge oss">v0.14</span>';
 const ROADMAP = '<span class="badge building">Roadmap</span>';
 const GATE_FLAGS = ['--approvals', '--approver-key', '--approvals-url', '--approvals-secret-file', '--approvals-poll-interval', '--task-context'];
 
@@ -59,13 +60,15 @@ function invocations(md) {
   return out;
 }
 
-/** The commands and flags a page shows that v0.13.0 does not have. */
+/** The commands and flags a page shows that v0.14.0 added (not in v0.13.0).
+ * What v0.15.0 added is left to test/docs-v015.test.js. */
 function newIn014(md) {
   const found = [];
   for (const { path, flags, text } of invocations(md)) {
+    if (!CLI014.commands[path]) continue;
     if (!CLI013.commands[path]) found.push(`cloakpipe ${path} (${text})`);
     const known = new Set([...(CLI013.commands[path] ?? []), ...(CLI013.hidden[path] ?? []), ...CLI013.commands['(root)']]);
-    for (const f of flags) if (!known.has(f)) found.push(`${f} (${text})`);
+    for (const f of flags) if (!known.has(f) && CLI014.commands[path].includes(f)) found.push(`${f} (${text})`);
   }
   return found;
 }
@@ -98,9 +101,9 @@ test('the fixtures come from the v0.14.0 binary, which only adds the broker flag
   assert.deepEqual(CLI014.hidden, CLI013.hidden, 'hidden flags carried over');
 });
 
-test('the overview explains the v0.14 badge and lists approvals through a broker', () => {
+test('the overview explains the v0.14 badge, now an older release, and lists approvals through a broker', () => {
   const overview = page('index');
-  assert.ok(overview.includes(`${V014} new in v0.14.0: not in the 0.13.0 crates or the 0.13.0 image.`));
+  assert.ok(overview.includes(`${V014} since v0.14, and still in v0.15.0.`));
   const row = overview.split('\n').find((l) => l.startsWith('|') && /broker/i.test(l) && l.includes(V014));
   assert.ok(row, 'a status row puts approvals through a broker under v0.14');
   for (const s of ['`approval.show`', '`--approvals-url`', '`cloakpipe approvals keys`', '/docs/approvals']) assert.ok(row.includes(s), `status row: ${s}`);
