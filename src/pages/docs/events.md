@@ -14,9 +14,9 @@ Delivery is off the decision path. Events go on a bounded queue that a backgroun
 
 | kind | when |
 |---|---|
-| `decision.deny` | a call was refused in enforce mode, including `fail_closed`, an expired receipt (`approval_expired`) and <span class="badge next">v0.14</span> a call an approver denied through a broker (`approval_denied`) |
+| `decision.deny` | a call was refused in enforce mode, including `fail_closed`, an expired receipt (`approval_expired`) and <span class="badge oss">v0.14</span> a call an approver denied through a broker (`approval_denied`) |
 | `approval.requested` | a call needs an approval receipt and has none |
-| `approval.mismatch` | a receipt was presented that does not cover this exact call (other arguments, release or tool, or a bad signature); <span class="badge next">v0.14</span> also a receipt from an [approval broker](/docs/approvals) that does not verify and was not written (no ledger entry) |
+| `approval.mismatch` | a receipt was presented that does not cover this exact call (other arguments, release or tool, or a bad signature); <span class="badge oss">v0.14</span> also a receipt from an [approval broker](/docs/approvals) that does not verify and was not written (no ledger entry) |
 | `shadow.finding` | shadow mode forwarded a call that enforce mode would have refused |
 | `side_effect.replayed` | a retry of a completed side effect was answered from the operations store |
 | `side_effect.unknown` | a forwarded side effect never got its reply: [reconcile it](/docs/mcp-gate#side-effects-and-reconciliation) |

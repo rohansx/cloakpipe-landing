@@ -18,20 +18,21 @@ CloakPipe does three jobs at the **action boundary**, the point where a model's 
 
 | Step | What you do | What CloakPipe does |
 |---|---|---|
-| **Declare** | Write one `cloakpipe.manifest.yaml`: the tools the agent may call, what each argument may hold, which calls have side effects and which need approval. Optionally point it at a Cedar policy for rate limits and tiers. | Loads and checks it at start-up, and refuses to start on a bad rule. See [Manifest reference](/docs/manifest) and [Policy](/docs/policy). |
+| **Declare** | Write one `cloakpipe.manifest.yaml`: the tools the agent may call, what each argument may hold, which calls have side effects and which need approval. Optionally point it at a Cedar policy for rate limits and tiers. <span class="badge next">v0.15</span> Or let `cloakpipe infer` draft it from the calls your agent makes in shadow mode, and review the draft. | Loads and checks it at start-up, and refuses to start on a bad rule. See [Manifest reference](/docs/manifest) and [Policy](/docs/policy). |
 | **Enforce** | Run your MCP server behind `cloakpipe mcp-proxy`. | Checks each `tools/call` in order (contract, Cedar, approval, side-effect state) and forwards it or answers with a JSON-RPC error. See [MCP tool gate](/docs/mcp-gate). |
-| **Prove** | Export the ledger with `cloakpipe ledger export`. | Every decision is a signed ledger entry; epochs are anchored with an RFC 3161 timestamp authority and Sigstore Rekor; `cloakpipe verify` checks a pack offline. See [Evidence & verification](/docs/evidence). |
+| **Prove** | Export the ledger with `cloakpipe ledger export`. <span class="badge next">v0.15</span> Run `cloakpipe prove` to put a live agent through an attack pack with the gate off and on. | Every decision is a signed ledger entry; epochs are anchored with an RFC 3161 timestamp authority and Sigstore Rekor; `cloakpipe verify` checks a pack offline. See [Evidence & verification](/docs/evidence) and [Attack proof](/docs/prove). |
 
 The [quick start](/docs/quickstart) runs all three on a sample support agent in a few minutes. In that example, a prompt-injected `send_email` to `attacker@evil.example` is refused as `scope_mismatch`, and a call to an undeclared `export_customers` tool is refused as `undeclared_tool`.
 
 ## Release status
 
-The latest release is **v0.14.0** (29 October 2026): a [GitHub release](https://github.com/rohansx/cloakpipe/releases/tag/v0.14.0), the [`cloakpipe-cli` 0.14.0](https://crates.io/crates/cloakpipe-cli/0.14.0) package on [crates.io](https://crates.io/crates/cloakpipe-cli), and the Docker image [`ghcr.io/rohansx/cloakpipe:0.14.0`](https://github.com/rohansx/cloakpipe/pkgs/container/cloakpipe), which runs the gate by default. The [quick start](/docs/quickstart#1-install) shows the install. Every page labels what it describes:
+The latest release is **v0.15.0** (24 November 2026): a [GitHub release](https://github.com/rohansx/cloakpipe/releases/tag/v0.15.0), the [`cloakpipe-cli` 0.15.0](https://crates.io/crates/cloakpipe-cli/0.15.0) package on [crates.io](https://crates.io/crates/cloakpipe-cli), and the Docker image [`ghcr.io/rohansx/cloakpipe:0.15.0`](https://github.com/rohansx/cloakpipe/pkgs/container/cloakpipe), which runs the gate by default. The [quick start](/docs/quickstart#1-install) shows the install. Every page labels what it describes:
 
-- <span class="badge oss">v0.11</span> since v0.11, and still in v0.14.0.
-- <span class="badge oss">v0.12</span> since v0.12, and still in v0.14.0.
-- <span class="badge oss">v0.13</span> since v0.13, and still in v0.14.0.
-- <span class="badge next">v0.14</span> new in v0.14.0: not in the 0.13.0 crates or the 0.13.0 image.
+- <span class="badge oss">v0.11</span> since v0.11, and still in v0.15.0.
+- <span class="badge oss">v0.12</span> since v0.12, and still in v0.15.0.
+- <span class="badge oss">v0.13</span> since v0.13, and still in v0.15.0.
+- <span class="badge oss">v0.14</span> since v0.14, and still in v0.15.0.
+- <span class="badge next">v0.15</span> new in v0.15.0: not in the 0.14.0 crates or the 0.14.0 image.
 - <span class="badge building">Roadmap</span> planned, not built.
 
 | Capability | Status |
@@ -48,12 +49,14 @@ The latest release is **v0.14.0** (29 October 2026): a [GitHub release](https://
 | One gate in front of several stdio servers (`--server`), with `tools/list` pinning (`cloakpipe tools pin`, `--tools-lock`) and drift detection | <span class="badge oss">v0.13</span> |
 | Gate events as signed webhooks (generic, Slack, Discord), OpenTelemetry spans and a JSONL log. See [Alerts & events](/docs/events) | <span class="badge oss">v0.13</span> |
 | The Docker image runs the gate over HTTP by default. See [Docker](/docs/docker) | <span class="badge oss">v0.13</span> |
-| Approvals through a broker you run: `approval.show`, `--approvals-url`, `cloakpipe approvals keys`, `approval_denied`, an open signed protocol, receipts verified locally. See [Approvals](/docs/approvals) | <span class="badge next">v0.14</span> |
+| Approvals through a broker you run: `approval.show`, `--approvals-url`, `cloakpipe approvals keys`, `approval_denied`, an open signed protocol, receipts verified locally. See [Approvals](/docs/approvals) | <span class="badge oss">v0.14</span> |
+| A draft manifest from the calls an agent really makes: `mcp-proxy --capture` in shadow mode, `cloakpipe infer`, and `infer --diff` for drift in CI. See [Drafting a contract](/docs/infer) | <span class="badge next">v0.15</span> |
+| Attack proof against a live agent: `cloakpipe prove` runs an attack pack with the gate off and on, in a local, Docker or E2B sandbox, with an HTML and JSON report and a verified audit pack per run. See [Attack proof](/docs/prove) | <span class="badge next">v0.15</span> |
 | Tool-call checks in the OpenAI/Anthropic-compatible LLM proxy | <span class="badge building">Roadmap</span> |
 | Replay of a candidate manifest; approve with an edit | <span class="badge building">Roadmap</span> |
 | A hosted plane on top of the events (grouped alerts, routing, approval cards in Slack, digests): CloakPipe Cloud, a hosted broker, is coming soon and not deployed yet. Nothing is sent to a hosted service unless you configure a webhook or a broker | <span class="badge building">Roadmap</span> |
 
-v0.11.0 configured the gate with the older pair of files, an `AgentRelease` plus a `ToolContract`. v0.12.0, v0.13.0 and v0.14.0 still read that pair, with a deprecation warning.
+v0.11.0 configured the gate with the older pair of files, an `AgentRelease` plus a `ToolContract`. v0.12.0 to v0.15.0 still read that pair, with a deprecation warning.
 
 ## What it is not
 
@@ -74,6 +77,7 @@ Everything on these pages is in [rohansx/cloakpipe](https://github.com/rohansx/c
 - [Quick start](/docs/quickstart): run the support-agent example and watch the gate refuse the injected email.
 - [MCP tool gate](/docs/mcp-gate): every flag, the decision order and the refusal codes.
 - [Integrations](/docs/integrations): put the gate in front of a server in Claude Code, Cursor or Codex.
-- [Approvals](/docs/approvals): have a person approve a held call through an approval broker <span class="badge next">v0.14</span>, or by hand.
+- [Drafting a contract](/docs/infer): draft the manifest from what your agent does <span class="badge next">v0.15</span>, then [prove](/docs/prove) it against an attack pack.
+- [Approvals](/docs/approvals): have a person approve a held call through an approval broker <span class="badge oss">v0.14</span>, or by hand.
 - [Alerts & events](/docs/events): tell a human about a refusal, by webhook, Slack, Discord or OpenTelemetry <span class="badge oss">v0.13</span>.
 - [Comparison](/docs/comparison): how CloakPipe differs from other agent governance tools.

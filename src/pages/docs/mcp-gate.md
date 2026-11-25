@@ -10,7 +10,9 @@ description: Every cloakpipe mcp-proxy flag, the order in which a tools/call is 
 
 <span class="badge oss">v0.13</span> The gate can also speak MCP over HTTP on either side, and front several servers at once with their tool definitions pinned. See [MCP over HTTP](#mcp-over-http), [Several servers](#several-servers) and [Pinning tool definitions](#pinning-tool-definitions).
 
-<span class="badge next">v0.14</span> A call that needs approval can be filed with an approval broker, which hands back a signed receipt the gate verifies before using it. See [Approvals](/docs/approvals).
+<span class="badge oss">v0.14</span> A call that needs approval can be filed with an approval broker, which hands back a signed receipt the gate verifies before using it. See [Approvals](/docs/approvals).
+
+<span class="badge next">v0.15</span> In shadow mode, or with no manifest, `--capture DIR` records every call the agent makes to local files, for `cloakpipe infer` to draft a manifest from. See [Drafting a contract](/docs/infer).
 
 | Capability | Status |
 |---|---|
@@ -20,7 +22,8 @@ description: Every cloakpipe mcp-proxy flag, the order in which a tools/call is 
 | MCP over HTTP (Streamable HTTP): `--listen` for agents, `--upstream-url` for one HTTP server | <span class="badge oss">v0.13</span> |
 | Several stdio servers per gate (`--server`), `tools/list` pinning with a tools lock (`--tools-lock`) and drift detection | <span class="badge oss">v0.13</span> |
 | Event delivery: `--webhook`, `--otel-endpoint`, `--events-log` ([Alerts & events](/docs/events)) | <span class="badge oss">v0.13</span> |
-| Approvals through a broker: `--approvals-url`, `--approvals-secret-file`, `--approvals-poll-interval`, the `approval_denied` refusal ([Approvals](/docs/approvals)) | <span class="badge next">v0.14</span> |
+| Approvals through a broker: `--approvals-url`, `--approvals-secret-file`, `--approvals-poll-interval`, the `approval_denied` refusal ([Approvals](/docs/approvals)) | <span class="badge oss">v0.14</span> |
+| Local capture of tool calls for `cloakpipe infer`: `--capture`, `--capture-shapes`, `--capture-max-age` ([Drafting a contract](/docs/infer)) | <span class="badge next">v0.15</span> |
 | SSE response streams and a `GET /mcp` stream for HTTP agents; HTTP servers behind `--server` | <span class="badge building">Roadmap</span> |
 
 ## Usage
@@ -47,14 +50,17 @@ cloakpipe mcp-proxy \
 | `--upstream-header 'Name: value'` | <span class="badge oss">v0.13</span> a header sent on every request to `--upstream-url` (repeatable). A value `env:VAR` is read from that environment variable; values are never logged. |
 | `--listen ADDR` | <span class="badge oss">v0.13</span> serve agents MCP over HTTP on `ADDR` (such as `127.0.0.1:8900`) instead of stdio. Port `0` picks one. See [MCP over HTTP](#mcp-over-http). |
 | `--listen-token-file FILE` | <span class="badge oss">v0.13</span> a file holding a bearer token every `/mcp` request must carry. |
-| `--manifest FILE` | the manifest the agent runs under. Enables the gate. A v1 `cloakpipe.manifest.yaml` is detected by its top-level `release` key; a legacy `AgentRelease` (top-level `apiVersion`) still works in v0.14.0, with a deprecation warning. See [Manifest reference](/docs/manifest). |
+| `--manifest FILE` | the manifest the agent runs under. Enables the gate. A v1 `cloakpipe.manifest.yaml` is detected by its top-level `release` key; a legacy `AgentRelease` (top-level `apiVersion`) still works in v0.15.0, with a deprecation warning. See [Manifest reference](/docs/manifest). |
 | `--mode enforce\|shadow` | `enforce` (default) refuses calls that fail the gate. `shadow` forwards every call the gate can read and records what enforce mode would have decided, with `mode: shadow` in each ledger entry. |
 | `--task-context FILE` | the trusted task context: a JSON object the orchestrator writes, such as `{"taskId":"t-981","ticket":{"id":"T-1042"}}`. `one_of_context` arguments are checked against it. Default: `CLOAKPIPE_TASK_CONTEXT`. |
-| `--approvals DIR` | directory of approval receipts, `<fingerprint hex>.approval.json`, from `cloakpipe approve` or, <span class="badge next">v0.14</span> written by the gate after verifying them, from an approval broker. Needs `--approver-key`. |
+| `--approvals DIR` | directory of approval receipts, `<fingerprint hex>.approval.json`, from `cloakpipe approve` or, <span class="badge oss">v0.14</span> written by the gate after verifying them, from an approval broker. Needs `--approver-key`. |
 | `--approver-key FILE` | an approver key file from `cloakpipe release keygen` (only the public part is read); repeatable. A receipt must be signed by one of these keys. |
-| `--approvals-url URL` | <span class="badge next">v0.14</span> the gate's base URL at an approval broker: a call refused as `approval_required` is filed there in the background, and finished approvals are fetched, verified against `--approver-key` and written to `--approvals`. Needs `--approvals`, `--approver-key`, `--approvals-secret-file` and a task context with a `taskId`. See [Approvals](/docs/approvals). |
-| `--approvals-secret-file FILE` | <span class="badge next">v0.14</span> the HMAC secret both directions of the broker protocol are signed with; the webhook secret file may be reused. |
-| `--approvals-poll-interval DURATION` | <span class="badge next">v0.14</span> how often finished approvals are fetched: `5s` (default), `1m`, … |
+| `--approvals-url URL` | <span class="badge oss">v0.14</span> the gate's base URL at an approval broker: a call refused as `approval_required` is filed there in the background, and finished approvals are fetched, verified against `--approver-key` and written to `--approvals`. Needs `--approvals`, `--approver-key`, `--approvals-secret-file` and a task context with a `taskId`. See [Approvals](/docs/approvals). |
+| `--approvals-secret-file FILE` | <span class="badge oss">v0.14</span> the HMAC secret both directions of the broker protocol are signed with; the webhook secret file may be reused. |
+| `--approvals-poll-interval DURATION` | <span class="badge oss">v0.14</span> how often finished approvals are fetched: `5s` (default), `1m`, … |
+| `--capture DIR` | <span class="badge next">v0.15</span> record every `tools/call` (raw arguments, before the gate decides), every `tools/list` reply and the task context to an owner-only file in `DIR`, for `cloakpipe infer`. Shadow mode or no manifest only: refused with an enforcing gate. Nothing is sent anywhere. See [Drafting a contract](/docs/infer). |
+| `--capture-shapes` | <span class="badge next">v0.15</span> with `--capture`: store each string as its shape only (length, pattern class and a salted hash), not its value. |
+| `--capture-max-age DAYS` | <span class="badge next">v0.15</span> with `--capture`: delete capture files older than `DAYS` at start-up. |
 | `--operations-db PATH` | SQLite store of side-effecting calls. Required when the manifest has a tool with `side_effect: true`. Default: `CLOAKPIPE_OPERATIONS_DB`. One gate per database. |
 | `--state-db PATH` | SQLite store of the Cedar policy's call counters, used when the manifest has `policy:`. Default: `CLOAKPIPE_STATE_DB`, else `$CLOAKPIPE_HOME/state.db`. The counters survive a restart. |
 | `--ledger-db PATH` | the decision ledger. Default: `CLOAKPIPE_LEDGER_DB`, else `$CLOAKPIPE_HOME/ledger.db`. `CLOAKPIPE_HOME` defaults to `~/.cloakpipe`. |
@@ -82,7 +88,7 @@ Each `tools/call` goes through these stages in order. The first refusal wins, an
 1. **Read.** Only a message the gate can parse in full is forwarded, and it is re-serialized rather than passed through raw. Unparseable lines, batches, non-objects and case variants of JSON-RPC member names are refused.
 2. **Contract.** The manifest must declare the tool (`undeclared_tool`). The call may carry only the arguments the tool lists (`undeclared_argument`), must carry the `required` ones (`argument_missing`), and each value must pass its rules (`argument_invalid`, or `scope_mismatch` / `task_context_missing` for `one_of_context`).
 3. **Cedar.** If the manifest has `policy:`, the policy must permit the call (`policy_denied`, naming the deciding policies). See [Policy](/docs/policy).
-4. **Approval.** If the manifest's `approval.when` holds, or every Cedar permit that allowed the call carries `@approval`, the call needs a valid receipt for exactly this call (`approval_required`, `approval_invalid`, `approval_expired`), and must not have been denied (`approval_denied`, <span class="badge next">v0.14</span>).
+4. **Approval.** If the manifest's `approval.when` holds, or every Cedar permit that allowed the call carries `@approval`, the call needs a valid receipt for exactly this call (`approval_required`, `approval_invalid`, `approval_expired`), and must not have been denied (`approval_denied`, <span class="badge oss">v0.14</span>).
 5. **Side effects.** For a tool with `side_effect: true`, the operations store must have no conflicting or unsettled attempt (`operation_conflict`, `reconcile_before_retry`).
 6. **Record, then forward.** The decision is written to the ledger first. If it cannot be written, the call is refused as `fail_closed` and not forwarded.
 
@@ -90,7 +96,7 @@ The test suite asserts that the contract and Cedar stages together take under 5m
 
 ## Refusals
 
-A refused call gets JSON-RPC error **`-32001`** with `data: {reason, tool, release}` and, where it applies, `path` (the argument path, never its value), `policies`, `approvers` and `fingerprint`; with an approval broker <span class="badge next">v0.14</span>, also `approval_request` and a `hint`. `release` is the manifest digest. Notifications get no reply.
+A refused call gets JSON-RPC error **`-32001`** with `data: {reason, tool, release}` and, where it applies, `path` (the argument path, never its value), `policies`, `approvers` and `fingerprint`; with an approval broker <span class="badge oss">v0.14</span>, also `approval_request` and a `hint`. `release` is the manifest digest. Notifications get no reply.
 
 ```json
 {"jsonrpc":"2.0","id":2,"error":{"code":-32001,"message":"tool call refused by CloakPipe: scope_mismatch","data":{"reason":"scope_mismatch","tool":"send_email","release":"sha256:c558…","path":"/to"}}}
@@ -106,7 +112,7 @@ A refused call gets JSON-RPC error **`-32001`** with `data: {reason, tool, relea
 | `task_context_missing` | no task context, or it lacks a key a rule needs |
 | `policy_denied` | no Cedar permit holds, or a forbid does; `data.policies` lists the deciding forbids by `@id` |
 | `approval_required` | the call needs a receipt and there is none for this exact call; `data.approvers` and `data.fingerprint` route the request. With a broker, `data.approval_request` is `requested`, `pending` or `denied` |
-| `approval_denied` | <span class="badge next">v0.14</span> an approver denied this exact call through a broker (or a `<fingerprint hex>.denied.json` marker says so), and the denial still holds. See [Approvals](/docs/approvals#denied-and-expired) |
+| `approval_denied` | <span class="badge oss">v0.14</span> an approver denied this exact call through a broker (or a `<fingerprint hex>.denied.json` marker says so), and the denial still holds. See [Approvals](/docs/approvals#denied-and-expired) |
 | `approval_invalid` | bad signature, untrusted approver, another release, tool, task or call, or a validity window longer than the tool's `ttl` |
 | `approval_expired` | the receipt's `notAfter` has passed |
 | `operation_conflict` | the operation id is already used by a different call |
@@ -139,7 +145,7 @@ The **call fingerprint** is SHA-256 over the canonical JSON (RFC 8785) of the re
 
 The gate looks the receipt up by the fingerprint it computes from the call it received, then checks the signature against `--approver-key`, the validity window (and that it is no longer than the tool's `ttl`), the release, the tool and the task's `taskId`. A receipt for a 350 refund cannot be replayed for 3,500: that is a different fingerprint, so no receipt is found.
 
-The `approval_required` refusal carries `approvers` and `fingerprint`, so any tooling can route the request and put the receipt in `--approvals`. <span class="badge next">v0.14</span> The gate can do that itself through an approval broker (`--approvals-url`), with an open, signed protocol and every receipt verified against `--approver-key` before it is written: see [Approvals](/docs/approvals).
+The `approval_required` refusal carries `approvers` and `fingerprint`, so any tooling can route the request and put the receipt in `--approvals`. <span class="badge oss">v0.14</span> The gate can do that itself through an approval broker (`--approvals-url`), with an open, signed protocol and every receipt verified against `--approver-key` before it is written: see [Approvals](/docs/approvals).
 
 ## Side effects and reconciliation
 
@@ -173,7 +179,7 @@ The gate refuses to start (non-zero exit) when:
 - the ledger database or signing key cannot be opened;
 - anchoring flags are given with `--no-ledger` or without `--manifest`;
 - `--tool-contract` is given with a v1 manifest;
-- <span class="badge next">v0.14</span> `--approvals-url` is given without `--approvals`, an `--approver-key`, `--approvals-secret-file` or a task context with a `taskId`, or the manifest's `approval.show` lists an argument the tool does not declare or one declared as an object or array.
+- <span class="badge oss">v0.14</span> `--approvals-url` is given without `--approvals`, an `--approver-key`, `--approvals-secret-file` or a task context with a `taskId`, or the manifest's `approval.show` lists an argument the tool does not declare or one declared as an object or array.
 
 ## MCP over HTTP
 

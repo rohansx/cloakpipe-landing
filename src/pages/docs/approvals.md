@@ -6,14 +6,14 @@ description: Route a call that needs approval to a human through an approval bro
 
 # Approvals
 
-<span class="badge next">v0.14</span> A call the manifest holds for approval is refused as `approval_required` until a signed receipt for that exact call is in the gate's approvals directory. You can sign receipts by hand with `cloakpipe approve`, or point the gate at an **approval broker**: a service that routes the request to a person and hands back the receipt they sign. The gate files the request in the background, polls for finished ones, and verifies every receipt against the approver keys you pinned before it writes it. The protocol is open: two signed HTTP calls that any service can implement.
+<span class="badge oss">v0.14</span> A call the manifest holds for approval is refused as `approval_required` until a signed receipt for that exact call is in the gate's approvals directory. You can sign receipts by hand with `cloakpipe approve`, or point the gate at an **approval broker**: a service that routes the request to a person and hands back the receipt they sign. The gate files the request in the background, polls for finished ones, and verifies every receipt against the approver keys you pinned before it writes it. The protocol is open: two signed HTTP calls that any service can implement.
 
 | Capability | Status |
 |---|---|
 | Signed approval receipts for one exact call, made by hand with `cloakpipe approve` | <span class="badge oss">v0.11</span> |
 | Conditional approval (`approval.when`, `approvers`, `ttl`) and Cedar `@approval` | <span class="badge oss">v0.12</span> |
 | The `approval.requested` event, to your webhook ([Alerts & events](/docs/events)) | <span class="badge oss">v0.13</span> |
-| Approvals through a broker: `approval.show`, `--approvals-url`, `cloakpipe approvals keys`, `approval_denied` | <span class="badge next">v0.14</span> |
+| Approvals through a broker: `approval.show`, `--approvals-url`, `cloakpipe approvals keys`, `approval_denied` | <span class="badge oss">v0.14</span> |
 | CloakPipe Cloud as a broker, with approval cards in Slack | <span class="badge building">Roadmap</span> coming soon, not deployed yet |
 | Approve with an edit (an approver changing an argument) | <span class="badge building">Roadmap</span> |
 

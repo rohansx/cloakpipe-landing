@@ -15,7 +15,9 @@ const frontmatter = {
 ---
 <Docs frontmatter={frontmatter}>
   <p class="changelog-lede">
-    <strong>v0.14.0</strong> (29 October 2026) sends approvals through a broker: the gate files a signed request carrying
+    <strong>v0.15.0</strong> (24 November 2026) adds <code>cloakpipe infer</code>, which drafts a manifest from tool calls
+    captured in shadow mode, and <code>cloakpipe prove</code>, which runs a live agent through an attack pack with the gate off
+    and on. <strong>v0.14.0</strong> (29 October 2026) sends approvals through a broker: the gate files a signed request carrying
     only the arguments the manifest lists in <code>approval.show</code>, and verifies every receipt the broker hands back
     before using it. <strong>v0.13.0</strong> (28 October 2026) adds MCP over HTTP on both sides of the gate, several servers behind one gate
     with pinned tool definitions, signed webhooks (Slack, Discord or generic), OpenTelemetry spans, and a Docker image that

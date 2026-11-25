@@ -2,7 +2,8 @@
 // in v0.12.0: MCP over HTTP, several servers per gate, tool pinning, event
 // delivery (webhooks, OpenTelemetry, a JSONL log) and the gate-by-default
 // Docker image. They carry the v0.13 badge, `badge oss` since v0.14.0 shipped
-// (29 October 2026); test/docs-v014.test.js covers what v0.14.0 added.
+// (29 October 2026); test/docs-v014.test.js and test/docs-v015.test.js cover
+// what v0.14.0 and v0.15.0 added.
 //
 // The claims are checked against what the code does, captured from the
 // binary built from rohansx/cloakpipe gate/integ (PR #42), which v0.13.0
@@ -35,8 +36,8 @@ const ENTRYPOINT = read('test/fixtures/gate-entrypoint-v0.13.sh');
 const CLAUDE = JSON.parse(read('test/fixtures/claude-mcp-add.json'));
 
 const UNREL = '<span class="badge oss">v0.13</span>';
-// The Docker files are unchanged in v0.14.0; links to core point at the latest tag.
-const TAG = 'https://github.com/rohansx/cloakpipe/blob/v0.14.0/';
+// The Docker files are unchanged in v0.14.0 and v0.15.0; links to core point at the latest tag.
+const TAG = 'https://github.com/rohansx/cloakpipe/blob/v0.15.0/';
 const ROADMAP = '<span class="badge building">Roadmap</span>';
 
 /** Code in a Markdown page: fenced blocks plus inline code spans. */
@@ -89,7 +90,7 @@ function sections(md) {
 test('the overview explains the v0.13 badge, now an older release', () => {
   assert.match(read('src/layouts/Docs.astro'), /\.badge\.next \{ color: var\(--[a-z0-9-]+\); \}/);
   const overview = page('index');
-  assert.match(overview, /<span class="badge oss">v0\.13<\/span> since v0\.13, and still in v0\.14\.0/);
+  assert.match(overview, /<span class="badge oss">v0\.13<\/span> since v0\.13, and still in v0\.15\.0/);
   for (const p of docPages()) assert.ok(!read(p).includes('badge unreleased'), `${p}: no Unreleased badge is left`);
 });
 
@@ -320,7 +321,7 @@ test('the docker page says what the image runs and where state lives', () => {
     'exit code 2',
     'cloakpipe-gate gate --mode shadow',
     'cloakpipe-gate start',
-    'ghcr.io/rohansx/cloakpipe:0.14.0',
+    'ghcr.io/rohansx/cloakpipe:0.15.0',
     `${TAG}docker/compose.example.yaml`,
     `${TAG}docker/gate-entrypoint.sh`,
   ]) {
@@ -332,9 +333,9 @@ test('the docker page says what the image runs and where state lives', () => {
   assert.ok(md.includes('refuses to start'), 'docker says when the entrypoint refuses to start');
   for (const s of ['no manifest', 'both', 'neither', 'non-loopback']) assert.ok(refusals.slice(0, 900).includes(s), `refusal: ${s}`);
   // The released image runs the gate by default; nothing says to build it from main.
-  assert.doesNotMatch(md, /blob\/(?:main|v0\.13\.0)\/docker\//, 'docker links point at the v0.14.0 tag');
+  assert.doesNotMatch(md, /blob\/(?:main|v0\.1[34]\.0)\/docker\//, 'docker links point at the v0.15.0 tag');
   assert.doesNotMatch(md, /clone of `main`|until v0\.13\.0 is tagged/i, 'no build-from-main instructions');
-  assert.doesNotMatch(md, /cloakpipe:0\.1[34]\.0[^\n]*PII proxy|default command is still the PII proxy/, 'the image runs the gate');
+  assert.doesNotMatch(md, /cloakpipe:0\.1[345]\.0[^\n]*PII proxy|default command is still the PII proxy/, 'the image runs the gate');
   assert.match(md, /up to v0\.12\.0/, 'the PII proxy default is described as the old behaviour');
 });
 
